@@ -87,22 +87,19 @@ function clearError(fieldId) {
 document.getElementById('loginFormElement')?.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const email = document.getElementById('loginEmail').value.trim();
+    const identifier = document.getElementById('loginIdentifier').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
     const rememberMe = document.getElementById('rememberMe').checked;
 
     let isValid = true;
 
     // Clear previous errors
-    clearError('loginEmailError');
+    clearError('loginIdentifierError');
     clearError('loginPasswordError');
 
-    // Validate email
-    if (!email) {
-        showError('loginEmailError', 'Email is required');
-        isValid = false;
-    } else if (!validateEmail(email)) {
-        showError('loginEmailError', 'Please enter a valid email');
+    // Validate identifier
+    if (!identifier) {
+        showError('loginIdentifierError', 'Email or Username is required');
         isValid = false;
     }
 
@@ -117,7 +114,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
 
     if (isValid) {
         const userData = {
-            email: email,
+            identifier: identifier,
             password: password
         };
 
@@ -179,6 +176,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
 document.getElementById('signupFormElement')?.addEventListener('submit', function (e) {
     e.preventDefault();
 
+    const username = document.getElementById('signupUsername').value.trim();
     const name = document.getElementById('signupName').value.trim();
     const email = document.getElementById('signupEmail').value.trim();
     const phone = document.getElementById('signupPhone').value.trim();
@@ -189,12 +187,22 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
     let isValid = true;
 
     // Clear previous errors
+    clearError('signupUsernameError');
     clearError('signupNameError');
     clearError('signupEmailError');
     clearError('signupPhoneError');
     clearError('signupPasswordError');
     clearError('confirmPasswordError');
     clearError('agreeTermsError');
+
+    // Validate username
+    if (!username) {
+        showError('signupUsernameError', 'Username is required');
+        isValid = false;
+    } else if (username.length < 3) {
+        showError('signupUsernameError', 'Username must be at least 3 characters');
+        isValid = false;
+    }
 
     // Validate name
     if (!name) {
@@ -249,6 +257,7 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
 
     if (isValid) {
         const userData = {
+            username: username,
             name: name,
             email: email,
             phone: phone,
