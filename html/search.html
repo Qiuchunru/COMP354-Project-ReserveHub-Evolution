@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Search Restaurants | ReserveHub</title>
+    <link rel="icon" type="image/x-icon" href="../pictures/reservehub-favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/search.css">
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar scrolled" id="navbar">
+        <a href="index.html" aria-label="ReserveHub Homepage" class="nav-logo-link">
+            <img src="../pictures/reservehub-full-logo.png" alt="ReserveHub Logo" class="top-logo">
+        </a>
+        <div class="top-btn-container" style="display: flex; gap: 4px;">
+            <a href="index.html" class="top-btn">HOME</a>
+            <div id="auth-buttons" style="display: flex; gap: 4px;">
+                <a href="login-signup.html" class="top-btn btn-cta">SIGN UP / LOG IN</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="search-page-main">
+        <div class="search-container">
+            <!-- Sidebar Filters -->
+            <aside class="search-sidebar">
+                <h3><i class="fa-solid fa-filter"></i> Filters</h3>
+                
+                <div class="filter-group">
+                    <label>Search Keyword</label>
+                    <input type="text" id="filterKeyword" placeholder="e.g. Italian, Pizza...">
+                </div>
+
+                <div class="filter-group">
+                    <label>Location</label>
+                    <select id="filterLocation">
+                        <option value="">Any Location</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Petaling Jaya">Petaling Jaya</option>
+                        <option value="Subang Jaya">Subang Jaya</option>
+                        <option value="Penang">Penang</option>
+                        <option value="Johor Bahru">Johor Bahru</option>
+                        <option value="Malacca">Malacca</option>
+                        <option value="Ipoh">Ipoh</option>
+                        <option value="Kuching">Kuching</option>
+                        <option value="Kota Kinabalu">Kota Kinabalu</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Dietary Preferences</label>
+                    <select id="filterHalal">
+                        <option value="">All</option>
+                        <option value="1">Halal Certified</option>
+                        <option value="0">Non-Halal</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Availability (Time)</label>
+                    <input type="time" id="filterTime">
+                </div>
+
+                <button id="applyFiltersBtn" class="search-btn w-100">Apply Filters</button>
+            </aside>
+
+            <!-- Results Area -->
+            <section class="search-results-area">
+                <div class="results-header">
+                    <h2 id="resultsCount">Searching...</h2>
+                </div>
+                
+                <div class="restaurants-grid" id="restaurantsGrid">
+                    <!-- Dynamic results will be injected here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-bottom" style="border-top:none;">
+            <p>© 2026 ReserveHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/search.js"></script>
+    <script src="../js/session.js"></script>
+</body>
+</html>

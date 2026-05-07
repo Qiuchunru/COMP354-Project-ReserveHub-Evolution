@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | ReserveHub</title>
+    <link rel="icon" type="image/x-icon" href="../pictures/reservehub-favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <aside class="admin-sidebar">
+        <a href="index.html" class="admin-logo" style="text-decoration: none; justify-content: center; margin-bottom: 50px;">
+            <img src="../pictures/reservehub-full-logo.png" alt="ReserveHub Logo" style="width: 100%; max-width: 180px; height: auto;">
+        </a>
+        <nav class="admin-nav">
+            <a href="#" data-target="dashboard" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#" data-target="restaurants"><i class="fa-solid fa-utensils"></i> Restaurants</a>
+            <a href="#" data-target="tables"><i class="fa-solid fa-chair"></i> Tables</a>
+            <a href="#" data-target="reservations"><i class="fa-solid fa-book"></i> Reservations</a>
+            <a href="#" data-target="users"><i class="fa-solid fa-users"></i> Users</a>
+            <a href="index.html" style="margin-top: auto; color: #e74c3c;"><i class="fa-solid fa-arrow-left"></i> Exit Admin</a>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="admin-section active">
+            <div class="admin-header">
+                <h1>Dashboard Overview</h1>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Users</h3>
+                        <div class="stat-val" id="statUsers">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="stat-info">
+                        <h3>Restaurants</h3>
+                        <div class="stat-val" id="statRests">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <h3>Reservations</h3>
+                        <div class="stat-val" id="statRes">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-header">
+                <h2>Popular Restaurants</h2>
+            </div>
+            <div class="admin-table-container" style="padding: 24px;">
+                <canvas id="popularityChart" width="100%" height="30"></canvas>
+            </div>
+        </section>
+
+        <!-- Restaurants Section -->
+        <section id="restaurants" class="admin-section">
+            <div class="admin-header">
+                <h1>Manage Restaurants</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="searchRestaurants" class="form-control" placeholder="Search restaurants..." style="width:250px;" onkeyup="filterRestaurants()">
+                    <button class="btn btn-primary" onclick="openRestaurantModal()">+ Add Restaurant</button>
+                </div>
+            </div>
+            <div id="restGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                <!-- Cards injected here -->
+            </div>
+        </section>
+
+        <!-- Tables Section -->
+        <section id="tables" class="admin-section">
+            <div class="admin-header">
+                <h1>Manage Tables</h1>
+                <div style="display:flex; gap:10px;">
+                    <select id="tableRestSelect" class="form-control" style="width:200px;" onchange="loadTables()"></select>
+                    <input type="text" id="searchTables" class="form-control" placeholder="Search tables..." style="width:200px;" onkeyup="filterTables()">
+                    <button class="btn btn-primary" onclick="openTableModal()">+ Add Table</button>
+                </div>
+            </div>
+            <div id="tablesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                <!-- Cards injected here -->
+            </div>
+        </section>
+
+        <!-- Reservations Section -->
+        <section id="reservations" class="admin-section">
+            <div class="admin-header"><h1>Reservations</h1></div>
+            <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
+                <div id="resList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Reservations will be rendered here as cards -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users" class="admin-section">
+            <div class="admin-header">
+                <h1>Users</h1>
+                <input type="text" id="searchUsers" class="form-control" placeholder="Search users..." style="width:300px;" onkeyup="filterUsers()">
+            </div>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead>
+                    <tbody id="usersTbody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Restaurant Modal -->
+    <div class="modal" id="restModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="restModalTitle">Add Restaurant</h3>
+                <button class="modal-close" onclick="closeModal('restModal')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="restForm">
+                <input type="hidden" id="restId">
+                <div class="form-group"><label>Name</label><input type="text" id="restName" class="form-control" required></div>
+                <div class="form-group"><label>Description</label><textarea id="restDesc" class="form-control" rows="3"></textarea></div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Cuisine</label><input type="text" id="restCuisine" class="form-control" required></div>
+                    <div class="form-group" style="flex:1;"><label>Location</label><input type="text" id="restLocation" class="form-control" required></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
+                    <div class="form-group" style="flex:1;"><label>Rating</label><input type="number" step="0.1" id="restRating" class="form-control" value="0.0"></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Open Time</label><input type="time" id="restOpen" class="form-control"></div>
+                    <div class="form-group" style="flex:1;"><label>Close Time</label><input type="time" id="restClose" class="form-control"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Save Restaurant</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table Modal -->
+    <div class="modal" id="tableModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="tableModalTitle">Add Table</h3>
+                <button class="modal-close" onclick="closeModal('tableModal')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="tableForm">
+                <input type="hidden" id="tableId">
+                <div class="form-group">
+                    <label>Restaurant</label>
+                    <select id="tableModalRest" class="form-control" required></select>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Table Number</label><input type="text" id="tableNum" class="form-control" required></div>
+                    <div class="form-group" style="flex:1;"><label>Capacity</label><input type="number" id="tableCap" class="form-control" value="4" required></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Shape</label>
+                        <select id="tableShape" class="form-control">
+                            <option value="round">Round</option><option value="rect">Rectangular</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;"><label>Status</label>
+                        <select id="tableStatus" class="form-control">
+                            <option value="available">Available</option><option value="occupied">Occupied</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>X Pos</label><input type="number" id="tableX" class="form-control" value="100"></div>
+                    <div class="form-group" style="flex:1;"><label>Y Pos</label><input type="number" id="tableY" class="form-control" value="100"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Save Table</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/admin.js?v=2"></script>
+</body>
+</html>

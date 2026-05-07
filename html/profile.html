@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>My Profile | ReserveHub</title>
+    <link rel="icon" type="image/x-icon" href="../pictures/reservehub-favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar scrolled" id="navbar">
+        <a href="index.html" aria-label="ReserveHub Homepage" class="nav-logo-link">
+            <img src="../pictures/reservehub-full-logo.png" alt="ReserveHub Logo" class="top-logo">
+        </a>
+        <div class="top-btn-container" id="auth-buttons">
+            <!-- Will be populated by session.js -->
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <a href="index.html" class="mob-link">Home</a>
+        <!-- Will be populated by session.js -->
+    </div>
+
+    <!-- ===== PROFILE SECTION ===== -->
+    <main class="profile-main">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h1 id="profileName">Loading...</h1>
+                    <p id="profileEmail">Fetching your details...</p>
+                    <p id="profilePhone" style="color: var(--orange); font-weight: 600; margin-top: 5px;"></p>
+                    <span class="member-since" id="profileDate" style="display:block; margin-top:5px;"></span>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2><i class="fa-regular fa-calendar-check"></i> My Reservations</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="reservationsList">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-utensils"></i>
+                                <p>You don't have any upcoming reservations yet.</p>
+                                <a href="search.html" class="reserve-btn">Find a Restaurant</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2><i class="fa-regular fa-heart"></i> Saved Restaurants</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="savedRestaurantsList" class="restaurants-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                            <div class="empty-state">
+                                <i class="fa-regular fa-bookmark"></i>
+                                <p>Restaurants you save will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-bottom" style="border-top:none;">
+            <p>© 2026 ReserveHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/session.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userStr = localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user');
+            
+            if (!userStr) {
+                window.location.href = 'login-signup.html';
+                return;
+            }
+
+            const sessionData = JSON.parse(userStr);
+
+            // Fetch latest data from database
+            fetch('../api/profile.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: sessionData.email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    const user = data.user;
+                    document.getElementById('profileName').textContent = user.name;
+                    document.getElementById('profileEmail').textContent = user.email;
+                    document.getElementById('profilePhone').textContent = user.phone ? `<i class="fa-solid fa-phone"></i> ${user.phone}` : '';
+                    document.getElementById('profilePhone').innerHTML = user.phone ? `<i class="fa-solid fa-phone" style="font-size: 12px; margin-right: 5px;"></i> ${user.phone}` : 'No phone number provided';
+                    
+                    const date = new Date(user.created_at);
+                    document.getElementById('profileDate').textContent = 'Member since ' + date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                    
+                    // Set Avatar Initial
+                    document.getElementById('profileAvatar').innerHTML = user.name.charAt(0).toUpperCase();
+
+                    // Fetch Reservations
+                    fetchReservations(user.id);
+                    // Fetch Saved Restaurants
+                    fetchSavedRestaurants(user.id);
+                } else {
+                    document.getElementById('profileName').textContent = 'Error loading profile';
+                    document.getElementById('profileEmail').textContent = data.message;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('profileName').textContent = sessionData.name; // Fallback to session
+                document.getElementById('profileEmail').textContent = sessionData.email;
+            });
+
+            function fetchReservations(userId) {
+                fetch('../api/profile_reservations.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('reservationsList');
+                    if(data.success && data.data.length > 0) {
+                        list.innerHTML = '';
+                        data.data.forEach(res => {
+                            const resCard = document.createElement('div');
+                            resCard.className = 'reservation-item';
+                            resCard.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
+                            
+                            const isPast = new Date(res.date + ' ' + res.time) < new Date();
+                            
+                            resCard.innerHTML = `
+                                <img src="${res.image_url}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0; font-size: 1rem;">${res.restaurant_name}</h4>
+                                    <p style="margin: 4px 0; font-size: 0.85rem; color: #888;">
+                                        <i class="fa-regular fa-calendar"></i> ${res.date} | <i class="fa-regular fa-clock"></i> ${res.time.slice(0,5)}
+                                    </p>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--orange);">Table ${res.table_number} | ${res.guests} Guests</p>
+                                </div>
+                                <div>
+                                    ${isPast ? `<button class="review-btn" onclick="openReviewModal(${res.id}, ${res.restaurant_id})" style="background: transparent; border: 1px solid var(--orange); color: var(--orange); padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Review</button>` : `<span style="color: #27ae60; font-size: 0.8rem;">Upcoming</span>`}
+                                </div>
+                            `;
+                            list.appendChild(resCard);
+                        });
+                    }
+                });
+            }
+
+            function fetchSavedRestaurants(userId) {
+                fetch(`../api/get_saved.php?user_id=${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('savedRestaurantsList');
+                    if(data.success && data.data.length > 0) {
+                        list.innerHTML = '';
+                        data.data.forEach(rest => {
+                            const card = document.createElement('div');
+                            card.className = 'saved-item';
+                            card.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
+                            card.innerHTML = `
+                                <img src="${rest.image_url}" style="width: 70px; height: 50px; object-fit: cover; border-radius: 6px;">
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0; font-size: 0.95rem;">${rest.name}</h4>
+                                    <p style="margin: 4px 0; font-size: 0.8rem; color: #888;">${rest.cuisine} · ${rest.location}</p>
+                                </div>
+                                <button onclick="window.location.href='restaurant.html?id=${rest.id}'" style="background: var(--orange); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">Book</button>
+                            `;
+                            list.appendChild(card);
+                        });
+                    }
+                });
+            }
+        });
+
+        function openReviewModal(resId, restId) {
+            const modal = document.getElementById('reviewModal');
+            document.getElementById('reviewResId').value = resId;
+            document.getElementById('reviewRestId').value = restId;
+            modal.style.display = 'flex';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+
+        function submitReview(e) {
+            e.preventDefault();
+            const userStr = localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user');
+            const user = JSON.parse(userStr);
+
+            const payload = {
+                user_id: user.id,
+                restaurant_id: document.getElementById('reviewRestId').value,
+                reservation_id: document.getElementById('reviewResId').value,
+                rating: document.getElementById('reviewRating').value,
+                comment: document.getElementById('reviewComment').value
+            };
+
+            fetch('../api/add_review.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert('Review submitted successfully!');
+                    closeReviewModal();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    </script>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: #1a1a1a; padding: 30px; border-radius: 16px; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-top: 0;">Rate your experience</h3>
+            <form onsubmit="submitReview(event)">
+                <input type="hidden" id="reviewResId">
+                <input type="hidden" id="reviewRestId">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Rating</label>
+                    <select id="reviewRating" style="width: 100%; background: #2a2a2a; color: white; border: 1px solid #333; padding: 8px; border-radius: 8px;" required>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="1">1 - Poor</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Comment</label>
+                    <textarea id="reviewComment" style="width: 100%; background: #2a2a2a; color: white; border: 1px solid #333; padding: 8px; border-radius: 8px; min-height: 80px;" placeholder="What did you think of the food and service?"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="closeReviewModal()" style="flex: 1; background: #333; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">Cancel</button>
+                    <button type="submit" style="flex: 1; background: var(--orange); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

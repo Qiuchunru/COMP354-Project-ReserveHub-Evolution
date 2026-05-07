@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Details | ReserveHub</title>
+    <meta name="description" content="View the floor plan and reserve your preferred table.">
+    <link rel="stylesheet" href="../css/restaurant.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo"><i class="fa-solid fa-calendar-check"></i> ReserveHub</a>
+        <a href="javascript:history.back()" class="nav-back">
+            <i class="fa-solid fa-arrow-left"></i> Back to results
+        </a>
+    </nav>
+
+    <!-- Hero Banner -->
+    <div class="restaurant-hero" id="restaurantHero">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-info">
+            <span class="hero-cuisine-tag" id="heroCuisine">Loading...</span>
+            <h1 class="hero-name" id="heroName">Loading Restaurant...</h1>
+            <div class="hero-meta">
+                <span class="rating"><i class="fa-solid fa-star"></i> <span id="heroRating">–</span></span>
+                <span><i class="fa-solid fa-location-dot"></i> <span id="heroLocation">–</span></span>
+                <span><i class="fa-regular fa-clock"></i> <span id="heroHours">–</span></span>
+                <span><i class="fa-solid fa-tag"></i> <span id="heroPrice">–</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="page-content">
+
+        <!-- Floor Plan Section -->
+        <section class="floor-plan-section">
+            <div class="floor-plan-header">
+                <h2><i class="fa-solid fa-table-cells" style="color:var(--orange);margin-right:8px;"></i>Table Layout</h2>
+                <p>Select your preferred table below. Green = Available, Red = Occupied.</p>
+            </div>
+
+            <div class="floor-plan-date-bar">
+                <label for="fpDate"><i class="fa-regular fa-calendar"></i> Date</label>
+                <input type="date" id="fpDate">
+                <label for="fpTime"><i class="fa-regular fa-clock"></i> Time</label>
+                <input type="time" id="fpTime" step="1800">
+                <button class="refresh-btn" id="checkAvailabilityBtn">
+                    <i class="fa-solid fa-rotate"></i> Check Availability
+                </button>
+            </div>
+
+            <div class="floor-legend">
+                <div class="legend-item"><div class="legend-dot available"></div> Available</div>
+                <div class="legend-item"><div class="legend-dot occupied"></div> Occupied</div>
+                <div class="legend-item"><div class="legend-dot selected"></div> Your Selection</div>
+            </div>
+
+            <div class="svg-wrapper">
+                <svg id="floorPlanSvg" viewBox="0 0 700 450" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Floor decorations -->
+                    <rect width="700" height="450" fill="#111" rx="8"/>
+                    <!-- Grid lines -->
+                    <g opacity="0.03" stroke="#fff" stroke-width="1">
+                        <line x1="0" y1="90" x2="700" y2="90"/>
+                        <line x1="0" y1="180" x2="700" y2="180"/>
+                        <line x1="0" y1="270" x2="700" y2="270"/>
+                        <line x1="0" y1="360" x2="700" y2="360"/>
+                        <line x1="140" y1="0" x2="140" y2="450"/>
+                        <line x1="280" y1="0" x2="280" y2="450"/>
+                        <line x1="420" y1="0" x2="420" y2="450"/>
+                        <line x1="560" y1="0" x2="560" y2="450"/>
+                    </g>
+                    <!-- Entrance indicator -->
+                    <rect x="280" y="435" width="140" height="15" fill="none" stroke="#ff6b35" stroke-width="2" rx="2" opacity="0.5"/>
+                    <text x="350" y="445" fill="#ff6b35" font-size="9" font-family="Inter" text-anchor="middle" opacity="0.6">ENTRANCE</text>
+                    <!-- Bar/Counter area -->
+                    <rect x="0" y="0" width="700" height="30" fill="rgba(255,255,255,0.03)" rx="0"/>
+                    <text x="350" y="19" fill="rgba(255,255,255,0.2)" font-size="10" font-family="Inter" text-anchor="middle">BAR / COUNTER AREA</text>
+
+                    <!-- Dynamic tables will be injected here -->
+                    <g id="tablesGroup"></g>
+
+                    <!-- Loading indicator -->
+                    <text id="svgLoadingText" x="350" y="225" fill="rgba(255,255,255,0.3)" font-size="14" font-family="Inter" text-anchor="middle">Loading floor plan...</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Booking Panel -->
+        <aside class="booking-panel">
+            <div class="booking-header">
+                <h3><i class="fa-solid fa-chair" style="color:var(--orange);margin-right:8px;"></i>Reserve a Table</h3>
+                <p>Click a table on the floor plan to select it.</p>
+            </div>
+
+            <div class="selected-table-display" id="selectedTableDisplay">
+                <p class="placeholder-text"><i class="fa-solid fa-hand-pointer" style="margin-right:6px;opacity:0.5;"></i>No table selected yet</p>
+                <div class="table-selected-info">
+                    <div class="table-num" id="selectedTableNum">–</div>
+                    <div class="table-details" id="selectedTableDetails">–</div>
+                </div>
+            </div>
+
+            <div class="booking-divider"></div>
+
+            <form class="booking-form" id="bookingForm">
+                <div class="form-group">
+                    <label for="bookDate"><i class="fa-regular fa-calendar"></i> Date</label>
+                    <input type="date" id="bookDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookTime"><i class="fa-regular fa-clock"></i> Time</label>
+                    <input type="time" id="bookTime" step="1800" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookGuests"><i class="fa-solid fa-users"></i> Number of Guests</label>
+                    <select id="bookGuests" required>
+                        <option value="">Select guests...</option>
+                        <option value="1">1 Guest</option>
+                        <option value="2">2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="5">5 Guests</option>
+                        <option value="6">6 Guests</option>
+                        <option value="7">7 Guests</option>
+                        <option value="8">8 Guests</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bookRequests"><i class="fa-solid fa-comment"></i> Special Requests (optional)</label>
+                    <textarea id="bookRequests" placeholder="e.g. Birthday celebration, window seat preferred..."></textarea>
+                </div>
+
+                <input type="hidden" id="selectedTableId" value="">
+                <input type="hidden" id="restaurantId" value="">
+
+                <button type="submit" class="btn-reserve" id="reserveBtn" disabled>
+                    <i class="fa-solid fa-lock"></i> Select a Table First
+                </button>
+            </form>
+
+            <div class="booking-divider" style="margin: 30px 0 20px;"></div>
+
+            <div class="reviews-sidebar">
+                <h3 class="sidebar-title"><i class="fa-solid fa-star" style="color:#f1c40f;margin-right:8px;"></i>Customer Reviews</h3>
+                <div id="reviewsList" class="reviews-list">
+                    <p class="placeholder-text">Loading reviews...</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon" id="toastIcon"><i class="fa-solid fa-check" id="toastIconI"></i></div>
+        <div>
+            <div class="toast-title" id="toastTitle">Success!</div>
+            <div class="toast-msg" id="toastMsg">Your table has been reserved.</div>
+        </div>
+    </div>
+
+    <!-- Reservation Success Modal -->
+    <div id="successModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div style="background: var(--dark-card); padding: 40px; border-radius: 16px; width: 90%; max-width: 450px; border: 1px solid var(--glass-border); text-align: center; position: relative;">
+            <div style="width: 70px; height: 70px; background: rgba(39, 174, 96, 0.1); color: #27ae60; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 style="margin-bottom: 10px; color: #fff;">Reservation Confirmed!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;">Your table has been successfully booked.</p>
+            
+            <div style="background: var(--dark-surface); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left; border: 1px solid var(--glass-border);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="color: var(--text-muted); font-size: 14px;">Booking ID</span>
+                    <strong style="color: var(--orange); font-size: 15px;" id="modalBookingId">#---</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="color: var(--text-muted); font-size: 14px;">Contact Phone</span>
+                    <strong style="color: #fff; font-size: 14px;" id="modalPhone">---</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="color: var(--text-muted); font-size: 14px;">Date & Time</span>
+                    <strong style="color: #fff; font-size: 14px;" id="modalDateTime">---</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="color: var(--text-muted); font-size: 14px;">Table Number</span>
+                    <strong style="color: #fff; font-size: 14px;" id="modalTableNum">---</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted); font-size: 14px;">Guests</span>
+                    <strong style="color: #fff; font-size: 14px;" id="modalGuests">---</strong>
+                </div>
+            </div>
+            
+            <button onclick="window.location.href='profile.html'" style="width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">View My Reservations</button>
+            <button onclick="document.getElementById('successModal').style.display='none'" style="width: 100%; padding: 14px; background: transparent; color: var(--text-muted); border: none; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 5px;">Close</button>
+        </div>
+    </div>
+
+    <script src="../js/session.js"></script>
+    <script src="../js/restaurant.js?v=2"></script>
+</body>
+</html>

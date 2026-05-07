@@ -1,0 +1,339 @@
+// Form Switching
+function switchForm(formType) {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const forms = [loginForm, signupForm];
+
+    forms.forEach(form => form.classList.remove('active'));
+
+    if (formType === 'login') {
+        loginForm.classList.add('active');
+    } else {
+        signupForm.classList.add('active');
+    }
+}
+
+// Toggle Password Visibility
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = event.target.closest('button').querySelector('i');
+
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Check Password Strength
+function checkPasswordStrength(password) {
+    const strengthBar = document.getElementById('passwordStrength');
+
+    if (!strengthBar) return;
+
+    strengthBar.classList.remove('weak', 'fair', 'strong');
+
+    if (password.length < 6) {
+        strengthBar.classList.add('weak');
+    } else if (password.length < 10) {
+        if (/[A-Z]/.test(password) && /[0-9]/.test(password)) {
+            strengthBar.classList.add('strong');
+        } else {
+            strengthBar.classList.add('fair');
+        }
+    } else {
+        if (/[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*]/.test(password)) {
+            strengthBar.classList.add('strong');
+        } else if (/[A-Z]/.test(password) || /[0-9]/.test(password)) {
+            strengthBar.classList.add('fair');
+        } else {
+            strengthBar.classList.add('weak');
+        }
+    }
+}
+
+// Validate Email
+function validateEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
+// Validate Password
+function validatePassword(password) {
+    return password.length >= 6;
+}
+
+// Show Error Message
+function showError(fieldId, message) {
+    const errorElement = document.getElementById(fieldId);
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
+}
+
+// Clear Error Message
+function clearError(fieldId) {
+    const errorElement = document.getElementById(fieldId);
+    if (errorElement) {
+        errorElement.textContent = '';
+    }
+}
+
+// Login Form Submission
+document.getElementById('loginFormElement')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const rememberMe = document.getElementById('rememberMe').checked;
+
+    let isValid = true;
+
+    // Clear previous errors
+    clearError('loginEmailError');
+    clearError('loginPasswordError');
+
+    // Validate email
+    if (!email) {
+        showError('loginEmailError', 'Email is required');
+        isValid = false;
+    } else if (!validateEmail(email)) {
+        showError('loginEmailError', 'Please enter a valid email');
+        isValid = false;
+    }
+
+    // Validate password
+    if (!password) {
+        showError('loginPasswordError', 'Password is required');
+        isValid = false;
+    } else if (!validatePassword(password)) {
+        showError('loginPasswordError', 'Password must be at least 6 characters');
+        isValid = false;
+    }
+
+    if (isValid) {
+        const userData = {
+            email: email,
+            password: password
+        };
+
+        const submitBtn = this.querySelector('.submit-btn');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span>Signing In...</span>';
+        submitBtn.disabled = true;
+
+        fetch('../api/login.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+
+            if (data.success) {
+                if (rememberMe) {
+                    localStorage.setItem('reservehub_user', JSON.stringify({
+                        id: data.user.id,
+                        email: data.user.email,
+                        name: data.user.name,
+                        phone: data.user.phone,
+                        timestamp: new Date().toISOString()
+                    }));
+                } else {
+                    sessionStorage.setItem('reservehub_user', JSON.stringify({
+                        id: data.user.id,
+                        email: data.user.email,
+                        name: data.user.name,
+                        phone: data.user.phone,
+                        timestamp: new Date().toISOString()
+                    }));
+                }
+
+                showSuccessModal('Login Successful!', `Welcome back, ${data.user.name}!`);
+                this.reset();
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            } else {
+                showError('loginPasswordError', data.message);
+            }
+        })
+        .catch(error => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            showError('loginPasswordError', 'Network error. Please try again later.');
+            console.error('Error:', error);
+        });
+    }
+});
+
+// Signup Form Submission
+document.getElementById('signupFormElement')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+    const agreeTerms = document.getElementById('agreeTerms').checked;
+
+    let isValid = true;
+
+    // Clear previous errors
+    clearError('signupNameError');
+    clearError('signupEmailError');
+    clearError('signupPhoneError');
+    clearError('signupPasswordError');
+    clearError('confirmPasswordError');
+    clearError('agreeTermsError');
+
+    // Validate name
+    if (!name) {
+        showError('signupNameError', 'Name is required');
+        isValid = false;
+    } else if (name.length < 3) {
+        showError('signupNameError', 'Name must be at least 3 characters');
+        isValid = false;
+    }
+
+    // Validate email
+    if (!email) {
+        showError('signupEmailError', 'Email is required');
+        isValid = false;
+    } else if (!validateEmail(email)) {
+        showError('signupEmailError', 'Please enter a valid email');
+        isValid = false;
+    }
+
+    // Validate phone
+    if (!phone) {
+        showError('signupPhoneError', 'Phone number is required');
+        isValid = false;
+    } else if (phone.length < 8) {
+        showError('signupPhoneError', 'Please enter a valid phone number');
+        isValid = false;
+    }
+
+    // Validate password
+    if (!password) {
+        showError('signupPasswordError', 'Password is required');
+        isValid = false;
+    } else if (!validatePassword(password)) {
+        showError('signupPasswordError', 'Password must be at least 6 characters');
+        isValid = false;
+    }
+
+    // Validate confirm password
+    if (!confirmPassword) {
+        showError('confirmPasswordError', 'Please confirm your password');
+        isValid = false;
+    } else if (password !== confirmPassword) {
+        showError('confirmPasswordError', 'Passwords do not match');
+        isValid = false;
+    }
+
+    // Validate terms
+    if (!agreeTerms) {
+        showError('agreeTermsError', 'You must agree to the terms and privacy policy');
+        isValid = false;
+    }
+
+    if (isValid) {
+        const userData = {
+            name: name,
+            email: email,
+            phone: phone,
+            password: password
+        };
+
+        const submitBtn = this.querySelector('.submit-btn');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span>Creating Account...</span>';
+        submitBtn.disabled = true;
+
+        fetch('../api/signup.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+
+            if (data.success) {
+                showSuccessModal('Account Created!', `Welcome ${name}! Your account has been created successfully.`);
+                this.reset();
+                setTimeout(() => {
+                    switchForm('login');
+                }, 2000);
+            } else {
+                showError('signupEmailError', data.message);
+            }
+        })
+        .catch(error => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            showError('signupPasswordError', 'Network error. Please try again later.');
+            console.error('Error:', error);
+        });
+    }
+});
+
+// Show Success Modal
+function showSuccessModal(title, message) {
+    const modal = document.getElementById('successModal');
+    document.getElementById('successTitle').textContent = title;
+    document.getElementById('successText').textContent = message;
+    modal.classList.add('show');
+
+    // Auto-close after 3 seconds
+    setTimeout(() => {
+        modal.classList.remove('show');
+    }, 3000);
+}
+
+// Social Login (placeholder)
+function socialLogin(provider) {
+    alert(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login integration would be implemented here.`);
+    // In a real application, this would redirect to OAuth providers
+}
+
+// Input validation on blur
+const inputs = document.querySelectorAll('input[type="email"], input[type="password"], input[type="text"]');
+inputs.forEach(input => {
+    input.addEventListener('blur', function () {
+        // Clear error on blur for better UX
+        const errorId = this.id + 'Error';
+        const errorElement = document.getElementById(errorId);
+        if (errorElement && this.value.trim()) {
+            clearError(errorId);
+        }
+    });
+});
+
+// Prevent form submission on Enter in social buttons
+document.querySelectorAll('.social-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+    });
+});
+
+// Check if user is already logged in
+window.addEventListener('DOMContentLoaded', () => {
+    const user = localStorage.getItem('reservehub_user');
+    if (user && window.location.pathname.includes('login-signup')) {
+        console.log('User already logged in:', user);
+    }
+});
