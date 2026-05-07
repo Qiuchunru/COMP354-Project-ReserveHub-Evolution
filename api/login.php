@@ -12,18 +12,18 @@ if (!$data) {
     exit;
 }
 
-$email = trim($data->email ?? '');
+$identifier = trim($data->identifier ?? '');
 $password = trim($data->password ?? '');
 
-if (empty($email) || empty($password)) {
+if (empty($identifier) || empty($password)) {
     echo json_encode(['success' => false, 'message' => 'Please fill in all fields.']);
     exit;
 }
 
 try {
-    // Find user by email
-    $stmt = $pdo->prepare("SELECT id, name, email, phone, password FROM users WHERE email = ?");
-    $stmt->execute([$email]);
+    // Find user by email or username
+    $stmt = $pdo->prepare("SELECT id, username, name, email, phone, password FROM users WHERE email = ? OR username = ?");
+    $stmt->execute([$identifier, $identifier]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
@@ -32,6 +32,7 @@ try {
             'message' => 'Login successful!',
             'user' => [
                 'id' => $user['id'],
+                'username' => $user['username'],
                 'name' => $user['name'],
                 'email' => $user['email'],
                 'phone' => $user['phone']
@@ -40,7 +41,7 @@ try {
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Invalid email or password.'
+            'message' => 'Invalid email/username or password.'
         ]);
     }
 } catch (PDOException $e) {

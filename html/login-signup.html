@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="../css/auth-styles.css">
 </head>
 <body>
+    <div class="bg-animations">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
     <div class="auth-container">
         <!-- Left Section - Branding -->
         <div class="auth-brand">
@@ -46,17 +52,17 @@
 
                     <form id="loginFormElement" class="auth-form">
                         <div class="form-group">
-                            <label for="loginEmail">Email Address</label>
+                            <label for="loginIdentifier">Email or Username</label>
                             <div class="input-wrapper">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-user"></i>
                                 <input 
-                                    type="email" 
-                                    id="loginEmail" 
-                                    placeholder="you@example.com" 
+                                    type="text" 
+                                    id="loginIdentifier" 
+                                    placeholder="Enter email or username" 
                                     required
                                 >
                             </div>
-                            <span class="error-message" id="loginEmailError"></span>
+                            <span class="error-message" id="loginIdentifierError"></span>
                         </div>
 
                         <div class="form-group">
@@ -135,6 +141,20 @@
                     </div>
 
                     <form id="signupFormElement" class="auth-form">
+                        <div class="form-group">
+                            <label for="signupUsername">Username</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-at"></i>
+                                <input 
+                                    type="text" 
+                                    id="signupUsername" 
+                                    placeholder="johndoe" 
+                                    required
+                                >
+                            </div>
+                            <span class="error-message" id="signupUsernameError"></span>
+                        </div>
+
                         <div class="form-group">
                             <label for="signupName">Full Name</label>
                             <div class="input-wrapper">
