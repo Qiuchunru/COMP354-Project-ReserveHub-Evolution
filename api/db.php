@@ -1,19 +1,24 @@
 <?php
-// api/db.php
+// api/db.php (InfinityFree Configuration Template)
+// Replace the placeholders with your actual credentials from the InfinityFree Client Area.
 
-$host = 'localhost';
-$dbname = 'reserve-hub';
-$username = 'root';
-$password = '';
+$host = 'sql101.infinityfree.com'; // Your MySQL Hostname
+$db   = 'if0_41799227_reservehub'; // Your MySQL Database Name
+$user = 'if0_41799227';            // Your MySQL Username
+$pass = 'Sekolah1123';            // Your MySQL Password
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    // Set PDO error mode to exception
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    die(json_encode([
-        'success' => false,
-        'message' => 'Database connection failed: ' . $e->getMessage()
-    ]));
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    // In production, don't show the full error to users
+    die("Database Connection Failed. Please check your credentials.");
 }
 ?>

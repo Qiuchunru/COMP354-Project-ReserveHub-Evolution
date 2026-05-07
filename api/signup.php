@@ -12,13 +12,14 @@ if (!$data) {
     exit;
 }
 
+$username_val = trim($data->username ?? '');
 $name = trim($data->name ?? '');
 $email = trim($data->email ?? '');
 $phone = trim($data->phone ?? '');
 $password = trim($data->password ?? '');
 
 // Basic validation
-if (empty($name) || empty($email) || empty($password) || empty($phone)) {
+if (empty($username_val) || empty($name) || empty($email) || empty($password) || empty($phone)) {
     echo json_encode(['success' => false, 'message' => 'Please fill in all fields.']);
     exit;
 }
@@ -34,19 +35,19 @@ if (strlen($password) < 6) {
 }
 
 try {
-    // Check if email already exists
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->execute([$email]);
+    // Check if username or email already exists
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+    $stmt->execute([$email, $username_val]);
     if ($stmt->rowCount() > 0) {
-        echo json_encode(['success' => false, 'message' => 'Email is already registered.']);
+        echo json_encode(['success' => false, 'message' => 'Email or Username is already registered.']);
         exit;
     }
 
     // Hash password and insert
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    $stmt = $pdo->prepare("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
-    if ($stmt->execute([$name, $email, $phone, $hashed_password])) {
+    $stmt = $pdo->prepare("INSERT INTO users (username, name, email, phone, password) VALUES (?, ?, ?, ?, ?)");
+    if ($stmt->execute([$username_val, $name, $email, $phone, $hashed_password])) {
         echo json_encode([
             'success' => true,
             'message' => 'Registration successful!'
