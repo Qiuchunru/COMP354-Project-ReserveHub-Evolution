@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Forms
     document.getElementById('restForm').addEventListener('submit', saveRestaurant);
-    document.getElementById('tableForm').addEventListener('submit', saveTable);
 
     // Initial load
     loadSection('dashboard');
@@ -39,7 +38,7 @@ async function apiFetch(endpoint, method = 'GET', data = null) {
 function loadSection(section) {
     if (section === 'dashboard') loadDashboard();
     if (section === 'restaurants') loadRestaurants();
-    if (section === 'tables') loadTables();
+    if (section === 'tables') loadFloorPlan();
     if (section === 'reservations') loadReservations();
     if (section === 'users') loadUsers();
 }
@@ -141,8 +140,8 @@ function loadRestaurantSelects() {
             allRestaurants = json.data;
             let options = '<option value="">Select Restaurant...</option>';
             json.data.forEach(r => options += `<option value="${r.id}">${r.name}</option>`);
-            document.getElementById('tableRestSelect').innerHTML = options;
-            document.getElementById('tableModalRest').innerHTML = options;
+            const tableSelect = document.getElementById('tableRestSelect');
+            if (tableSelect) tableSelect.innerHTML = options;
         }
     });
 }
@@ -150,7 +149,10 @@ function loadRestaurantSelects() {
 function openRestaurantModal() {
     document.getElementById('restForm').reset();
     document.getElementById('restId').value = '';
-    document.getElementById('imagePreview').style.display = 'none';
+    const preview = document.getElementById('imagePreview');
+    preview.querySelector('img').style.display = 'none';
+    preview.querySelector('.preview-placeholder').style.display = 'flex';
+    document.getElementById('fileLabelText').textContent = 'Choose Restaurant Image';
     document.getElementById('restModalTitle').textContent = 'Add Restaurant';
     document.getElementById('restModal').classList.add('show');
 }
@@ -158,13 +160,20 @@ function openRestaurantModal() {
 function previewImage(input) {
     const preview = document.getElementById('imagePreview');
     const previewImg = preview.querySelector('img');
+    const placeholder = preview.querySelector('.preview-placeholder');
+    const labelText = document.getElementById('fileLabelText');
+    
     if (input.files && input.files[0]) {
+        labelText.textContent = input.files[0].name;
         const reader = new FileReader();
         reader.onload = function(e) {
             previewImg.src = e.target.result;
-            preview.style.display = 'block';
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none';
         }
         reader.readAsDataURL(input.files[0]);
+    } else {
+        labelText.textContent = 'Choose Restaurant Image';
     }
 }
 
@@ -180,11 +189,18 @@ function editRestaurant(r) {
     document.getElementById('restClose').value = r.closing_time;
     
     const preview = document.getElementById('imagePreview');
+    const previewImg = preview.querySelector('img');
+    const placeholder = preview.querySelector('.preview-placeholder');
+
     if (r.image_url) {
-        preview.querySelector('img').src = r.image_url;
-        preview.style.display = 'block';
+        previewImg.src = r.image_url;
+        previewImg.style.display = 'block';
+        placeholder.style.display = 'none';
+        document.getElementById('fileLabelText').textContent = 'Change Restaurant Image';
     } else {
-        preview.style.display = 'none';
+        previewImg.style.display = 'none';
+        placeholder.style.display = 'flex';
+        document.getElementById('fileLabelText').textContent = 'Choose Restaurant Image';
     }
     
     document.getElementById('restModalTitle').textContent = 'Edit Restaurant';
@@ -206,9 +222,12 @@ async function saveRestaurant(e) {
     formData.append('closing_time', document.getElementById('restClose').value);
     
     // Pass existing image_url if we're editing and no new image is selected
-    const existingPreview = document.getElementById('imagePreview').querySelector('img').src;
-    if (existingPreview && !existingPreview.startsWith('data:')) {
-        formData.append('image_url', existingPreview);
+    const previewImg = document.getElementById('imagePreview').querySelector('img');
+    const existingSrc = previewImg.src;
+    if (existingSrc && !existingSrc.startsWith('data:') && previewImg.style.display !== 'none') {
+        // Convert full URL back to relative path if needed
+        const relativePath = existingSrc.includes('/pictures/') ? '../pictures/' + existingSrc.split('/pictures/')[1] : existingSrc;
+        formData.append('image_url', relativePath);
     }
     
     const imageFile = document.getElementById('restImage').files[0];
@@ -235,110 +254,321 @@ async function deleteRestaurant(id) {
     }
 }
 
-let allTables = [];
+// ===== FLOOR PLAN EDITOR =====
+let floorTables = [];      // { id, table_number, capacity, shape, status, x_pos, y_pos, _new, _dirty, _delete }
+let selectedTableId = null;
+let dragState = null;
+let nextTempId = -1;       // negative IDs for unsaved tables
 
-async function loadTables() {
+async function loadFloorPlan() {
     const restId = document.getElementById('tableRestSelect').value;
-    const grid = document.getElementById('tablesGrid');
+    const room = document.getElementById('floorRoom');
+    const sidebar = document.getElementById('floorSidebar');
+    selectedTableId = null;
+    floorTables = [];
+
     if (!restId) {
-        grid.innerHTML = '<p style="color:var(--text-muted);">Please select a restaurant first.</p>';
+        room.querySelectorAll('.floor-table').forEach(e => e.remove());
+        sidebar.innerHTML = `<div class="floor-empty-state"><i class="fa-solid fa-utensils"></i><p>Select a restaurant first</p></div>`;
         return;
     }
+
     const json = await apiFetch(`tables&restaurant_id=${restId}`);
     if (json.success) {
-        allTables = json.data;
-        renderTables(allTables);
+        floorTables = json.data.map(t => ({...t, _dirty: false, _new: false, _delete: false}));
+        renderFloorPlan();
     }
+    renderSidebar(null);
 }
 
-function renderTables(data) {
-    const grid = document.getElementById('tablesGrid');
-    grid.innerHTML = '';
-    if(data.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-muted);">No tables found.</p>';
+function renderFloorPlan() {
+    const room = document.getElementById('floorRoom');
+    // Clear existing tables (keep grid overlay)
+    room.querySelectorAll('.floor-table').forEach(e => e.remove());
+    floorTables.filter(t => !t._delete).forEach(t => createTableElement(t));
+}
+
+function createTableElement(t) {
+    const room = document.getElementById('floorRoom');
+    const el = document.createElement('div');
+    el.className = `floor-table ${t.shape} ${t.status}`;
+    el.dataset.id = t.id;
+
+    const bodySize = t.shape === 'round' ? 80 : 110;
+    const bodyH    = t.shape === 'round' ? 80 : 70;
+    const padding  = 28;
+
+    el.style.left = (t.x_pos) + 'px';
+    el.style.top  = (t.y_pos) + 'px';
+    el.style.width  = (bodySize + padding * 2) + 'px';
+    el.style.height = (bodyH   + padding * 2) + 'px';
+
+    // Seats
+    const cap = parseInt(t.capacity) || 4;
+    const seatsHTML = generateSeatsHTML(t.shape, cap, bodySize, bodyH, padding);
+
+    el.innerHTML = `
+        ${seatsHTML}
+        <div class="table-body">
+            <span class="table-label">T${t.table_number}</span>
+            <span class="table-cap">${cap} seats</span>
+        </div>
+    `;
+
+    if (t.id === selectedTableId) el.classList.add('selected');
+
+    // Click to select
+    el.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        startDrag(e, t.id, el);
+    });
+
+    room.appendChild(el);
+}
+
+function generateSeatsHTML(shape, cap, bw, bh, padding) {
+    let html = '';
+    const cx = padding + bw / 2;
+    const cy = padding + bh / 2;
+
+    if (shape === 'round') {
+        const radius = bw / 2 + 14;
+        for (let i = 0; i < cap; i++) {
+            const angle = (2 * Math.PI * i / cap) - Math.PI / 2;
+            const sx = cx + radius * Math.cos(angle) - 9;
+            const sy = cy + radius * Math.sin(angle) - 9;
+            html += `<div class="seat" style="left:${sx.toFixed(1)}px; top:${sy.toFixed(1)}px;"></div>`;
+        }
+    } else {
+        // Distribute seats around rect sides
+        const perSide = Math.ceil(cap / 2);
+        const topSeats = Math.ceil(cap / 2);
+        const bottomSeats = Math.floor(cap / 2);
+        for (let i = 0; i < topSeats; i++) {
+            const sx = padding + (bw / (topSeats + 1)) * (i + 1) - 9;
+            html += `<div class="seat" style="left:${sx.toFixed(1)}px; top:${(padding - 16).toFixed(1)}px;"></div>`;
+        }
+        for (let i = 0; i < bottomSeats; i++) {
+            const sx = padding + (bw / (bottomSeats + 1)) * (i + 1) - 9;
+            html += `<div class="seat" style="left:${sx.toFixed(1)}px; top:${(padding + bh - 2).toFixed(1)}px;"></div>`;
+        }
+    }
+    return html;
+}
+
+function startDrag(e, id, el) {
+    // Select the table
+    selectTable(id);
+
+    const room = document.getElementById('floorRoom');
+    const roomRect = room.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const offsetX = e.clientX - elRect.left;
+    const offsetY = e.clientY - elRect.top;
+
+    dragState = { id, el, offsetX, offsetY };
+
+    const onMove = (e) => {
+        if (!dragState) return;
+        const x = e.clientX - roomRect.left - dragState.offsetX;
+        const y = e.clientY - roomRect.top  - dragState.offsetY;
+        // Snap to 10px grid
+        const snappedX = Math.round(x / 10) * 10;
+        const snappedY = Math.round(y / 10) * 10;
+        // Clamp within room
+        const maxX = room.offsetWidth  - dragState.el.offsetWidth;
+        const maxY = room.offsetHeight - dragState.el.offsetHeight;
+        const clampedX = Math.max(0, Math.min(snappedX, maxX));
+        const clampedY = Math.max(0, Math.min(snappedY, maxY));
+
+        dragState.el.style.left = clampedX + 'px';
+        dragState.el.style.top  = clampedY + 'px';
+
+        // Update data
+        const t = floorTables.find(t => t.id === dragState.id);
+        if (t) { t.x_pos = clampedX; t.y_pos = clampedY; t._dirty = true; }
+    };
+
+    const onUp = () => {
+        dragState = null;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+}
+
+function selectTable(id) {
+    selectedTableId = id;
+    document.querySelectorAll('.floor-table').forEach(el => el.classList.remove('selected'));
+    const el = document.querySelector(`.floor-table[data-id="${id}"]`);
+    if (el) el.classList.add('selected');
+    renderSidebar(floorTables.find(t => t.id === id));
+}
+
+function renderSidebar(t) {
+    const sidebar = document.getElementById('floorSidebar');
+    if (!t) {
+        sidebar.innerHTML = `
+            <div class="floor-sidebar-header">Properties</div>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+                <p style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">Click a table on the floor plan to select and edit it</p>
+            </div>`;
         return;
     }
-    data.forEach(t => {
-        const isAvail = t.status === 'available';
-        const statusColor = isAvail ? '#2ecc71' : '#e74c3c';
-        const shapeIcon = t.shape === 'round' ? 'fa-circle' : 'fa-square';
-        grid.innerHTML += `
-            <div style="background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 20px; position: relative;">
-                <div style="position: absolute; top: 20px; right: 20px; width: 12px; height: 12px; border-radius: 50%; background: ${statusColor}; box-shadow: 0 0 8px ${statusColor};" title="${t.status}"></div>
-                <h3 style="font-size: 1.4rem; margin-bottom: 12px; color: var(--orange);">Table ${t.table_number}</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 6px;"><i class="fa-solid fa-users" style="width: 20px;"></i> ${t.capacity} Seats</p>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;"><i class="fa-regular ${shapeIcon}" style="width: 20px;"></i> ${t.shape === 'round' ? 'Round' : 'Rectangular'}</p>
-                <div style="display: flex; gap: 10px; border-top: 1px solid var(--glass-border); padding-top: 16px;">
-                    <button class="btn btn-secondary" style="flex: 1; font-size: 0.8rem; padding: 6px;" onclick='editTable(${JSON.stringify(t).replace(/'/g, "&apos;")})'><i class="fa-solid fa-pen"></i> Edit</button>
-                    <button class="btn" style="flex: 1; font-size: 0.8rem; padding: 6px; background: transparent; border: 1px solid #e74c3c; color: #e74c3c;" onclick="deleteTable(${t.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+
+    sidebar.innerHTML = `
+        <div class="floor-sidebar-header">
+            <span>Table ${t.table_number}</span>
+        </div>
+        <div class="floor-sidebar-body">
+            <div class="form-group">
+                <label>Table Number</label>
+                <input type="text" class="form-control" id="sp-num" value="${t.table_number}" oninput="updateSelectedTable('table_number', this.value)">
+            </div>
+            <div class="form-group">
+                <label>Capacity (seats)</label>
+                <input type="number" class="form-control" id="sp-cap" value="${t.capacity}" min="1" max="20" oninput="updateSelectedTable('capacity', this.value)">
+            </div>
+            <div class="form-group">
+                <label>Shape</label>
+                <select class="form-control" id="sp-shape" onchange="updateSelectedTable('shape', this.value)">
+                    <option value="round" ${t.shape==='round'?'selected':''}>Round</option>
+                    <option value="rect"  ${t.shape==='rect' ?'selected':''}>Rectangular</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select class="form-control" id="sp-status" onchange="updateSelectedTable('status', this.value)">
+                    <option value="available" ${t.status==='available'?'selected':''}>Available</option>
+                    <option value="occupied"  ${t.status==='occupied' ?'selected':''}>Occupied</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Position</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="number" class="form-control" placeholder="X" value="${t.x_pos}" style="flex:1;" oninput="updateSelectedTablePos('x_pos', this.value)">
+                    <input type="number" class="form-control" placeholder="Y" value="${t.y_pos}" style="flex:1;" oninput="updateSelectedTablePos('y_pos', this.value)">
                 </div>
             </div>
-        `;
-    });
+            <button class="btn btn-primary" style="width:100%;" onclick="saveFloorPlan()"><i class="fa-solid fa-floppy-disk"></i> Save Layout</button>
+            <button class="sidebar-delete-btn" onclick="deleteFloorTable(${t.id})"><i class="fa-solid fa-trash"></i> Delete Table</button>
+        </div>`;
 }
 
-function filterTables() {
-    const q = document.getElementById('searchTables').value.toLowerCase();
-    const filtered = allTables.filter(t => 
-        t.table_number.toLowerCase().includes(q) || 
-        t.status.toLowerCase().includes(q) ||
-        t.shape.toLowerCase().includes(q)
-    );
-    renderTables(filtered);
+function updateSelectedTable(key, value) {
+    const t = floorTables.find(t => t.id === selectedTableId);
+    if (!t) return;
+    t[key] = value;
+    t._dirty = true;
+    // Re-render this table element in place
+    const old = document.querySelector(`.floor-table[data-id="${t.id}"]`);
+    if (old) old.remove();
+    createTableElement(t);
+    document.querySelector(`.floor-table[data-id="${t.id}"]`).classList.add('selected');
+    // Update sidebar header
+    const header = document.querySelector('.floor-sidebar-header span');
+    if (header) header.textContent = `Table ${t.table_number}`;
 }
 
-function openTableModal() {
-    document.getElementById('tableForm').reset();
-    document.getElementById('tableId').value = '';
-    const selRest = document.getElementById('tableRestSelect').value;
-    if(selRest) document.getElementById('tableModalRest').value = selRest;
-    document.getElementById('tableModalTitle').textContent = 'Add Table';
-    document.getElementById('tableModal').classList.add('show');
+function updateSelectedTablePos(key, value) {
+    const t = floorTables.find(t => t.id === selectedTableId);
+    if (!t) return;
+    t[key] = parseInt(value) || 0;
+    t._dirty = true;
+    const el = document.querySelector(`.floor-table[data-id="${t.id}"]`);
+    if (el) {
+        if (key === 'x_pos') el.style.left = t.x_pos + 'px';
+        if (key === 'y_pos') el.style.top  = t.y_pos + 'px';
+    }
 }
 
-function editTable(t) {
-    document.getElementById('tableId').value = t.id;
-    document.getElementById('tableModalRest').value = t.restaurant_id;
-    document.getElementById('tableNum').value = t.table_number;
-    document.getElementById('tableCap').value = t.capacity;
-    document.getElementById('tableShape').value = t.shape;
-    document.getElementById('tableStatus').value = t.status;
-    document.getElementById('tableX').value = t.x_pos;
-    document.getElementById('tableY').value = t.y_pos;
-    document.getElementById('tableModalTitle').textContent = 'Edit Table';
-    document.getElementById('tableModal').classList.add('show');
-}
+function addTableToFloor(shape, capacity) {
+    const restId = document.getElementById('tableRestSelect').value;
+    if (!restId) { alert('Please select a restaurant first.'); return; }
 
-async function saveTable(e) {
-    e.preventDefault();
-    const id = document.getElementById('tableId').value;
-    const data = {
-        restaurant_id: document.getElementById('tableModalRest').value,
-        table_number: document.getElementById('tableNum').value,
-        capacity: document.getElementById('tableCap').value,
-        shape: document.getElementById('tableShape').value,
-        status: document.getElementById('tableStatus').value,
-        x_pos: document.getElementById('tableX').value,
-        y_pos: document.getElementById('tableY').value
+    const count = floorTables.filter(t => !t._delete).length + 1;
+    const newTable = {
+        id: nextTempId--,
+        restaurant_id: restId,
+        table_number: String(count),
+        capacity,
+        shape,
+        status: 'available',
+        x_pos: 60 + Math.floor(Math.random() * 300),
+        y_pos: 60 + Math.floor(Math.random() * 200),
+        _new: true,
+        _dirty: true,
+        _delete: false
     };
-    
-    if (id) await apiFetch(`tables&id=${id}`, 'PUT', data);
-    else await apiFetch('tables', 'POST', data);
-    
-    closeModal('tableModal');
-    
-    // Auto refresh if looking at same rest
-    if (document.getElementById('tableRestSelect').value === data.restaurant_id) {
-        loadTables();
-    }
+    floorTables.push(newTable);
+    createTableElement(newTable);
+    selectTable(newTable.id);
 }
 
-async function deleteTable(id) {
-    if (confirm('Are you sure you want to delete this table?')) {
+async function deleteFloorTable(id) {
+    if (!confirm('Delete this table? This will remove its reservations too.')) return;
+    const t = floorTables.find(t => t.id === id);
+    if (!t) return;
+
+    if (t._new) {
+        // Never saved – just remove locally
+        floorTables = floorTables.filter(t => t.id !== id);
+    } else {
         await apiFetch(`tables&id=${id}`, 'DELETE');
-        loadTables();
+        floorTables = floorTables.filter(t => t.id !== id);
     }
+
+    const el = document.querySelector(`.floor-table[data-id="${id}"]`);
+    if (el) el.remove();
+    selectedTableId = null;
+    renderSidebar(null);
 }
+
+async function saveFloorPlan() {
+    const restId = document.getElementById('tableRestSelect').value;
+    if (!restId) return;
+
+    const btn = document.getElementById('saveFloorBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+    const dirty = floorTables.filter(t => t._dirty && !t._delete);
+
+    for (const t of dirty) {
+        const payload = {
+            restaurant_id: restId,
+            table_number:  t.table_number,
+            capacity:      t.capacity,
+            shape:         t.shape,
+            status:        t.status,
+            x_pos:         t.x_pos,
+            y_pos:         t.y_pos
+        };
+        if (t._new) {
+            const res = await apiFetch('tables', 'POST', payload);
+            if (res.success && res.id) {
+                const old = document.querySelector(`.floor-table[data-id="${t.id}"]`);
+                if (old) { old.dataset.id = res.id; }
+                t.id = res.id;
+                if (selectedTableId === parseInt(t.id)) selectedTableId = res.id;
+            }
+            t._new = false;
+        } else {
+            await apiFetch(`tables&id=${t.id}`, 'PUT', payload);
+        }
+        t._dirty = false;
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
+    setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Layout'; }, 2000);
+}
+
+// Keep old functions for backward compat if called elsewhere
+function openTableModal() { addTableToFloor('round', 4); }
+function loadTables() { loadFloorPlan(); }
 
 // ===== RESERVATIONS =====
 async function loadReservations() {
