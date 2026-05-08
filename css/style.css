@@ -738,10 +738,6 @@ mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
 .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px 48px; display: grid; grid-template-columns: 280px 1fr; gap: 60px; }
 
 .footer-logo { width: 130px; transition: var(--transition); margin-bottom: 12px; }
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .footer-logo { filter: brightness(0) invert(1); }
-}
-[data-theme="dark"] .footer-logo { filter: brightness(0) invert(1); }
 .footer-tagline { font-size: 13px; color: var(--text-muted); font-style: italic; margin-bottom: 20px; }
 .footer-socials { display: flex; gap: 12px; }
 .footer-socials a {

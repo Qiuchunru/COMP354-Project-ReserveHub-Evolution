@@ -13,7 +13,7 @@
         const mobThemeBtn = document.getElementById('mobile-theme-toggle');
 
         const updateLogos = (theme) => {
-            const logos = document.querySelectorAll('.top-logo, .brand-logo, .admin-logo img');
+            const logos = document.querySelectorAll('.top-logo, .brand-logo, .footer-logo, .admin-logo img');
             logos.forEach(logo => {
                 const isDark = theme === 'dark';
                 logo.src = isDark ? '../pictures/reservehub-full-logo-dark-mode.png' : '../pictures/reservehub-full-logo-light-mode.png';
