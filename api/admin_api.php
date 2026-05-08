@@ -63,20 +63,55 @@ try {
                 $rests = $pdo->query("SELECT * FROM restaurants ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $rests]);
             } elseif ($method === 'POST') {
-                $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, rating, opening_time, closing_time, image_gradient, image_url, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([
-                    $data['name'], $data['description'], $data['cuisine'], $data['location'], 
-                    $data['price_range'], $data['rating'], $data['opening_time'], $data['closing_time'], 
-                    $data['image_gradient'] ?? '', $data['image_url'] ?? '', $data['icon'] ?? 'fa-utensils'
-                ]);
+                $id = $_GET['id'] ?? 0;
+                $input = !empty($_POST) ? $_POST : $data;
+                
+                $imageUrl = $input['image_url'] ?? '';
+                
+                // Handle Image Upload
+                if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = '../pictures/restaurants/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    
+                    $fileTmpPath = $_FILES['image']['tmp_name'];
+                    $fileName = $_FILES['image']['name'];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $newFileName = uniqid('rest_') . '.' . $fileExtension;
+                    $destPath = $uploadDir . $newFileName;
+                    
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $imageUrl = '../pictures/restaurants/' . $newFileName;
+                    }
+                }
+
+                if ($id) {
+                    // Update
+                    $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_url=? WHERE id=?");
+                    $stmt->execute([
+                        $input['name'], $input['description'], $input['cuisine'], $input['location'], 
+                        $input['price_range'], $input['rating'], $input['opening_time'], $input['closing_time'], 
+                        $imageUrl, $id
+                    ]);
+                } else {
+                    // Create
+                    $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, rating, opening_time, closing_time, image_url, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([
+                        $input['name'], $input['description'], $input['cuisine'], $input['location'], 
+                        $input['price_range'], $input['rating'], $input['opening_time'], $input['closing_time'], 
+                        $imageUrl, $input['icon'] ?? 'fa-utensils'
+                    ]);
+                }
                 echo json_encode(['success' => true]);
             } elseif ($method === 'PUT') {
+                // Keep PUT for backward compatibility if needed, but we now use POST for uploads
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_gradient=?, image_url=?, icon=? WHERE id=?");
+                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_url=? WHERE id=?");
                 $stmt->execute([
                     $data['name'], $data['description'], $data['cuisine'], $data['location'], 
                     $data['price_range'], $data['rating'], $data['opening_time'], $data['closing_time'], 
-                    $data['image_gradient'] ?? '', $data['image_url'] ?? '', $data['icon'] ?? 'fa-utensils', $id
+                    $data['image_url'] ?? '', $id
                 ]);
                 echo json_encode(['success' => true]);
             } elseif ($method === 'DELETE') {

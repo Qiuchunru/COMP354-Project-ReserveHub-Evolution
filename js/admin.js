@@ -24,8 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function apiFetch(endpoint, method = 'GET', data = null) {
     const options = { method };
     if (data) {
-        options.headers = { 'Content-Type': 'application/json' };
-        options.body = JSON.stringify(data);
+        if (data instanceof FormData) {
+            options.body = data;
+            // Browser sets Content-Type automatically for FormData with boundary
+        } else {
+            options.headers = { 'Content-Type': 'application/json' };
+            options.body = JSON.stringify(data);
+        }
     }
     const res = await fetch(`../api/admin_api.php?endpoint=${endpoint}`, options);
     return res.json();
@@ -145,8 +150,22 @@ function loadRestaurantSelects() {
 function openRestaurantModal() {
     document.getElementById('restForm').reset();
     document.getElementById('restId').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('restModalTitle').textContent = 'Add Restaurant';
     document.getElementById('restModal').classList.add('show');
+}
+
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const previewImg = preview.querySelector('img');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 
 function editRestaurant(r) {
@@ -159,6 +178,15 @@ function editRestaurant(r) {
     document.getElementById('restRating').value = r.rating;
     document.getElementById('restOpen').value = r.opening_time;
     document.getElementById('restClose').value = r.closing_time;
+    
+    const preview = document.getElementById('imagePreview');
+    if (r.image_url) {
+        preview.querySelector('img').src = r.image_url;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+    
     document.getElementById('restModalTitle').textContent = 'Edit Restaurant';
     document.getElementById('restModal').classList.add('show');
 }
@@ -166,19 +194,35 @@ function editRestaurant(r) {
 async function saveRestaurant(e) {
     e.preventDefault();
     const id = document.getElementById('restId').value;
-    const data = {
-        name: document.getElementById('restName').value,
-        description: document.getElementById('restDesc').value,
-        cuisine: document.getElementById('restCuisine').value,
-        location: document.getElementById('restLocation').value,
-        price_range: document.getElementById('restPrice').value,
-        rating: document.getElementById('restRating').value,
-        opening_time: document.getElementById('restOpen').value,
-        closing_time: document.getElementById('restClose').value
-    };
+    const formData = new FormData();
     
-    if (id) await apiFetch(`restaurants&id=${id}`, 'PUT', data);
-    else await apiFetch('restaurants', 'POST', data);
+    formData.append('name', document.getElementById('restName').value);
+    formData.append('description', document.getElementById('restDesc').value);
+    formData.append('cuisine', document.getElementById('restCuisine').value);
+    formData.append('location', document.getElementById('restLocation').value);
+    formData.append('price_range', document.getElementById('restPrice').value);
+    formData.append('rating', document.getElementById('restRating').value);
+    formData.append('opening_time', document.getElementById('restOpen').value);
+    formData.append('closing_time', document.getElementById('restClose').value);
+    
+    // Pass existing image_url if we're editing and no new image is selected
+    const existingPreview = document.getElementById('imagePreview').querySelector('img').src;
+    if (existingPreview && !existingPreview.startsWith('data:')) {
+        formData.append('image_url', existingPreview);
+    }
+    
+    const imageFile = document.getElementById('restImage').files[0];
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+    
+    // Note: PHP doesn't handle multipart/form-data with PUT easily.
+    // We'll use POST for both create and update, but pass ID in URL for update.
+    if (id) {
+        await apiFetch(`restaurants&id=${id}`, 'POST', formData);
+    } else {
+        await apiFetch('restaurants', 'POST', formData);
+    }
     
     closeModal('restModal');
     loadRestaurants();
