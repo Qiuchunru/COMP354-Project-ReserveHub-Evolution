@@ -21,4 +21,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "./"
           remoteDir: "htdocs/"
-          options: "--create-dirs"
+          options: "--reverse --verbose --exclude=.git* --exclude=.github --exclude=node_modules --exclude=.env"
