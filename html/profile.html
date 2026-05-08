@@ -20,6 +20,10 @@
         <div class="top-btn-container" id="auth-buttons">
             <!-- Will be populated by session.js -->
         </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" style="margin-left: 10px;">
+            <i class="fa-solid fa-moon"></i>
+            <i class="fa-solid fa-sun"></i>
+        </button>
         <button class="hamburger" id="hamburger" aria-label="Open menu">
             <span></span><span></span><span></span>
         </button>
@@ -85,6 +89,7 @@
         </div>
     </footer>
 
+    <script src="../js/theme.js"></script>
     <script src="../js/session.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

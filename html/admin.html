@@ -21,7 +21,14 @@
             <a href="#" data-target="tables"><i class="fa-solid fa-chair"></i> Tables</a>
             <a href="#" data-target="reservations"><i class="fa-solid fa-book"></i> Reservations</a>
             <a href="#" data-target="users"><i class="fa-solid fa-users"></i> Users</a>
-            <a href="index.html" style="margin-top: auto; color: #e74c3c;"><i class="fa-solid fa-arrow-left"></i> Exit Admin</a>
+            <div style="margin-top: auto; padding: 20px 0;">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fa-solid fa-moon" style="margin-right: 8px;"></i>
+                    <i class="fa-solid fa-sun" style="margin-right: 8px;"></i>
+                    <span class="theme-text">Switch Theme</span>
+                </button>
+            </div>
+            <a href="index.html" style="color: #e74c3c;"><i class="fa-solid fa-arrow-left"></i> Exit Admin</a>
         </nav>
     </aside>
 
@@ -183,6 +190,7 @@
         </div>
     </div>
 
+    <script src="../js/theme.js"></script>
     <script src="../js/admin.js?v=2"></script>
 </body>
 </html>
