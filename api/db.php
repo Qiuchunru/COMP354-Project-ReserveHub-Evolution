@@ -3,8 +3,9 @@
 // Auto-detects environment: uses local XAMPP credentials when running on localhost,
 // and InfinityFree credentials when running on the live server.
 
-$isLocal = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1', '::1'])
-        || ($_SERVER['SERVER_ADDR'] ?? '') === '127.0.0.1';
+$isLocal = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1', '::1', ''])
+        || ($_SERVER['SERVER_ADDR'] ?? '') === '127.0.0.1'
+        || ($_SERVER['HTTP_HOST'] ?? '') === 'localhost';
 
 if ($isLocal) {
     // ── Local XAMPP ──────────────────────────────
