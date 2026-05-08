@@ -349,7 +349,7 @@ body {
     align-items: center;
 }
 
-.input-wrapper i {
+.input-wrapper > i {
     position: absolute;
     left: 15px;
     color: var(--border-color);
