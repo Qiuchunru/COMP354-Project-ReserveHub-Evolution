@@ -7,19 +7,22 @@
     <meta name="description" content="View the floor plan and reserve your preferred table.">
     <link rel="stylesheet" href="../css/restaurant.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="theme-transition">
 
     <!-- Navigation -->
     <nav class="nav">
-        <a href="index.html" class="nav-logo"><i class="fa-solid fa-calendar-check"></i> ReserveHub</a>
+        <a href="index.html" class="nav-logo-link">
+            <img src="../pictures/reservehub-full-logo-light-mode.png" alt="ReserveHub Logo" class="top-logo">
+        </a>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" style="margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
                 <i class="fa-solid fa-sun"></i>
             </button>
             <a href="javascript:history.back()" class="nav-back">
-                <i class="fa-solid fa-arrow-left"></i> Back to results
+                <i class="fa-solid fa-arrow-left"></i> Back
             </a>
         </div>
     </nav>

@@ -1,5 +1,5 @@
 /* restaurant.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -66,7 +66,7 @@
                 filter 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+body { font-family: 'Alexandria', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* ===== NAV ===== */
 .nav { 
@@ -83,8 +83,53 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     z-index: 100; 
     transition: var(--transition);
 }
-.nav-logo { font-size: 1.4rem; font-weight: 700; color: var(--orange); text-decoration: none; }
-.nav-back { display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+.nav-logo-link { height: 35px; text-decoration: none; display: flex; align-items: center; }
+.top-logo { height: 100%; object-fit: contain; transition: var(--transition); }
+
+/* Browser-native date/time icons in dark mode */
+[data-theme="dark"] input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) input::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+}
+
+.theme-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.theme-toggle:hover {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+    transform: rotate(15deg) scale(1.1);
+}
+
+.theme-toggle .fa-sun { display: none; }
+.theme-toggle .fa-moon { display: block; }
+
+[data-theme="dark"] .theme-toggle .fa-sun { display: block; }
+[data-theme="dark"] .theme-toggle .fa-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .fa-sun { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle .fa-moon { display: none; }
+}
+
+.nav-back { display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; font-weight: 500; }
 .nav-back:hover { color: var(--orange); }
 .nav-back i { transition: transform 0.2s; }
 .nav-back:hover i { transform: translateX(-3px); }
@@ -151,8 +196,8 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .legend-dot.selected { background: var(--selected); }
 
 /* SVG Canvas */
-.svg-wrapper { padding: 20px 28px 28px; overflow-x: auto; }
-#floorPlanSvg { display: block; width: 100%; max-width: 700px; margin: 0 auto; border-radius: 12px; background: var(--surface2); border: 1px solid var(--glass-border); }
+.svg-wrapper { padding: 30px 40px 40px; overflow-x: auto; background: var(--surface2); }
+#floorPlanSvg { display: block; width: 100%; height: auto; min-height: 500px; max-width: 900px; margin: 0 auto; border-radius: 12px; background: #0a0a0a; border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
 
 /* Table SVG elements */
 .table-group { cursor: pointer; transition: filter 0.2s; }
