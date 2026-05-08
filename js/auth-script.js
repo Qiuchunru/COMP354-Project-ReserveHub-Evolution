@@ -14,9 +14,16 @@ function switchForm(formType) {
 }
 
 // Toggle Password Visibility
-function togglePassword(fieldId) {
+function togglePassword(fieldId, buttonEl) {
     const field = document.getElementById(fieldId);
-    const icon = event.target.closest('button').querySelector('i');
+    if (!field) return;
+
+    // Use passed element or current event target
+    const button = buttonEl || (event && (event.currentTarget || event.target.closest('button')));
+    if (!button) return;
+    
+    const icon = button.querySelector('i');
+    if (!icon) return;
 
     if (field.type === 'password') {
         field.type = 'text';
