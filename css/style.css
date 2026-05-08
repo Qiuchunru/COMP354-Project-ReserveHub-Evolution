@@ -99,10 +99,7 @@ a { text-decoration: none; color: inherit; }
 
 .nav-logo-link { display: flex; align-items: center; }
 .top-logo { width: 140px; height: auto; transition: var(--transition); }
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .top-logo { filter: brightness(0) invert(1); }
-}
-[data-theme="dark"] .top-logo { filter: brightness(0) invert(1); }
+/* Logo updated via theme.js */
 
 .theme-transition,
 .theme-transition *,

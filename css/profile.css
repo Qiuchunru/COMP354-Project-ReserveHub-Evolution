@@ -2,7 +2,7 @@
 .profile-main {
     padding-top: 100px;
     min-height: calc(100vh - 80px);
-    background: var(--dark);
+    background: var(--bg);
 }
 
 .profile-container {
@@ -15,10 +15,10 @@
     display: flex;
     align-items: center;
     gap: 32px;
-    background: var(--dark2);
+    background: var(--surface);
     border: 1px solid var(--border);
     padding: 40px;
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     margin-bottom: 40px;
     position: relative;
     overflow: hidden;
@@ -48,7 +48,7 @@
 
 .profile-info h1 {
     font-size: 2.2rem;
-    color: #fff;
+    color: var(--text);
     margin-bottom: 8px;
 }
 
@@ -61,10 +61,10 @@
 .member-since {
     display: inline-block;
     font-size: 12px;
-    background: rgba(255,255,255,0.05);
+    background: var(--glass);
     padding: 4px 12px;
     border-radius: 50px;
-    color: rgba(255,255,255,0.6);
+    color: var(--text-muted);
 }
 
 .profile-content {
@@ -74,9 +74,9 @@
 }
 
 .dashboard-card {
-    background: var(--dark2);
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     overflow: hidden;
 }
 
@@ -88,7 +88,7 @@
 
 .card-header h2 {
     font-size: 1.2rem;
-    color: #fff;
+    color: var(--text);
     display: flex;
     align-items: center;
     gap: 10px;
