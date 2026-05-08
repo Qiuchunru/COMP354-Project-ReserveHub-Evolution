@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy via FTP
-        uses: drewmullen/ftp-deploy@v1
+        uses: sebastianpopp/ftp-action@releases/v2
         with:
-          ftp-server: ftpupload.net
-          ftp-username: ${{ secrets.FTP_USERNAME }}
-          ftp-password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          remote-dir: /htdocs/
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "./"
+          remoteDir: "htdocs/"
