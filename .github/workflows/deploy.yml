@@ -24,4 +24,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "./"
           remoteDir: "htdocs/"
-          options: "--delete --verbose"
+          options: "--delete --verbose --no-perms"
