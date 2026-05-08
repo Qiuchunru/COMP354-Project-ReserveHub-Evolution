@@ -17,11 +17,15 @@
         <a href="index.html" aria-label="ReserveHub Homepage" class="nav-logo-link">
             <img src="../pictures/reservehub-full-logo.png" alt="ReserveHub Logo" class="top-logo">
         </a>
-        <div class="top-btn-container" style="display: flex; gap: 4px;">
+        <div class="top-btn-container" style="display: flex; gap: 4px; align-items: center;">
             <a href="index.html" class="top-btn">HOME</a>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
                 <a href="login-signup.html" class="top-btn btn-cta">SIGN UP / LOG IN</a>
             </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" style="margin-left: 10px;">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
         </div>
     </nav>
 
@@ -89,6 +93,7 @@
         </div>
     </footer>
 
+    <script src="../js/theme.js"></script>
     <script src="../js/search.js"></script>
     <script src="../js/session.js"></script>
 </body>
