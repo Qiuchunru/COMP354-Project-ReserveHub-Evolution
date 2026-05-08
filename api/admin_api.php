@@ -1,6 +1,15 @@
 <?php
-header('Content-Type: application/json');
+// Database connection
 require_once 'db.php';
+
+// Auto-migration: Ensure image_url column exists
+try {
+    $pdo->exec("ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS image_url VARCHAR(255) AFTER image_gradient");
+} catch (Exception $e) {
+    // Ignore if already exists or other issues, but at least we tried
+}
+
+header('Content-Type: application/json');
 
 $endpoint = $_GET['endpoint'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
@@ -63,20 +72,55 @@ try {
                 $rests = $pdo->query("SELECT * FROM restaurants ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $rests]);
             } elseif ($method === 'POST') {
-                $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, rating, opening_time, closing_time, image_gradient, image_url, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([
-                    $data['name'], $data['description'], $data['cuisine'], $data['location'], 
-                    $data['price_range'], $data['rating'], $data['opening_time'], $data['closing_time'], 
-                    $data['image_gradient'] ?? '', $data['image_url'] ?? '', $data['icon'] ?? 'fa-utensils'
-                ]);
+                $id = $_GET['id'] ?? 0;
+                $input = !empty($_POST) ? $_POST : $data;
+                
+                $imageUrl = $input['image_url'] ?? '';
+                
+                // Handle Image Upload
+                if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = '../pictures/restaurants/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    
+                    $fileTmpPath = $_FILES['image']['tmp_name'];
+                    $fileName = $_FILES['image']['name'];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $newFileName = uniqid('rest_') . '.' . $fileExtension;
+                    $destPath = $uploadDir . $newFileName;
+                    
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $imageUrl = '../pictures/restaurants/' . $newFileName;
+                    }
+                }
+
+                if ($id) {
+                    // Update
+                    $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE id=?");
+                    $stmt->execute([
+                        $input['name'], $input['description'], $input['cuisine'], $input['location'], 
+                        $input['price_range'], $input['rating'], $input['opening_time'], $input['closing_time'], 
+                        $imageUrl, $input['icon'] ?? 'fa-utensils', $input['image_gradient'] ?? '', $id
+                    ]);
+                } else {
+                    // Create
+                    $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([
+                        $input['name'], $input['description'], $input['cuisine'], $input['location'], 
+                        $input['price_range'], $input['rating'], $input['opening_time'], $input['closing_time'], 
+                        $imageUrl, $input['icon'] ?? 'fa-utensils', $input['image_gradient'] ?? ''
+                    ]);
+                }
                 echo json_encode(['success' => true]);
             } elseif ($method === 'PUT') {
+                // Keep PUT for backward compatibility if needed, but we now use POST for uploads
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_gradient=?, image_url=?, icon=? WHERE id=?");
+                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_url=? WHERE id=?");
                 $stmt->execute([
                     $data['name'], $data['description'], $data['cuisine'], $data['location'], 
                     $data['price_range'], $data['rating'], $data['opening_time'], $data['closing_time'], 
-                    $data['image_gradient'] ?? '', $data['image_url'] ?? '', $data['icon'] ?? 'fa-utensils', $id
+                    $data['image_url'] ?? '', $id
                 ]);
                 echo json_encode(['success' => true]);
             } elseif ($method === 'DELETE') {
@@ -104,7 +148,7 @@ try {
                     $data['restaurant_id'], $data['table_number'], $data['capacity'], $data['shape'], 
                     $data['x_pos'], $data['y_pos'], $data['status']
                 ]);
-                echo json_encode(['success' => true]);
+                echo json_encode(['success' => true, 'id' => (int)$pdo->lastInsertId()]);
             } elseif ($method === 'PUT') {
                 $id = $_GET['id'] ?? 0;
                 $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, x_pos=?, y_pos=?, status=? WHERE id=?");

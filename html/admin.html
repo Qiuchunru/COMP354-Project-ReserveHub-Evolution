@@ -87,15 +87,26 @@
         <!-- Tables Section -->
         <section id="tables" class="admin-section">
             <div class="admin-header">
-                <h1>Manage Tables</h1>
-                <div style="display:flex; gap:10px;">
-                    <select id="tableRestSelect" class="form-control" style="width:200px;" onchange="loadTables()"></select>
-                    <input type="text" id="searchTables" class="form-control" placeholder="Search tables..." style="width:200px;" onkeyup="filterTables()">
-                    <button class="btn btn-primary" onclick="openTableModal()">+ Add Table</button>
+                <h1>Floor Plan Editor</h1>
+                <div style="display:flex; gap:10px; align-items: center;">
+                    <select id="tableRestSelect" class="form-control" style="width:220px;" onchange="loadFloorPlan()"></select>
+                    <button class="btn btn-primary" onclick="addTableToFloor('round', 4)"><i class="fa-solid fa-circle-plus"></i> Add Round</button>
+                    <button class="btn btn-primary" onclick="addTableToFloor('rect', 6)"><i class="fa-solid fa-square-plus"></i> Add Rect</button>
+                    <button class="btn btn-primary" id="saveFloorBtn" onclick="saveFloorPlan()" style="background: #27ae60;"><i class="fa-solid fa-floppy-disk"></i> Save Layout</button>
                 </div>
             </div>
-            <div id="tablesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
-                <!-- Cards injected here -->
+            <div class="floor-plan-wrapper">
+                <!-- Sidebar -->
+                <div class="floor-sidebar" id="floorSidebar">
+                    <p style="color: var(--text-muted); font-size:13px; text-align:center; padding: 20px;">Click a table to edit it</p>
+                </div>
+                <!-- Canvas -->
+                <div class="floor-canvas" id="floorCanvas">
+                    <div class="floor-room" id="floorRoom">
+                        <div class="floor-grid-overlay"></div>
+                        <!-- Tables rendered here -->
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -147,49 +158,29 @@
                     <div class="form-group" style="flex:1;"><label>Open Time</label><input type="time" id="restOpen" class="form-control"></div>
                     <div class="form-group" style="flex:1;"><label>Close Time</label><input type="time" id="restClose" class="form-control"></div>
                 </div>
+                <div class="form-group">
+                    <label>Restaurant Image</label>
+                    <div id="imagePreview" class="preview-box">
+                        <div class="preview-placeholder">
+                            <i class="fa-solid fa-image"></i>
+                            <p>No image selected</p>
+                        </div>
+                        <img src="" alt="Preview" style="display: none;">
+                    </div>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="restImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
+                        <label for="restImage" class="file-upload-btn">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span id="fileLabelText">Choose Restaurant Image</span>
+                        </label>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Save Restaurant</button>
             </form>
         </div>
     </div>
 
-    <!-- Table Modal -->
-    <div class="modal" id="tableModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="tableModalTitle">Add Table</h3>
-                <button class="modal-close" onclick="closeModal('tableModal')"><i class="fa-solid fa-times"></i></button>
-            </div>
-            <form id="tableForm">
-                <input type="hidden" id="tableId">
-                <div class="form-group">
-                    <label>Restaurant</label>
-                    <select id="tableModalRest" class="form-control" required></select>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Table Number</label><input type="text" id="tableNum" class="form-control" required></div>
-                    <div class="form-group" style="flex:1;"><label>Capacity</label><input type="number" id="tableCap" class="form-control" value="4" required></div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Shape</label>
-                        <select id="tableShape" class="form-control">
-                            <option value="round">Round</option><option value="rect">Rectangular</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex:1;"><label>Status</label>
-                        <select id="tableStatus" class="form-control">
-                            <option value="available">Available</option><option value="occupied">Occupied</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>X Pos</label><input type="number" id="tableX" class="form-control" value="100"></div>
-                    <div class="form-group" style="flex:1;"><label>Y Pos</label><input type="number" id="tableY" class="form-control" value="100"></div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Save Table</button>
-            </form>
-        </div>
-    </div>
-
+    <!-- Table Edit Sidebar Panel (inside floor plan, not a modal) -->
     <script src="../js/theme.js"></script>
     <script src="../js/admin.js?v=2"></script>
 </body>
