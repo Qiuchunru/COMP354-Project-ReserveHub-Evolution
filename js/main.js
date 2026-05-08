@@ -23,9 +23,9 @@ mobileNav?.querySelectorAll('a').forEach(link => {
     });
 });
 
-// ===== SCROLL REVEAL =====
-const reveals = document.querySelectorAll('.step-card, .restaurant-card, .testimonial-card, .section-header');
-reveals.forEach(el => el.classList.add('reveal'));
+// ===== DYNAMIC RESTAURANTS (FEATURED SECTION) =====
+const featuredGrid = document.querySelector('.restaurants-grid');
+const filterTabs = document.querySelectorAll('.filter-tab');
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
@@ -36,23 +36,86 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+const fetchFeatured = (category = 'all') => {
+    if (!featuredGrid) return;
+    
+    // Show loading state
+    featuredGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>Loading Restaurants...</div>';
 
-// ===== FILTER TABS =====
-const tabs = document.querySelectorAll('.filter-tab');
-const cards = document.querySelectorAll('.restaurant-card');
+    let url = '../api/search.php';
+    if (category !== 'all') {
+        url += `?q=${encodeURIComponent(category)}`;
+    }
 
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
+    fetch(url)
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                renderRestaurants(res.data);
+            } else {
+                featuredGrid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">${res.message}</div>`;
+            }
+        })
+        .catch(err => {
+            featuredGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">Could not connect to the server.</div>';
+        });
+};
 
-        const filter = tab.dataset.filter;
-        cards.forEach(card => {
-            const match = filter === 'all' || card.dataset.category === filter;
-            card.classList.toggle('hidden', !match);
+const renderRestaurants = (data) => {
+    featuredGrid.innerHTML = '';
+    if (data.length === 0) {
+        featuredGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">No restaurants found in this category.</div>';
+        return;
+    }
+
+    data.slice(0, 8).forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'restaurant-card reveal';
+        card.innerHTML = `
+            <div class="card-image">
+                <img src="${item.image_url}" alt="${item.name}" onerror="this.onerror=null; this.src=''; this.parentElement.classList.add('no-image');" style="width:100%; height:100%; object-fit:cover;">
+                <div class="no-image-overlay">NO IMAGE AVAILABLE</div>
+                <div class="card-img-overlay">
+                    <span class="cuisine-tag">${item.cuisine}</span>
+                    <span class="halal-tag" style="background: ${item.is_halal == 1 ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; position: absolute; top: 10px; left: 10px;">${item.is_halal == 1 ? 'HALAL' : 'NON-HALAL'}</span>
+                    <button class="wishlist-btn" data-id="${item.id}" aria-label="Add to wishlist" style="top: 10px; right: 10px;"><i class="fa-regular fa-heart"></i></button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-top">
+                    <h3 class="card-name">${item.name}</h3>
+                    <span class="card-price">${item.price_range}</span>
+                </div>
+                <div class="card-meta">
+                    <span><i class="fa-solid fa-star"></i> ${item.rating}</span>
+                    <span><i class="fa-solid fa-location-dot"></i> ${item.location}</span>
+                    <span><i class="fa-regular fa-clock"></i> Open now</span>
+                </div>
+                <p class="card-desc">${item.description}</p>
+                <button class="reserve-btn" onclick="window.location.href='restaurant.html?id=${item.id}'">Reserve a Table</button>
+            </div>
+        `;
+        featuredGrid.appendChild(card);
+        observer.observe(card);
+    });
+};
+
+// Initial load and tab listeners
+if (featuredGrid) {
+    fetchFeatured();
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            filterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            fetchFeatured(tab.dataset.filter);
         });
     });
+}
+
+// Initial observer for static elements
+document.querySelectorAll('.reveal, .step-card, .testimonial-card, .section-header').forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
 });
 
 // ===== WISHLIST TOGGLE =====
