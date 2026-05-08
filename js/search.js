@@ -16,6 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     applyBtn.addEventListener('click', fetchResults);
 
+    // Add Enter key listener for all filter inputs
+    const filterInputs = document.querySelectorAll('.search-sidebar input, .search-sidebar select');
+    filterInputs.forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                fetchResults();
+            }
+        });
+    });
+
     function fetchResults() {
         const q = keywordInput.value.trim();
         const loc = locationSelect.value;
