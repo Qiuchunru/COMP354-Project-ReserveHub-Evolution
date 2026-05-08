@@ -112,6 +112,16 @@ a { text-decoration: none; color: inherit; }
                 filter 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+/* Browser-native date/time icons in dark mode */
+[data-theme="dark"] input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) input::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+}
+
 .top-btn-container { display: flex; align-items: center; gap: 4px; }
 
 .top-btn {
