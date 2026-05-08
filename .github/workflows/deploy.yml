@@ -13,9 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: List files to deploy
-        run: ls -la ./
-
       - name: Deploy via FTP
         uses: sebastianpopp/ftp-action@releases/v2
         with:
@@ -24,4 +21,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "./"
           remoteDir: "htdocs/"
-          options: "--delete --verbose --no-perms"
+          options: "--create-dirs"
