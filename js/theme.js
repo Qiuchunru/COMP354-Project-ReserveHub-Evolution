@@ -21,7 +21,7 @@
             
             // Smooth transition effect
             document.documentElement.classList.add('theme-transition');
-            setTimeout(() => document.documentElement.classList.remove('theme-transition'), 1000);
+            setTimeout(() => document.documentElement.classList.remove('theme-transition'), 1200);
         };
 
         themeBtn?.addEventListener('click', toggleTheme);
