@@ -18,8 +18,8 @@ if (!empty($query)) {
 }
 
 if (!empty($location)) {
-    $sql .= " AND location = ?";
-    $params[] = $location;
+    $sql .= " AND location LIKE ?";
+    $params[] = "%$location%";
 }
 
 if ($halal !== '') {
