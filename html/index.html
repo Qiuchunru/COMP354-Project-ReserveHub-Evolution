@@ -26,6 +26,10 @@
             <div id="auth-buttons" style="display: flex; gap: 4px;">
                 <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
             </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
         </div>
 
         <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -42,6 +46,9 @@
         <div id="mob-auth-buttons">
             <a href="login-signup.html" class="mob-link mob-cta">Sign Up / Log In</a>
         </div>
+        <a href="javascript:void(0)" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
+            <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
+        </a>
     </div>
 
     <!-- ===== HERO SECTION ===== -->
@@ -408,6 +415,7 @@
         </div>
     </footer>
 
+    <script src="../js/theme.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/session.js"></script>
 </body>
