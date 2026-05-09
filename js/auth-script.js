@@ -320,10 +320,104 @@ function showSuccessModal(title, message) {
     }, 3000);
 }
 
-// Social Login (placeholder)
+// Social Login Integration
 function socialLogin(provider) {
-    alert(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login integration would be implemented here.`);
-    // In a real application, this would redirect to OAuth providers
+    if (provider === 'google') {
+        googleLogin();
+    } else if (provider === 'facebook') {
+        facebookLogin();
+    }
+}
+
+// Google Login Implementation
+function googleLogin() {
+    google.accounts.id.initialize({
+        client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // Placeholder
+        callback: handleGoogleResponse
+    });
+    google.accounts.id.prompt(); // Show One Tap or login popup
+}
+
+function handleGoogleResponse(response) {
+    if (response.credential) {
+        // Decode the JWT (simplistic client-side decoding for UI, backend must verify)
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(atob(base64));
+
+        processSocialLogin({
+            provider: 'google',
+            token: response.credential,
+            email: payload.email,
+            name: payload.name,
+            id: payload.sub
+        });
+    }
+}
+
+// Facebook Login Implementation
+function facebookLogin() {
+    FB.login(function(response) {
+        if (response.status === 'connected') {
+            FB.api('/me', {fields: 'name,email'}, function(userData) {
+                processSocialLogin({
+                    provider: 'facebook',
+                    token: response.authResponse.accessToken,
+                    email: userData.email,
+                    name: userData.name,
+                    id: userData.id
+                });
+            });
+        }
+    }, {scope: 'public_profile,email'});
+}
+
+// Unified Social Login Processor
+function processSocialLogin(data) {
+    const loginForm = document.getElementById('loginFormElement');
+    const submitBtn = loginForm?.querySelector('.submit-btn');
+    const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+    
+    if (submitBtn) {
+        submitBtn.innerHTML = '<span>Processing...</span>';
+        submitBtn.disabled = true;
+    }
+
+    fetch('../api/social_login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            localStorage.setItem('reservehub_user', JSON.stringify({
+                id: res.user.id,
+                email: res.user.email,
+                name: res.user.name,
+                phone: res.user.phone,
+                timestamp: new Date().toISOString()
+            }));
+            
+            showSuccessModal('Login Successful!', `Welcome, ${res.user.name}!`);
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        } else {
+            if (submitBtn) {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+            alert(res.message || 'Social login failed. Please try again.');
+        }
+    })
+    .catch(err => {
+        console.error('Social Login Error:', err);
+        if (submitBtn) {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+        }
+    });
 }
 
 // Input validation on blur
