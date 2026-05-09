@@ -76,7 +76,6 @@ const renderRestaurants = (data) => {
                 <img src="${item.image_url}" alt="${item.name}" onerror="this.onerror=null; this.src=''; this.parentElement.classList.add('no-image');" style="width:100%; height:100%; object-fit:cover;">
                 <div class="no-image-overlay">NO IMAGE AVAILABLE</div>
                 <div class="card-img-overlay">
-                    <span class="cuisine-tag">${item.cuisine}</span>
                     <span class="halal-tag" style="background: ${item.is_halal == 1 ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; position: absolute; top: 10px; left: 10px;">${item.is_halal == 1 ? 'HALAL' : 'NON-HALAL'}</span>
                     <button class="wishlist-btn" data-id="${item.id}" aria-label="Add to wishlist" style="top: 10px; right: 10px;"><i class="fa-regular fa-heart"></i></button>
                 </div>
