@@ -343,39 +343,68 @@ function showToast(type, title, msg) {
     setTimeout(() => toast.classList.remove('show'), 5000);
 }
 
-// ===== LOAD REVIEWS =====
 async function loadReviews() {
     const list = document.getElementById('reviewsList');
+    list.innerHTML = '<p class="placeholder-text"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching latest reviews...</p>';
+    
     try {
-        const res = await fetch(`../api/get_reviews.php?restaurant_id=${restaurantId}`);
-        const json = await res.json();
+        // Fetch local reviews
+        const localRes = await fetch(`../api/get_reviews.php?restaurant_id=${restaurantId}`);
+        const localJson = await localRes.json();
         
-        if (json.success && json.data.length > 0) {
-            list.innerHTML = '';
-            json.data.forEach(rev => {
-                const item = document.createElement('div');
-                item.className = 'review-item';
-                item.style = 'margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px;';
-                
-                let stars = '';
-                for (let i = 0; i < 5; i++) {
-                    stars += `<i class="fa-solid fa-star" style="color:${i < rev.rating ? '#f1c40f' : 'rgba(255,255,255,0.1)'}; font-size: 11px;"></i>`;
-                }
-
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <strong style="font-size: 0.9rem; color: #fff;">${rev.user_name}</strong>
-                        <div class="stars">${stars}</div>
-                    </div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">"${rev.comment}"</p>
-                    <small style="font-size: 0.7rem; color: rgba(255,255,255,0.2); margin-top: 8px; display: block;">${new Date(rev.created_at).toLocaleDateString()}</small>
-                `;
-                list.appendChild(item);
+        // Fetch Google reviews
+        const googleRes = await fetch(`../api/get_google_reviews.php?restaurant_id=${restaurantId}`);
+        const googleJson = await googleRes.json();
+        
+        let allReviewsHtml = '';
+        
+        // Render Local Reviews
+        if (localJson.success && localJson.data.length > 0) {
+            localJson.data.forEach(rev => {
+                allReviewsHtml += renderReviewItem(rev.user_name, rev.rating, rev.comment, new Date(rev.created_at).toLocaleDateString(), 'ReserveHub');
             });
+        }
+        
+        // Render Google Reviews
+        if (googleJson.success && googleJson.data.length > 0) {
+            googleJson.data.forEach(rev => {
+                allReviewsHtml += renderReviewItem(rev.author, rev.rating, rev.text, rev.time, 'Google');
+            });
+        }
+        
+        if (allReviewsHtml) {
+            list.innerHTML = allReviewsHtml;
         } else {
             list.innerHTML = '<p class="placeholder-text">No reviews yet. Be the first to review!</p>';
         }
     } catch (err) {
         list.innerHTML = '<p class="placeholder-text" style="color:#ff4757;">Failed to load reviews.</p>';
+        console.error(err);
     }
+}
+
+function renderReviewItem(name, rating, text, time, source) {
+    let stars = '';
+    for (let i = 0; i < 5; i++) {
+        stars += `<i class="fa-solid fa-star" style="color:${i < rating ? '#f1c40f' : 'var(--glass-border)'}; font-size: 11px;"></i>`;
+    }
+
+    const isGoogle = source === 'Google';
+    const sourceBadge = isGoogle 
+        ? '<span class="source-badge google"><i class="fa-brands fa-google"></i> Google</span>'
+        : '<span class="source-badge local">ReserveHub</span>';
+
+    return `
+        <div class="review-item">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <strong style="font-size: 0.9rem; color: var(--text);">${name}</strong>
+                    ${sourceBadge}
+                </div>
+                <div class="stars">${stars}</div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">"${text}"</p>
+            <small style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.4; margin-top: 8px; display: block;">${time}</small>
+        </div>
+    `;
 }
