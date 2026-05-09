@@ -21,7 +21,7 @@ function togglePassword(fieldId, buttonEl) {
     // Use passed element or current event target
     const button = buttonEl || (event && (event.currentTarget || event.target.closest('button')));
     if (!button) return;
-    
+
     const icon = button.querySelector('i');
     if (!icon) return;
 
@@ -137,45 +137,45 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
             },
             body: JSON.stringify(userData)
         })
-        .then(response => response.json())
-        .then(data => {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
 
-            if (data.success) {
-                if (rememberMe) {
-                    localStorage.setItem('reservehub_user', JSON.stringify({
-                        id: data.user.id,
-                        email: data.user.email,
-                        name: data.user.name,
-                        phone: data.user.phone,
-                        timestamp: new Date().toISOString()
-                    }));
+                if (data.success) {
+                    if (rememberMe) {
+                        localStorage.setItem('reservehub_user', JSON.stringify({
+                            id: data.user.id,
+                            email: data.user.email,
+                            name: data.user.name,
+                            phone: data.user.phone,
+                            timestamp: new Date().toISOString()
+                        }));
+                    } else {
+                        sessionStorage.setItem('reservehub_user', JSON.stringify({
+                            id: data.user.id,
+                            email: data.user.email,
+                            name: data.user.name,
+                            phone: data.user.phone,
+                            timestamp: new Date().toISOString()
+                        }));
+                    }
+
+                    showSuccessModal('Login Successful!', `Welcome back, ${data.user.name}!`);
+                    this.reset();
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
                 } else {
-                    sessionStorage.setItem('reservehub_user', JSON.stringify({
-                        id: data.user.id,
-                        email: data.user.email,
-                        name: data.user.name,
-                        phone: data.user.phone,
-                        timestamp: new Date().toISOString()
-                    }));
+                    showError('loginPasswordError', data.message);
                 }
-
-                showSuccessModal('Login Successful!', `Welcome back, ${data.user.name}!`);
-                this.reset();
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-            } else {
-                showError('loginPasswordError', data.message);
-            }
-        })
-        .catch(error => {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            showError('loginPasswordError', 'Network error. Please try again later.');
-            console.error('Error:', error);
-        });
+            })
+            .catch(error => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                showError('loginPasswordError', 'Network error. Please try again later.');
+                console.error('Error:', error);
+            });
     }
 });
 
@@ -283,27 +283,27 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
             },
             body: JSON.stringify(userData)
         })
-        .then(response => response.json())
-        .then(data => {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
 
-            if (data.success) {
-                showSuccessModal('Account Created!', `Welcome ${name}! Your account has been created successfully.`);
-                this.reset();
-                setTimeout(() => {
-                    switchForm('login');
-                }, 2000);
-            } else {
-                showError('signupEmailError', data.message);
-            }
-        })
-        .catch(error => {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            showError('signupPasswordError', 'Network error. Please try again later.');
-            console.error('Error:', error);
-        });
+                if (data.success) {
+                    showSuccessModal('Account Created!', `Welcome ${name}! Your account has been created successfully.`);
+                    this.reset();
+                    setTimeout(() => {
+                        switchForm('login');
+                    }, 2000);
+                } else {
+                    showError('signupEmailError', data.message);
+                }
+            })
+            .catch(error => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                showError('signupPasswordError', 'Network error. Please try again later.');
+                console.error('Error:', error);
+            });
     }
 });
 
@@ -332,7 +332,7 @@ function socialLogin(provider) {
 // Google Login Implementation
 function googleLogin() {
     google.accounts.id.initialize({
-        client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // Placeholder
+        client_id: "883807509960-bg31ba8sicarhupujk7c9if3dg29ifro.apps.googleusercontent.com.apps.googleusercontent.com",
         callback: handleGoogleResponse
     });
     google.accounts.id.prompt(); // Show One Tap or login popup
@@ -357,9 +357,9 @@ function handleGoogleResponse(response) {
 
 // Facebook Login Implementation
 function facebookLogin() {
-    FB.login(function(response) {
+    FB.login(function (response) {
         if (response.status === 'connected') {
-            FB.api('/me', {fields: 'name,email'}, function(userData) {
+            FB.api('/me', { fields: 'name,email' }, function (userData) {
                 processSocialLogin({
                     provider: 'facebook',
                     token: response.authResponse.accessToken,
@@ -369,7 +369,7 @@ function facebookLogin() {
                 });
             });
         }
-    }, {scope: 'public_profile,email'});
+    }, { scope: 'public_profile,email' });
 }
 
 // Unified Social Login Processor
@@ -377,7 +377,7 @@ function processSocialLogin(data) {
     const loginForm = document.getElementById('loginFormElement');
     const submitBtn = loginForm?.querySelector('.submit-btn');
     const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
-    
+
     if (submitBtn) {
         submitBtn.innerHTML = '<span>Processing...</span>';
         submitBtn.disabled = true;
@@ -388,36 +388,36 @@ function processSocialLogin(data) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-    .then(res => res.json())
-    .then(res => {
-        if (res.success) {
-            localStorage.setItem('reservehub_user', JSON.stringify({
-                id: res.user.id,
-                email: res.user.email,
-                name: res.user.name,
-                phone: res.user.phone,
-                timestamp: new Date().toISOString()
-            }));
-            
-            showSuccessModal('Login Successful!', `Welcome, ${res.user.name}!`);
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 2000);
-        } else {
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                localStorage.setItem('reservehub_user', JSON.stringify({
+                    id: res.user.id,
+                    email: res.user.email,
+                    name: res.user.name,
+                    phone: res.user.phone,
+                    timestamp: new Date().toISOString()
+                }));
+
+                showSuccessModal('Login Successful!', `Welcome, ${res.user.name}!`);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            } else {
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }
+                alert(res.message || 'Social login failed. Please try again.');
+            }
+        })
+        .catch(err => {
+            console.error('Social Login Error:', err);
             if (submitBtn) {
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             }
-            alert(res.message || 'Social login failed. Please try again.');
-        }
-    })
-    .catch(err => {
-        console.error('Social Login Error:', err);
-        if (submitBtn) {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-        }
-    });
+        });
 }
 
 // Input validation on blur
