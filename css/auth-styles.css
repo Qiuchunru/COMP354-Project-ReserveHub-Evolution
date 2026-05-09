@@ -368,10 +368,13 @@ body {
 
 .form-content {
     width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
 }
 
 .form-header {
     margin-bottom: 35px;
+    text-align: center;
 }
 
 .form-header h2 {
