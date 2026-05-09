@@ -593,7 +593,7 @@ mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     position: absolute;
     top: 0; left: 0; right: 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: flex-start;
     padding: 14px;
 }
@@ -602,7 +602,12 @@ mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     backdrop-filter: blur(6px);
     border: none;
     color: #fff;
-    width: 32px; height: 32px;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 5;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 14px;
@@ -628,15 +633,24 @@ mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     display: none;
     position: absolute;
     inset: 0;
-    background: #1a1a1a;
-    color: rgba(255,255,255,0.2);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
     text-align: center;
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px dashed var(--glass-border);
+}
+
+.no-image-overlay i {
+    font-size: 24px;
+    opacity: 0.5;
 }
 
 .card-image.no-image .no-image-overlay {
