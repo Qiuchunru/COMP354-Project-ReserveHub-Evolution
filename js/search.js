@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="no-image-overlay">NO IMAGE AVAILABLE</div>
                                 <div class="card-img-overlay">
                                     <span class="halal-tag" style="background: ${item.is_halal == 1 ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; position: absolute; top: 10px; left: 10px;">${item.is_halal == 1 ? 'HALAL' : 'NON-HALAL'}</span>
-                                    <button class="wishlist-btn" data-id="${item.id}" aria-label="Add to wishlist" style="position: absolute; top: 10px; right: 10px;"><i class="fa-regular fa-heart"></i></button>
+                                    <button class="wishlist-btn" data-id="${item.id}" aria-label="Add to wishlist"><i class="fa-regular fa-heart"></i></button>
                                 </div>
                             </div>
                             <div class="card-body">
