@@ -1,5 +1,5 @@
 /* restaurant.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,6 +21,10 @@
     --available: #00b894;
     --occupied: #ff7675;
     --selected: #ff9f43;
+    --floor-bg: #f8f9fa;
+    --floor-bg-rect: #ffffff;
+    --floor-line: rgba(0, 0, 0, 0.08);
+    --floor-text: #666666;
     --radius: 20px;
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -36,8 +40,12 @@
         --glass-border: rgba(255, 255, 255, 0.08);
         --orange-glow: rgba(255, 107, 43, 0.15);
         --nav-bg: rgba(5, 5, 5, 0.4);
-        --available: #00d2d3;
+        --available: #00b894;
         --occupied: #ff6b6b;
+        --floor-bg: #0a0a0a;
+        --floor-bg-rect: #111111;
+        --floor-line: rgba(255, 255, 255, 0.05);
+        --floor-text: rgba(255, 255, 255, 0.3);
     }
 }
 
@@ -51,8 +59,12 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --orange-glow: rgba(255, 107, 43, 0.15);
     --nav-bg: rgba(5, 5, 5, 0.4);
-    --available: #00d2d3;
+    --available: #00b894;
     --occupied: #ff6b6b;
+    --floor-bg: #0a0a0a;
+    --floor-bg-rect: #111111;
+    --floor-line: rgba(255, 255, 255, 0.05);
+    --floor-text: rgba(255, 255, 255, 0.3);
 }
 
 .theme-transition,
@@ -66,7 +78,7 @@
                 filter 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+body { font-family: 'Alexandria', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* ===== NAV ===== */
 .nav { 
@@ -83,16 +95,70 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     z-index: 100; 
     transition: var(--transition);
 }
-.nav-logo { font-size: 1.4rem; font-weight: 700; color: var(--orange); text-decoration: none; }
-.nav-back { display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+.nav-logo-link { height: 35px; text-decoration: none; display: flex; align-items: center; }
+.top-logo { height: 100%; object-fit: contain; transition: var(--transition); }
+
+/* Browser-native date/time icons in dark mode */
+[data-theme="dark"] input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) input::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+}
+
+.theme-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.theme-toggle:hover {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+    transform: rotate(15deg) scale(1.1);
+}
+
+.theme-toggle .fa-sun { display: none; }
+.theme-toggle .fa-moon { display: block; }
+
+[data-theme="dark"] .theme-toggle .fa-sun { display: block; }
+[data-theme="dark"] .theme-toggle .fa-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .fa-sun { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle .fa-moon { display: none; }
+}
+
+.nav-back { display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; font-weight: 500; }
 .nav-back:hover { color: var(--orange); }
 .nav-back i { transition: transform 0.2s; }
 .nav-back:hover i { transform: translateX(-3px); }
 
 /* ===== HERO BANNER ===== */
-.restaurant-hero { position: relative; height: 450px; overflow: hidden; border-bottom: 1px solid var(--glass-border); }
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); }
-.hero-info { position: absolute; bottom: 60px; left: 60px; right: 60px; }
+.restaurant-hero { position: relative; height: 450px; overflow: hidden; border-bottom: 1px solid var(--glass-border); background: #000; }
+.hero-bg { 
+    position: absolute; 
+    inset: 0; 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    transition: transform 8s ease;
+}
+.restaurant-hero:hover .hero-bg { transform: scale(1.1); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); z-index: 1; }
+.hero-info { position: absolute; bottom: 60px; left: 60px; right: 60px; z-index: 2; }
 .hero-cuisine-tag { background: var(--orange); color: #fff; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; }
 .hero-name { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 700; line-height: 1.1; margin-bottom: 12px; }
 .hero-meta { display: flex; gap: clamp(12px, 3vw, 24px); flex-wrap: wrap; }
@@ -151,8 +217,15 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .legend-dot.selected { background: var(--selected); }
 
 /* SVG Canvas */
-.svg-wrapper { padding: 20px 28px 28px; overflow-x: auto; }
-#floorPlanSvg { display: block; width: 100%; max-width: 700px; margin: 0 auto; border-radius: 12px; background: var(--surface2); border: 1px solid var(--glass-border); }
+.svg-wrapper { padding: 30px 40px 40px; overflow-x: auto; background: var(--surface2); }
+#floorPlanSvg { display: block; width: 100%; height: auto; min-height: 500px; max-width: 900px; margin: 0 auto; border-radius: 12px; background: var(--floor-bg); border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+
+/* SVG Interior Elements */
+.floor-rect { fill: var(--floor-bg-rect); }
+.floor-grid { stroke: var(--floor-line); }
+.floor-counter { fill: var(--floor-line); }
+.floor-counter-text { fill: var(--floor-text); }
+.floor-loading-text { fill: var(--floor-text); }
 
 /* Table SVG elements */
 .table-group { cursor: pointer; transition: filter 0.2s; }

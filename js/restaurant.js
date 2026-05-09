@@ -125,7 +125,7 @@ function renderFloorPlan(tables) {
             circle.setAttribute('cy', y);
             circle.setAttribute('r', r);
             circle.setAttribute('class', `table-body ${table.status}`);
-            circle.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+            circle.setAttribute('stroke', 'var(--glass-border)');
             circle.setAttribute('stroke-width', '1.5');
             g.appendChild(circle);
 
@@ -154,7 +154,7 @@ function renderFloorPlan(tables) {
             rect.setAttribute('height', h);
             rect.setAttribute('rx', '8');
             rect.setAttribute('class', `table-body ${table.status}`);
-            rect.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+            rect.setAttribute('stroke', 'var(--glass-border)');
             rect.setAttribute('stroke-width', '1.5');
             g.appendChild(rect);
 
@@ -343,6 +343,7 @@ function showToast(type, title, msg) {
     setTimeout(() => toast.classList.remove('show'), 5000);
 }
 
+// ===== LOAD REVIEWS =====
 async function loadReviews() {
     const list = document.getElementById('reviewsList');
     list.innerHTML = '<p class="placeholder-text"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching latest reviews...</p>';
