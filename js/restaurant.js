@@ -125,7 +125,7 @@ function renderFloorPlan(tables) {
             circle.setAttribute('cy', y);
             circle.setAttribute('r', r);
             circle.setAttribute('class', `table-body ${table.status}`);
-            circle.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+            circle.setAttribute('stroke', 'var(--glass-border)');
             circle.setAttribute('stroke-width', '1.5');
             g.appendChild(circle);
 
@@ -154,7 +154,7 @@ function renderFloorPlan(tables) {
             rect.setAttribute('height', h);
             rect.setAttribute('rx', '8');
             rect.setAttribute('class', `table-body ${table.status}`);
-            rect.setAttribute('stroke', 'rgba(255,255,255,0.1)');
+            rect.setAttribute('stroke', 'var(--glass-border)');
             rect.setAttribute('stroke-width', '1.5');
             g.appendChild(rect);
 
@@ -359,16 +359,16 @@ async function loadReviews() {
                 
                 let stars = '';
                 for (let i = 0; i < 5; i++) {
-                    stars += `<i class="fa-solid fa-star" style="color:${i < rev.rating ? '#f1c40f' : 'rgba(255,255,255,0.1)'}; font-size: 11px;"></i>`;
+                    stars += `<i class="fa-solid fa-star" style="color:${i < rev.rating ? '#f1c40f' : 'var(--glass-border)'}; font-size: 11px;"></i>`;
                 }
 
                 item.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <strong style="font-size: 0.9rem; color: #fff;">${rev.user_name}</strong>
+                        <strong style="font-size: 0.9rem; color: var(--text);">${rev.user_name}</strong>
                         <div class="stars">${stars}</div>
                     </div>
                     <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">"${rev.comment}"</p>
-                    <small style="font-size: 0.7rem; color: rgba(255,255,255,0.2); margin-top: 8px; display: block;">${new Date(rev.created_at).toLocaleDateString()}</small>
+                    <small style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.4; margin-top: 8px; display: block;">${new Date(rev.created_at).toLocaleDateString()}</small>
                 `;
                 list.appendChild(item);
             });
