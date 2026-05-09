@@ -61,7 +61,6 @@ async function loadRestaurant() {
 // ===== RENDER HERO =====
 function renderHero(r) {
     document.getElementById('heroBg').style.backgroundImage = `url('${r.image_url}')`;
-    document.getElementById('heroCuisine').textContent = r.cuisine;
     document.getElementById('heroName').textContent = r.name;
     document.getElementById('heroRating').textContent = r.rating;
     document.getElementById('heroLocation').textContent = r.location;
