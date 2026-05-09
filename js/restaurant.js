@@ -6,6 +6,10 @@ const restaurantId = urlParams.get('id');
 let selectedTable = null;
 let restaurantData = null;
 
+function getUser() {
+    return JSON.parse(localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user') || 'null');
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
     if (!restaurantId) {
@@ -39,6 +43,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load reviews
     loadReviews();
+
+    // Check login status for reservation UI
+    const user = getUser();
+    if (!user) {
+        const reserveBtn = document.getElementById('reserveBtn');
+        reserveBtn.disabled = false;
+        reserveBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login to Reserve';
+        reserveBtn.style.background = 'var(--orange)';
+        
+        // Disable form inputs but keep them visible
+        const formInputs = document.querySelectorAll('#bookingForm select, #bookingForm textarea');
+        formInputs.forEach(input => {
+            input.disabled = true;
+            input.style.opacity = '0.6';
+            input.style.cursor = 'not-allowed';
+        });
+        
+        // Add a helpful message
+        const bookingHeader = document.querySelector('.booking-header');
+        const loginMsg = document.createElement('p');
+        loginMsg.style.color = 'var(--orange)';
+        loginMsg.style.fontSize = '0.85rem';
+        loginMsg.style.marginTop = '8px';
+        loginMsg.style.fontWeight = '500';
+        loginMsg.innerHTML = '<i class="fa-solid fa-circle-info"></i> Please log in to select a table and reserve.';
+        bookingHeader.appendChild(loginMsg);
+    }
 });
 
 // ===== LOAD RESTAURANT =====
@@ -174,7 +205,13 @@ function renderFloorPlan(tables) {
 
         // Click handler (only for available tables)
         if (table.status === 'available') {
-            g.addEventListener('click', () => selectTable(table, g));
+            g.addEventListener('click', () => {
+                if (!getUser()) {
+                    showToast('error', 'Login Required', 'You must be logged in to select a table.');
+                    return;
+                }
+                selectTable(table, g);
+            });
             g.style.cursor = 'pointer';
         } else {
             g.style.cursor = 'not-allowed';
@@ -240,6 +277,15 @@ function updateBookingPanel(table) {
     const display = document.getElementById('selectedTableDisplay');
     const reserveBtn = document.getElementById('reserveBtn');
     const tableIdInput = document.getElementById('selectedTableId');
+    const user = getUser();
+
+    if (!user) {
+        display.classList.remove('has-selection');
+        reserveBtn.disabled = false;
+        reserveBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login to Reserve';
+        tableIdInput.value = '';
+        return;
+    }
 
     if (!table) {
         display.classList.remove('has-selection');
