@@ -593,7 +593,7 @@ mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     position: absolute;
     top: 0; left: 0; right: 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: flex-start;
     padding: 14px;
 }
