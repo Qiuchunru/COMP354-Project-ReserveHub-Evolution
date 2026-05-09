@@ -250,16 +250,15 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.brand-logo {
+.auth-brand-logo {
     margin-bottom: 25px;
-    filter: brightness(0) invert(1);
     animation: float 4s ease-in-out infinite;
     max-width: 180px;
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); filter: brightness(0) invert(1) drop-shadow(0 5px 15px rgba(255,107,43,0.4)); }
-    50% { transform: translateY(-10px); filter: brightness(0) invert(1) drop-shadow(0 15px 25px rgba(255,107,43,0.2)); }
+    0%, 100% { transform: translateY(0); filter: drop-shadow(0 5px 15px rgba(255,107,43,0.4)); }
+    50% { transform: translateY(-10px); filter: drop-shadow(0 15px 25px rgba(255,107,43,0.2)); }
 }
 
 .brand-content h1 {
