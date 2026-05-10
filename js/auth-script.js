@@ -335,16 +335,35 @@ document.getElementById('forgotPasswordFormElement')?.addEventListener('submit',
         submitBtn.innerHTML = '<span>Sending Link...</span>';
         submitBtn.disabled = true;
 
-        // Simulate API call for sending reset link
-        setTimeout(() => {
+        // Make API call to send reset link
+        fetch('../api/forgot_password.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
-            showSuccessModal('Reset Link Sent!', `We've sent a password reset link to ${email}`);
-            this.reset();
-            setTimeout(() => {
-                switchForm('login');
-            }, 3000);
-        }, 1500);
+
+            if (data.success) {
+                showSuccessModal('Reset Link Sent!', data.message || `We've sent a password reset link to ${email}`);
+                this.reset();
+                setTimeout(() => {
+                    switchForm('login');
+                }, 3000);
+            } else {
+                showError('resetEmailError', data.message || 'Failed to send reset link. Please try again.');
+            }
+        })
+        .catch(error => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            showError('resetEmailError', 'Network error. Please try again later.');
+            console.error('Error:', error);
+        });
     }
 });
 
