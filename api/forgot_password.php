@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once 'db.php';
+require_once 'load_env.php';
 
 // Get JSON data from request body
 $rawInput = file_get_contents("php://input");
@@ -54,7 +55,7 @@ try {
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
         $baseDir = $isLocal ? '/reservehub' : '';
-        $resetLink = $protocol . '://' . $host . $baseDir . '/html/reset-password.php?token=' . $token;
+        $resetLink = $protocol . '://' . $host . $baseDir . '/html/reset-password.html?token=' . $token;
 
         // Send email using PHPMailer
         require_once 'PHPMailer/Exception.php';
@@ -68,13 +69,13 @@ try {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';                     // Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                 // Enable SMTP authentication
-            $mail->Username   = 'YOUR_GMAIL_ADDRESS@gmail.com';       // SMTP username
-            $mail->Password   = 'YOUR_APP_PASSWORD';                  // SMTP password (use an App Password)
+            $mail->Username   = $_ENV['SMTP_USER'];       // SMTP username
+            $mail->Password   = $_ENV['SMTP_PASS'];                  // SMTP password (use an App Password)
             $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
             $mail->Port       = 587;                                  // TCP port to connect to
 
             // Recipients
-            $mail->setFrom('YOUR_GMAIL_ADDRESS@gmail.com', 'ReserveHub Team');
+            $mail->setFrom($_ENV['SMTP_USER'], 'ReserveHub Team');
             $mail->addAddress($email, $user['name']);                 // Add a recipient
 
             // Content
