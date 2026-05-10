@@ -2,14 +2,19 @@
 function switchForm(formType) {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
-    const forms = [loginForm, signupForm];
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const forms = [loginForm, signupForm, forgotPasswordForm];
 
-    forms.forEach(form => form.classList.remove('active'));
+    forms.forEach(form => {
+        if (form) form.classList.remove('active');
+    });
 
     if (formType === 'login') {
         loginForm.classList.add('active');
-    } else {
+    } else if (formType === 'signup') {
         signupForm.classList.add('active');
+    } else if (formType === 'forgotPassword') {
+        if (forgotPasswordForm) forgotPasswordForm.classList.add('active');
     }
 }
 
@@ -304,6 +309,61 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
                 showError('signupPasswordError', 'Network error. Please try again later.');
                 console.error('Error:', error);
             });
+    }
+});
+
+// Forgot Password Form Submission
+document.getElementById('forgotPasswordFormElement')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('resetEmail').value.trim();
+    let isValid = true;
+
+    clearError('resetEmailError');
+
+    if (!email) {
+        showError('resetEmailError', 'Email is required');
+        isValid = false;
+    } else if (!validateEmail(email)) {
+        showError('resetEmailError', 'Please enter a valid email');
+        isValid = false;
+    }
+
+    if (isValid) {
+        const submitBtn = this.querySelector('.submit-btn');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span>Sending Link...</span>';
+        submitBtn.disabled = true;
+
+        // Make API call to send reset link
+        fetch('../api/forgot_password.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+
+            if (data.success) {
+                showSuccessModal('Reset Link Sent!', data.message || `We've sent a password reset link to ${email}`);
+                this.reset();
+                setTimeout(() => {
+                    switchForm('login');
+                }, 3000);
+            } else {
+                showError('resetEmailError', data.message || 'Failed to send reset link. Please try again.');
+            }
+        })
+        .catch(error => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            showError('resetEmailError', 'Network error. Please try again later.');
+            console.error('Error:', error);
+        });
     }
 });
 

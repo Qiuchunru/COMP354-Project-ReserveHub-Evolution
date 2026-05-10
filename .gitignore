@@ -37,3 +37,4 @@ __pycache__/
 *.tmp
 *.sql
 !sql/*.sql
+.env
