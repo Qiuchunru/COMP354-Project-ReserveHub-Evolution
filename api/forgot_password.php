@@ -56,23 +56,42 @@ try {
         $baseDir = $isLocal ? '/reservehub' : '';
         $resetLink = $protocol . '://' . $host . $baseDir . '/html/reset-password.php?token=' . $token;
 
-        // Send email
-        $to = $email;
-        $subject = "Password Reset Request - ReserveHub";
-        $message = "Hi " . $user['name'] . ",\n\n";
-        $message .= "We received a request to reset your ReserveHub password.\n";
-        $message .= "Click the link below to set a new password:\n\n";
-        $message .= $resetLink . "\n\n";
-        $message .= "If you didn't request this, you can safely ignore this email.\nThis link will expire in 1 hour.\n\n";
-        $message .= "Best regards,\nThe ReserveHub Team";
-        
-        $headers = "From: noreply@reservehub.com\r\n";
-        $headers .= "Reply-To: noreply@reservehub.com\r\n";
-        $headers .= "X-Mailer: PHP/" . phpversion();
+        // Send email using PHPMailer
+        require_once 'PHPMailer/Exception.php';
+        require_once 'PHPMailer/PHPMailer.php';
+        require_once 'PHPMailer/SMTP.php';
 
-        // Use mail() function to send email. 
-        // Note: This relies on the server being configured to send emails (e.g. sendmail in XAMPP)
-        @mail($to, $subject, $message, $headers);
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';                     // Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                 // Enable SMTP authentication
+            $mail->Username   = 'YOUR_GMAIL_ADDRESS@gmail.com';       // SMTP username
+            $mail->Password   = 'YOUR_APP_PASSWORD';                  // SMTP password (use an App Password)
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
+            $mail->Port       = 587;                                  // TCP port to connect to
+
+            // Recipients
+            $mail->setFrom('YOUR_GMAIL_ADDRESS@gmail.com', 'ReserveHub Team');
+            $mail->addAddress($email, $user['name']);                 // Add a recipient
+
+            // Content
+            $mail->isHTML(false);
+            $mail->Subject = "Password Reset Request - ReserveHub";
+            $message = "Hi " . $user['name'] . ",\n\n";
+            $message .= "We received a request to reset your ReserveHub password.\n";
+            $message .= "Click the link below to set a new password:\n\n";
+            $message .= $resetLink . "\n\n";
+            $message .= "If you didn't request this, you can safely ignore this email.\nThis link will expire in 1 hour.\n\n";
+            $message .= "Best regards,\nThe ReserveHub Team";
+            $mail->Body = $message;
+
+            $mail->send();
+        } catch (Exception $e) {
+            error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        }
     }
     
     // Always return success even if email doesn't exist to prevent email enumeration
