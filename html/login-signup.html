@@ -85,7 +85,7 @@
                                 <span class="checkmark"></span>
                                 <span>Remember me</span>
                             </label>
-                            <a href="#" class="forgot-password">Forgot password?</a>
+                            <a href="#" class="forgot-password" onclick="switchForm('forgotPassword'); event.preventDefault();">Forgot password?</a>
                         </div>
 
                         <button type="submit" class="submit-btn">
@@ -224,6 +224,40 @@
 
                     <div class="form-footer">
                         <p>Already have an account?
+                            <button type="button" class="switch-form" onclick="switchForm('login')">
+                                Sign in
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div class="form-wrapper" id="forgotPasswordForm">
+                <div class="form-content">
+                    <div class="form-header">
+                        <h2>Reset Password</h2>
+                        <p>Enter your email to receive a reset link</p>
+                    </div>
+
+                    <form id="forgotPasswordFormElement" class="auth-form">
+                        <div class="form-group">
+                            <label for="resetEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="resetEmail" placeholder="you@example.com" required>
+                            </div>
+                            <span class="error-message" id="resetEmailError"></span>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <span>Send Reset Link</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div class="form-footer" style="margin-top: 2rem;">
+                        <p>Remember your password?
                             <button type="button" class="switch-form" onclick="switchForm('login')">
                                 Sign in
                             </button>
