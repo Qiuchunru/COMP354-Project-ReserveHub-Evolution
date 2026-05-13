@@ -15,6 +15,7 @@ Desktop.ini
 api/db.php
 config.local.php
 .env
+uploads/
 
 # Dependencies
 node_modules/
