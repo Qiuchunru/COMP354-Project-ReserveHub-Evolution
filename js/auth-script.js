@@ -392,7 +392,7 @@ function socialLogin(provider) {
 // Google Login Implementation
 function googleLogin() {
     google.accounts.id.initialize({
-        client_id: "883807509960-bg31ba8sicarhupujk7c9if3dg29ifro.apps.googleusercontent.com.apps.googleusercontent.com",
+        client_id: "883807509960-bg31ba8sicarhupujk7c9if3dg29ifro.apps.googleusercontent.com",
         callback: handleGoogleResponse
     });
     google.accounts.id.prompt(); // Show One Tap or login popup
@@ -438,6 +438,12 @@ function processSocialLogin(data) {
     const submitBtn = loginForm?.querySelector('.submit-btn');
     const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
 
+    if (!data.email) {
+        console.error('Social Login Error: No email provided by ' + data.provider);
+        alert('Could not retrieve your email from ' + data.provider + '. Please make sure your email is verified and public.');
+        return;
+    }
+
     if (submitBtn) {
         submitBtn.innerHTML = '<span>Processing...</span>';
         submitBtn.disabled = true;
@@ -448,7 +454,12 @@ function processSocialLogin(data) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Server returned ' + res.status + ': ' + res.statusText);
+            }
+            return res.json();
+        })
         .then(res => {
             if (res.success) {
                 localStorage.setItem('reservehub_user', JSON.stringify({
