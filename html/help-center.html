@@ -134,6 +134,38 @@
             margin-top: 12px;
         }
 
+        /* Search Highlighting */
+        mark.highlight {
+            background: var(--orange-glow);
+            color: var(--orange);
+            padding: 0 2px;
+            border-radius: 2px;
+            font-weight: 700;
+        }
+
+        .search-suggestions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .suggestion-tag {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+        }
+        .suggestion-tag:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+            background: var(--surface);
+        }
+
         .contact-section {
             padding: 100px 0;
             background: var(--surface);
@@ -236,6 +268,13 @@
                 <div class="help-search-container">
                     <i class="fa-solid fa-magnifying-glass help-search-icon"></i>
                     <input type="text" class="help-search-input" id="helpSearch" placeholder="Search for answers (e.g. 'how to cancel')">
+                    <div class="search-suggestions">
+                        <span class="suggestion-tag">Booking</span>
+                        <span class="suggestion-tag">Cancellation</span>
+                        <span class="suggestion-tag">Password Reset</span>
+                        <span class="suggestion-tag">Refunds</span>
+                        <span class="suggestion-tag">Profile Edit</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -418,83 +457,7 @@
     <script src="../js/theme.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/session.js"></script>
-    <script>
-        // FAQ Toggle Logic
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', () => {
-                const item = question.parentElement;
-                const isActive = item.classList.contains('active');
-                
-                // Close all other items
-                document.querySelectorAll('.faq-item').forEach(otherItem => {
-                    otherItem.classList.remove('active');
-                });
-                
-                // Toggle current item
-                if (!isActive) {
-                    item.classList.add('active');
-                }
-            });
-        });
-
-        // Search Logic
-        const searchInput = document.getElementById('helpSearch');
-        const faqItems = document.querySelectorAll('.faq-item');
-        const categories = document.querySelectorAll('.faq-category');
-        const faqGrid = document.getElementById('faqGrid');
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            let hasResults = false;
-
-            categories.forEach(category => {
-                let categoryHasMatch = false;
-                const itemsInCat = category.querySelectorAll('.faq-item');
-                
-                itemsInCat.forEach(item => {
-                    const question = item.querySelector('.faq-question').textContent.toLowerCase();
-                    const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
-                    
-                    if (question.includes(term) || answer.includes(term)) {
-                        item.style.display = 'block';
-                        categoryHasMatch = true;
-                        hasResults = true;
-                    } else {
-                        item.style.display = 'none';
-                        item.classList.remove('active');
-                    }
-                });
-
-                if (categoryHasMatch) {
-                    category.style.display = 'block';
-                } else {
-                    category.style.display = 'none';
-                }
-            });
-
-            // Handle no results
-            let noResultsMsg = document.getElementById('no-results-msg');
-            if (!hasResults) {
-                if (!noResultsMsg) {
-                    noResultsMsg = document.createElement('div');
-                    noResultsMsg.id = 'no-results-msg';
-                    noResultsMsg.style.textAlign = 'center';
-                    noResultsMsg.style.padding = '60px 20px';
-                    noResultsMsg.style.gridColumn = '1 / -1';
-                    noResultsMsg.innerHTML = `
-                        <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--orange); opacity: 0.5;"></i>
-                        <h3>No results found</h3>
-                        <p style="color: var(--text-muted);">We couldn't find any matches for "${term}". Please try a different search term or contact us.</p>
-                    `;
-                    faqGrid.appendChild(noResultsMsg);
-                }
-                noResultsMsg.style.display = 'block';
-                noResultsMsg.querySelector('p').innerHTML = `We couldn't find any matches for "${term}". Please try a different search term or contact us.`;
-            } else {
-                if (noResultsMsg) noResultsMsg.style.display = 'none';
-            }
-        });
-    </script>
+    <script src="../js/help.js"></script>
 </body>
 </html></body>
 </html>
