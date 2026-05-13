@@ -343,27 +343,27 @@ document.getElementById('forgotPasswordFormElement')?.addEventListener('submit',
             },
             body: JSON.stringify({ email: email })
         })
-        .then(response => response.json())
-        .then(data => {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
 
-            if (data.success) {
-                showSuccessModal('Reset Link Sent!', data.message || `We've sent a password reset link to ${email}`);
-                this.reset();
-                setTimeout(() => {
-                    switchForm('login');
-                }, 3000);
-            } else {
-                showError('resetEmailError', data.message || 'Failed to send reset link. Please try again.');
-            }
-        })
-        .catch(error => {
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            showError('resetEmailError', 'Network error. Please try again later.');
-            console.error('Error:', error);
-        });
+                if (data.success) {
+                    showSuccessModal('Reset Link Sent!', data.message || `We've sent a password reset link to ${email}`);
+                    this.reset();
+                    setTimeout(() => {
+                        switchForm('login');
+                    }, 3000);
+                } else {
+                    showError('resetEmailError', data.message || 'Failed to send reset link. Please try again.');
+                }
+            })
+            .catch(error => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                showError('resetEmailError', 'Network error. Please try again later.');
+                console.error('Error:', error);
+            });
     }
 });
 
@@ -391,11 +391,34 @@ function socialLogin(provider) {
 
 // Google Login Implementation
 function googleLogin() {
-    google.accounts.id.initialize({
-        client_id: "883807509960-bg31ba8sicarhupujk7c9if3dg29ifro.apps.googleusercontent.com",
-        callback: handleGoogleResponse
-    });
-    google.accounts.id.prompt(); // Show One Tap or login popup
+    console.log('Attempting Google Login...');
+    if (typeof google !== 'undefined') {
+        // Initialize right before prompting to ensure client_id is never "missing"
+        google.accounts.id.initialize({
+            client_id: "883807509960-bg31ba8sicarhupujk7c9if3dg29ifro.apps.googleusercontent.com",
+            callback: handleGoogleResponse,
+            ux_mode: 'popup',
+            context: 'signin'
+        });
+
+        google.accounts.id.prompt((notification) => {
+            console.log('Google Prompt Status:', notification.getMomentType(), notification.getNotDisplayedReason());
+            if (notification.isNotDisplayed()) {
+                const reason = notification.getNotDisplayedReason();
+                console.warn('Google Prompt not displayed:', reason);
+
+                // Fallback: If One Tap is suppressed or skipped, try to use the manual picker
+                if (reason === 'suppressed_by_user' || reason === 'skipped_by_user') {
+                    alert('Google login was dismissed. Try clearing your browser cookies or use a different browser.');
+                } else {
+                    alert('Google login failed: ' + reason);
+                }
+            }
+        });
+    } else {
+        console.error('Google SDK not loaded');
+        alert('Google Login is currently unavailable. Please refresh the page.');
+    }
 }
 
 function handleGoogleResponse(response) {
