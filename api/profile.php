@@ -13,7 +13,7 @@ if (!$data || empty($data->email)) {
 $email = $data->email;
 
 try {
-    $stmt = $pdo->prepare("SELECT id, name, email, phone, created_at FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT id, username, name, email, phone, profile_picture, created_at FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
