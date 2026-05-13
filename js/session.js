@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const authButtonsContainer = document.getElementById('auth-buttons');
+    const footerAdminLink = document.getElementById('footerAdminLink');
+
+    // Hide footer admin link by default
+    if (footerAdminLink) footerAdminLink.style.display = 'none';
+
     if (!authButtonsContainer) return;
 
     // Check if user is logged in
@@ -8,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userStr) {
         try {
             const user = JSON.parse(userStr);
+            
+            // Show footer admin link if admin
+            if (footerAdminLink && user.role === 'admin') {
+                footerAdminLink.style.display = 'inline-block';
+            }
             
             // SECURITY CHECK: If on admin.html but not an admin, redirect
             if (window.location.pathname.includes('admin.html')) {
