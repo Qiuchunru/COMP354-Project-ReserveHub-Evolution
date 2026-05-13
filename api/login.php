@@ -37,7 +37,7 @@ if (empty($identifier) || empty($password)) {
 
 try {
     // Find user by email or username
-    $stmt = $pdo->prepare("SELECT id, username, name, email, phone, password FROM users WHERE email = ? OR username = ?");
+    $stmt = $pdo->prepare("SELECT id, username, name, email, role, phone, profile_picture, password FROM users WHERE email = ? OR username = ?");
     $stmt->execute([$identifier, $identifier]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -50,7 +50,9 @@ try {
                 'username' => $user['username'],
                 'name' => $user['name'],
                 'email' => $user['email'],
-                'phone' => $user['phone']
+                'role' => $user['role'],
+                'phone' => $user['phone'],
+                'profile_picture' => $user['profile_picture']
             ]
         ]);
     } else {

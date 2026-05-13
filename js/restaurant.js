@@ -407,7 +407,7 @@ async function loadReviews() {
         // Render Local Reviews
         if (localJson.success && localJson.data.length > 0) {
             localJson.data.forEach(rev => {
-                allReviewsHtml += renderReviewItem(rev.user_name, rev.rating, rev.comment, new Date(rev.created_at).toLocaleDateString(), 'ReserveHub');
+                allReviewsHtml += renderReviewItem(rev.user_name, rev.rating, rev.comment, new Date(rev.created_at).toLocaleDateString(), 'ReserveHub', rev.user_role);
             });
         }
         
@@ -429,22 +429,26 @@ async function loadReviews() {
     }
 }
 
-function renderReviewItem(name, rating, text, time, source) {
+function renderReviewItem(name, rating, text, time, source, role = 'user') {
     let stars = '';
     for (let i = 0; i < 5; i++) {
         stars += `<i class="fa-solid fa-star" style="color:${i < rating ? '#f1c40f' : 'var(--glass-border)'}; font-size: 11px;"></i>`;
     }
 
     const isGoogle = source === 'Google';
+    const isAdmin = role === 'admin';
     const sourceBadge = isGoogle 
         ? '<span class="source-badge google"><i class="fa-brands fa-google"></i> Google</span>'
-        : '<span class="source-badge local">ReserveHub</span>';
+        : (isAdmin ? '' : '<span class="source-badge local">ReserveHub</span>');
+
+    const adminTag = isAdmin ? '<span class="admin-tag"><i class="fa-solid fa-shield-halved" style="font-size: 8px;"></i> Admin</span>' : '';
 
     return `
         <div class="review-item">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <strong style="font-size: 0.9rem; color: var(--text);">${name}</strong>
+                    ${adminTag}
                     ${sourceBadge}
                 </div>
                 <div class="stars">${stars}</div>
