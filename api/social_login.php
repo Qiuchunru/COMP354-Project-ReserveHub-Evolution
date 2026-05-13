@@ -68,7 +68,7 @@ if ($provider === 'google') {
 
 try {
     // 1. Check if user exists by email
-    $stmt = $pdo->prepare("SELECT id, username, name, email, phone FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT id, username, name, email, role, phone, profile_picture FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

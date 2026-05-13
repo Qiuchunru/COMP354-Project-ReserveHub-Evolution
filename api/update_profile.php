@@ -32,7 +32,7 @@ try {
 
     if ($result) {
         // Fetch updated user data
-        $stmt = $pdo->prepare("SELECT id, username, name, email, phone, profile_picture FROM users WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, username, name, email, role, phone, profile_picture FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
