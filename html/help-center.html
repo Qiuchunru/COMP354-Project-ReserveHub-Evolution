@@ -28,7 +28,10 @@
         .help-search-container {
             max-width: 600px;
             margin: 40px auto 0;
+        }
+        .help-search-wrapper {
             position: relative;
+            width: 100%;
         }
         .help-search-input {
             width: 100%;
@@ -266,8 +269,10 @@
                 <span class="section-tag">Support Center</span>
                 <h1 class="help-title">How can we <span class="accent">help you</span> today?</h1>
                 <div class="help-search-container">
-                    <i class="fa-solid fa-magnifying-glass help-search-icon"></i>
-                    <input type="text" class="help-search-input" id="helpSearch" placeholder="Search for answers (e.g. 'how to cancel')">
+                    <div class="help-search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass help-search-icon"></i>
+                        <input type="text" class="help-search-input" id="helpSearch" placeholder="Search for answers (e.g. 'how to cancel')">
+                    </div>
                     <div class="search-suggestions">
                         <span class="suggestion-tag">Booking</span>
                         <span class="suggestion-tag">Cancellation</span>
