@@ -73,7 +73,11 @@ ReserveHub is a high-end, responsive restaurant reservation platform designed to
 ├── html/            # Page Templates
 ├── js/              # Client-side Logic (Auth, Session, UI interactions)
 ├── pictures/        # Brand assets, logos, and user uploads
-├── sql/             # Database Schema and Migrations
+├── sql/             # Database Schema and basic seed scripts
+├── tools/           # Internal tools and maintenance scripts
+│   ├── deployment/  # Deployment configuration for specific targets
+│   └── migrations/  # Database migration and cleanup scripts
+├── uploads/         # User-uploaded content (Profile pictures)
 ├── videos/          # High-quality UI background assets
 └── index.php        # Entry point (Main redirect)
 ```
