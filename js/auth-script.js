@@ -151,17 +151,23 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                     if (rememberMe) {
                         localStorage.setItem('reservehub_user', JSON.stringify({
                             id: data.user.id,
+                            username: data.user.username,
                             email: data.user.email,
                             name: data.user.name,
+                            role: data.user.role,
                             phone: data.user.phone,
+                            profile_picture: data.user.profile_picture,
                             timestamp: new Date().toISOString()
                         }));
                     } else {
                         sessionStorage.setItem('reservehub_user', JSON.stringify({
                             id: data.user.id,
+                            username: data.user.username,
                             email: data.user.email,
                             name: data.user.name,
+                            role: data.user.role,
                             phone: data.user.phone,
+                            profile_picture: data.user.profile_picture,
                             timestamp: new Date().toISOString()
                         }));
                     }
@@ -487,9 +493,12 @@ function processSocialLogin(data) {
             if (res.success) {
                 localStorage.setItem('reservehub_user', JSON.stringify({
                     id: res.user.id,
+                    username: res.user.username,
                     email: res.user.email,
                     name: res.user.name,
+                    role: res.user.role,
                     phone: res.user.phone,
+                    profile_picture: res.user.profile_picture,
                     timestamp: new Date().toISOString()
                 }));
 
