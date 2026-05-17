@@ -27,6 +27,10 @@
     --floor-text: #666666;
     --radius: 20px;
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    --display-sun: none;
+    --display-moon: block;
+    --calendar-filter: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -46,6 +50,9 @@
         --floor-bg-rect: #111111;
         --floor-line: rgba(255, 255, 255, 0.05);
         --floor-text: rgba(255, 255, 255, 0.3);
+        --display-sun: block;
+        --display-moon: none;
+        --calendar-filter: invert(1);
     }
 }
 
@@ -65,6 +72,9 @@
     --floor-bg-rect: #111111;
     --floor-line: rgba(255, 255, 255, 0.05);
     --floor-text: rgba(255, 255, 255, 0.3);
+    --display-sun: block;
+    --display-moon: none;
+    --calendar-filter: invert(1);
 }
 
 .theme-transition,
@@ -99,13 +109,8 @@ body { font-family: 'Alexandria', sans-serif; background: var(--bg); color: var(
 .top-logo { height: 100%; object-fit: contain; transition: var(--transition); }
 
 /* Browser-native date/time icons in dark mode */
-[data-theme="dark"] input::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-}
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) input::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-    }
+input::-webkit-calendar-picker-indicator {
+    filter: var(--calendar-filter);
 }
 
 .theme-toggle {
@@ -130,16 +135,8 @@ body { font-family: 'Alexandria', sans-serif; background: var(--bg); color: var(
     transform: rotate(15deg) scale(1.1);
 }
 
-.theme-toggle .fa-sun { display: none; }
-.theme-toggle .fa-moon { display: block; }
-
-[data-theme="dark"] .theme-toggle .fa-sun { display: block; }
-[data-theme="dark"] .theme-toggle .fa-moon { display: none; }
-
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-toggle .fa-sun { display: block; }
-    :root:not([data-theme="light"]) .theme-toggle .fa-moon { display: none; }
-}
+.theme-toggle .fa-sun { display: var(--display-sun); }
+.theme-toggle .fa-moon { display: var(--display-moon); }
 
 .nav-back { display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; font-weight: 500; }
 .nav-back:hover { color: var(--orange); }
