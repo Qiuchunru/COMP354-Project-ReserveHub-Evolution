@@ -30,8 +30,10 @@ $newPassword = trim($data->newPassword);
 
 try {
     // Check if token exists and is valid (not expired)
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()");
-    $stmt->execute([$token]);
+    // Compare using PHP's current time to avoid timezone mismatch with MySQL NOW()
+    $currentTime = date('Y-m-d H:i:s');
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_token_expiry > ?");
+    $stmt->execute([$token, $currentTime]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {

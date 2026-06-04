@@ -74,6 +74,15 @@ try {
             $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
             $mail->Port       = 587;                                  // TCP port to connect to
 
+            // Disable SSL peer verification for local XAMPP environment compatibility
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
+
             // Recipients
             $mail->setFrom($_ENV['SMTP_USER'], 'ReserveHub Team');
             $mail->addAddress($email, $user['name']);                 // Add a recipient
@@ -93,13 +102,26 @@ try {
         } catch (Exception $e) {
             error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
         }
+
+        // Log reset link locally if in development environment
+        if ($isLocal) {
+            $logFile = __DIR__ . '/../reservehub_emails.log';
+            $logMessage = "[" . date('Y-m-d H:i:s') . "] Password Reset Request for $email\n";
+            $logMessage .= "Reset Link: $resetLink\n";
+            $logMessage .= "--------------------------------------------------\n";
+            file_put_contents($logFile, $logMessage, FILE_APPEND);
+        }
     }
     
     // Always return success even if email doesn't exist to prevent email enumeration
-    echo json_encode([
+    $response = [
         'success' => true,
         'message' => 'If an account matches that email, we have sent a password reset link.'
-    ]);
+    ];
+    if ($isLocal && $user) {
+        $response['debug_link'] = $resetLink;
+    }
+    echo json_encode($response);
     
 } catch (PDOException $e) {
     echo json_encode([
