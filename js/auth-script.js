@@ -156,7 +156,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                             name: data.user.name,
                             role: data.user.role,
                             phone: data.user.phone,
-                            profile_picture: data.user.profile_picture,
+                            role: data.user.role,
                             timestamp: new Date().toISOString()
                         }));
                     } else {
@@ -167,7 +167,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                             name: data.user.name,
                             role: data.user.role,
                             phone: data.user.phone,
-                            profile_picture: data.user.profile_picture,
+                            role: data.user.role,
                             timestamp: new Date().toISOString()
                         }));
                     }
@@ -175,7 +175,13 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                     showSuccessModal('Login Successful!', `Welcome back, ${data.user.name}!`);
                     this.reset();
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin.html';
+                        } else if (data.user.role === 'vendor') {
+                            window.location.href = 'vendor-dashboard.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
                     }, 2000);
                 } else {
                     showError('loginPasswordError', data.message);
@@ -201,6 +207,7 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
     const password = document.getElementById('signupPassword').value.trim();
     const confirmPassword = document.getElementById('confirmPassword').value.trim();
     const agreeTerms = document.getElementById('agreeTerms').checked;
+    const registerAsVendor = document.getElementById('registerAsVendor')?.checked || false;
 
     let isValid = true;
 
@@ -279,7 +286,8 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
             name: name,
             email: email,
             phone: phone,
-            password: password
+            password: password,
+            role: registerAsVendor ? 'vendor' : 'user'
         };
 
         const submitBtn = this.querySelector('.submit-btn');
@@ -502,13 +510,19 @@ function processSocialLogin(data) {
                     name: res.user.name,
                     role: res.user.role,
                     phone: res.user.phone,
-                    profile_picture: res.user.profile_picture,
+                    role: res.user.role,
                     timestamp: new Date().toISOString()
                 }));
 
                 showSuccessModal('Login Successful!', `Welcome, ${res.user.name}!`);
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    if (res.user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else if (res.user.role === 'vendor') {
+                        window.location.href = 'vendor-dashboard.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                 }, 2000);
             } else {
                 if (submitBtn) {

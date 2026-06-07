@@ -17,6 +17,11 @@ $name = trim($data->name ?? '');
 $email = trim($data->email ?? '');
 $phone = trim($data->phone ?? '');
 $password = trim($data->password ?? '');
+$role = trim($data->role ?? 'user');
+
+if (!in_array($role, ['user', 'vendor'])) {
+    $role = 'user';
+}
 
 // Basic validation
 if (empty($username_val) || empty($name) || empty($email) || empty($password) || empty($phone)) {
@@ -46,8 +51,8 @@ try {
     // Hash password and insert
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    $stmt = $pdo->prepare("INSERT INTO users (username, name, email, phone, password) VALUES (?, ?, ?, ?, ?)");
-    if ($stmt->execute([$username_val, $name, $email, $phone, $hashed_password])) {
+    $stmt = $pdo->prepare("INSERT INTO users (username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+    if ($stmt->execute([$username_val, $name, $email, $phone, $hashed_password, $role])) {
         echo json_encode([
             'success' => true,
             'message' => 'Registration successful!'

@@ -8,7 +8,7 @@ $location = $_GET['location'] ?? '';
 $time = $_GET['time'] ?? '';
 $halal = $_GET['halal'] ?? '';
 
-$sql = "SELECT * FROM restaurants WHERE 1=1";
+$sql = "SELECT * FROM restaurants WHERE status = 'approved'";
 $params = [];
 
 if (!empty($query)) {
