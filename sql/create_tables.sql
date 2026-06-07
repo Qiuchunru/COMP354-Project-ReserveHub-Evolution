@@ -1,4 +1,6 @@
 -- Tables for restaurant floor plans
+-- NOTE: Table availability is computed dynamically from the reservations table.
+--       There is no static status column — see api/tables.php for the live query.
 CREATE TABLE IF NOT EXISTS `tables` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `restaurant_id` INT NOT NULL,
@@ -7,7 +9,6 @@ CREATE TABLE IF NOT EXISTS `tables` (
   `shape` ENUM('round','rect') DEFAULT 'round',
   `x_pos` INT NOT NULL,
   `y_pos` INT NOT NULL,
-  `status` ENUM('available','occupied') DEFAULT 'available',
   FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants`(`id`) ON DELETE CASCADE
 );
 

@@ -152,7 +152,7 @@
                 </div>
                 <div style="display:flex; gap:10px;">
                     <div class="form-group" style="flex:1;"><label>Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
-                    <div class="form-group" style="flex:1;"><label>Rating</label><input type="number" step="0.1" id="restRating" class="form-control" value="0.0"></div>
+                    <div class="form-group" style="flex:1;"><label>Seed Rating <small style="color:var(--text-muted);font-weight:400;">(fallback)</small></label><input type="number" step="0.1" min="0" max="5" id="restRating" class="form-control" value="0.0" title="Used as the display rating until real reviews come in"></div>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <div class="form-group" style="flex:1;"><label>Open Time</label><input type="time" id="restOpen" class="form-control"></div>

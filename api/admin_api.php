@@ -69,57 +69,68 @@ try {
 
         case 'restaurants':
             if ($method === 'GET') {
-                $rests = $pdo->query("SELECT * FROM restaurants ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+                // Compute live rating from reviews; fall back to seed_rating for restaurants with none
+                $rests = $pdo->query("
+                    SELECT r.*,
+                           ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
+                    FROM restaurants r
+                    LEFT JOIN reviews rev ON rev.restaurant_id = r.id
+                    GROUP BY r.id
+                    ORDER BY r.id DESC
+                ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $rests]);
             } elseif ($method === 'POST') {
                 $id = $_GET['id'] ?? 0;
                 $input = !empty($_POST) ? $_POST : $data;
-                
+
                 $imageUrl = $input['image_url'] ?? '';
-                
+
                 // Handle Image Upload
                 if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                     $uploadDir = '../pictures/restaurants/';
                     if (!is_dir($uploadDir)) {
                         mkdir($uploadDir, 0777, true);
                     }
-                    
+
                     $fileTmpPath = $_FILES['image']['tmp_name'];
-                    $fileName = $_FILES['image']['name'];
+                    $fileName   = $_FILES['image']['name'];
                     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                     $newFileName = uniqid('rest_') . '.' . $fileExtension;
-                    $destPath = $uploadDir . $newFileName;
-                    
+                    $destPath    = $uploadDir . $newFileName;
+
                     if (move_uploaded_file($fileTmpPath, $destPath)) {
                         $imageUrl = '../pictures/restaurants/' . $newFileName;
                     }
                 }
 
                 if ($id) {
-                    // Update
-                    $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE id=?");
+                    // Update — write to seed_rating (computed rating is derived at query time)
+                    $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE id=?");
                     $stmt->execute([
-                        $input['name'], $input['description'], $input['cuisine'], $input['location'], 
-                        $input['price_range'], $input['rating'], $input['opening_time'], $input['closing_time'], 
+                        $input['name'], $input['description'], $input['cuisine'], $input['location'],
+                        $input['price_range'], $input['seed_rating'] ?? $input['rating'] ?? null,
+                        $input['opening_time'], $input['closing_time'],
                         $imageUrl, $input['icon'] ?? 'fa-utensils', $input['image_gradient'] ?? '', $id
                     ]);
                 } else {
                     // Create
-                    $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, seed_rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([
-                        $input['name'], $input['description'], $input['cuisine'], $input['location'], 
-                        $input['price_range'], $input['rating'], $input['opening_time'], $input['closing_time'], 
+                        $input['name'], $input['description'], $input['cuisine'], $input['location'],
+                        $input['price_range'], $input['seed_rating'] ?? $input['rating'] ?? null,
+                        $input['opening_time'], $input['closing_time'],
                         $imageUrl, $input['icon'] ?? 'fa-utensils', $input['image_gradient'] ?? ''
                     ]);
                 }
                 echo json_encode(['success' => true]);
             } elseif ($method === 'PUT') {
-                // Keep PUT for backward compatibility if needed, but we now use POST for uploads
+                // Backward-compatible PUT (no file upload)
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, rating=?, opening_time=?, closing_time=?, image_url=? WHERE id=?");
+                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=? WHERE id=?");
                 $stmt->execute([
-                    $data['name'], $data['description'], $data['cuisine'], $data['location'], 
-                    $data['price_range'], $data['rating'], $data['opening_time'], $data['closing_time'], 
+                    $data['name'], $data['description'], $data['cuisine'], $data['location'],
+                    $data['price_range'], $data['seed_rating'] ?? $data['rating'] ?? null,
+                    $data['opening_time'], $data['closing_time'],
                     $data['image_url'] ?? '', $id
                 ]);
                 echo json_encode(['success' => true]);
@@ -135,7 +146,20 @@ try {
             if ($method === 'GET') {
                 $restId = $_GET['restaurant_id'] ?? 0;
                 if ($restId) {
-                    $stmt = $pdo->prepare("SELECT * FROM `tables` WHERE restaurant_id = ? ORDER BY table_number ASC");
+                    // Compute live availability: a table is 'occupied' if it has an active
+                    // reservation within 90 minutes of the current time today
+                    $stmt = $pdo->prepare("
+                        SELECT t.*,
+                               CASE WHEN r.id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
+                        FROM `tables` t
+                        LEFT JOIN reservations r
+                            ON r.table_id = t.id
+                            AND r.date = CURDATE()
+                            AND ABS(TIMESTAMPDIFF(MINUTE, r.time, CURTIME())) < 90
+                            AND r.status != 'cancelled'
+                        WHERE t.restaurant_id = ?
+                        ORDER BY t.table_number ASC
+                    ");
                     $stmt->execute([$restId]);
                     $tables = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     echo json_encode(['success' => true, 'data' => $tables]);
@@ -143,18 +167,19 @@ try {
                     echo json_encode(['success' => false, 'message' => 'restaurant_id required']);
                 }
             } elseif ($method === 'POST') {
-                $stmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                // status column has been removed — availability is computed at query time
+                $stmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES (?, ?, ?, ?, ?, ?)");
                 $stmt->execute([
-                    $data['restaurant_id'], $data['table_number'], $data['capacity'], $data['shape'], 
-                    $data['x_pos'], $data['y_pos'], $data['status']
+                    $data['restaurant_id'], $data['table_number'], $data['capacity'],
+                    $data['shape'], $data['x_pos'], $data['y_pos']
                 ]);
                 echo json_encode(['success' => true, 'id' => (int)$pdo->lastInsertId()]);
             } elseif ($method === 'PUT') {
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, x_pos=?, y_pos=?, status=? WHERE id=?");
+                $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, x_pos=?, y_pos=? WHERE id=?");
                 $stmt->execute([
-                    $data['table_number'], $data['capacity'], $data['shape'], 
-                    $data['x_pos'], $data['y_pos'], $data['status'], $id
+                    $data['table_number'], $data['capacity'], $data['shape'],
+                    $data['x_pos'], $data['y_pos'], $id
                 ]);
                 echo json_encode(['success' => true]);
             } elseif ($method === 'DELETE') {

@@ -31,15 +31,8 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$user_id, $restaurant_id, $reservation_id, $rating, $comment]);
 
-    // Optional: Update restaurant average rating
-    $avgStmt = $pdo->prepare("SELECT AVG(rating) as avg_rating FROM reviews WHERE restaurant_id = ?");
-    $avgStmt->execute([$restaurant_id]);
-    $newAvg = $avgStmt->fetch(PDO::FETCH_ASSOC)['avg_rating'];
-
-    if ($newAvg) {
-        $updateStmt = $pdo->prepare("UPDATE restaurants SET rating = ? WHERE id = ?");
-        $updateStmt->execute([round($newAvg, 1), $restaurant_id]);
-    }
+    // No need to sync restaurants.rating — it is computed live from this table
+    // via COALESCE(AVG(reviews.rating), seed_rating) in all read queries.
 
     echo json_encode(['success' => true, 'message' => 'Review added successfully']);
 } catch (PDOException $e) {

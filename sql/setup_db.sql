@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS restaurants (
 -- Clear existing to avoid duplicates if run multiple times
 TRUNCATE TABLE restaurants;
 
-INSERT INTO restaurants (name, description, cuisine, location, price_range, rating, opening_time, closing_time, image_gradient, icon) VALUES 
+INSERT INTO restaurants (name, description, cuisine, location, price_range, seed_rating, opening_time, closing_time, image_gradient, icon) VALUES 
 ('La Bella Roma', 'Authentic wood-fired pizzas, hand-rolled pasta, and Italian classics in a warm, candlelit setting.', 'Italian', 'Downtown', '$$', 4.8, '11:00:00', '23:00:00', 'linear-gradient(135deg,#c0392b,#8e44ad)', 'fa-pizza-slice'),
 ('Sakura Garden', 'A zen-inspired dining journey through Japan, Korea, and Southeast Asia — each dish a masterpiece.', 'Asian Fusion', 'Midtown', '$$$', 4.9, '12:00:00', '22:30:00', 'linear-gradient(135deg,#16a085,#2980b9)', 'fa-bowl-rice'),
 ('The Blue Harbor', 'Fresh ocean-to-table seafood with panoramic harbor views. Famous for its lobster bisque.', 'Seafood', 'Waterfront', '$$$', 4.7, '11:30:00', '22:00:00', 'linear-gradient(135deg,#1a6b9a,#00b4db)', 'fa-fish'),

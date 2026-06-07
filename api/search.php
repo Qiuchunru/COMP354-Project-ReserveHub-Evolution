@@ -3,45 +3,54 @@
 header('Content-Type: application/json');
 require_once 'db.php';
 
-$query = $_GET['q'] ?? '';
+$query    = $_GET['q']        ?? '';
 $location = $_GET['location'] ?? '';
-$time = $_GET['time'] ?? '';
-$halal = $_GET['halal'] ?? '';
+$time     = $_GET['time']     ?? '';
+$halal    = $_GET['halal']    ?? '';
+$params   = [];
 
-$sql = "SELECT * FROM restaurants WHERE 1=1";
-$params = [];
+// Build the WHERE clause filters
+// Rating is computed live from reviews (falls back to seed_rating)
+$sql = "
+    SELECT r.*,
+           ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
+    FROM restaurants r
+    LEFT JOIN reviews rev ON rev.restaurant_id = r.id
+    WHERE 1=1
+";
 
 if (!empty($query)) {
-    $sql .= " AND (name LIKE ? OR cuisine LIKE ?)";
+    $sql .= " AND (r.name LIKE ? OR r.cuisine LIKE ?)";
     $params[] = "%$query%";
     $params[] = "%$query%";
 }
 
 if (!empty($location)) {
-    $sql .= " AND location LIKE ?";
+    $sql .= " AND r.location LIKE ?";
     $params[] = "%$location%";
 }
 
 if ($halal !== '') {
-    $sql .= " AND is_halal = ?";
+    $sql .= " AND r.is_halal = ?";
     $params[] = (int)$halal;
 }
 
 if (!empty($time)) {
-    // Assuming time is provided in HH:MM format
-    $sql .= " AND opening_time <= ? AND closing_time >= ?";
+    $sql .= " AND r.opening_time <= ? AND r.closing_time >= ?";
     $params[] = $time;
     $params[] = $time;
 }
+
+$sql .= " GROUP BY r.id";
 
 try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     echo json_encode([
         'success' => true,
-        'data' => $restaurants
+        'data'    => $restaurants
     ]);
 } catch (PDOException $e) {
     echo json_encode([

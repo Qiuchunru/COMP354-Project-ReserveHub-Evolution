@@ -29,55 +29,55 @@ BEGIN
 
     IF pattern = 1 THEN
       -- Pattern A: Cozy bistro - 10 tables
-      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos, status) VALUES
-        (i, 'T1', 2, 'round', 80, 80, 'available'),
-        (i, 'T2', 2, 'round', 200, 80, 'occupied'),
-        (i, 'T3', 4, 'rect', 340, 60, 'available'),
-        (i, 'T4', 4, 'rect', 500, 60, 'available'),
-        (i, 'T5', 2, 'round', 80, 220, 'available'),
-        (i, 'T6', 4, 'rect', 200, 200, 'occupied'),
-        (i, 'T7', 6, 'rect', 380, 200, 'available'),
-        (i, 'T8', 2, 'round', 580, 220, 'available'),
-        (i, 'T9', 4, 'rect', 120, 350, 'available'),
-        (i, 'T10', 6, 'rect', 380, 350, 'occupied');
+      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES
+        (i, 'T1', 2, 'round', 80, 80),
+        (i, 'T2', 2, 'round', 200, 80),
+        (i, 'T3', 4, 'rect', 340, 60),
+        (i, 'T4', 4, 'rect', 500, 60),
+        (i, 'T5', 2, 'round', 80, 220),
+        (i, 'T6', 4, 'rect', 200, 200),
+        (i, 'T7', 6, 'rect', 380, 200),
+        (i, 'T8', 2, 'round', 580, 220),
+        (i, 'T9', 4, 'rect', 120, 350),
+        (i, 'T10', 6, 'rect', 380, 350);
     ELSEIF pattern = 2 THEN
       -- Pattern B: Medium restaurant - 14 tables
-      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos, status) VALUES
-        (i, 'T1', 2, 'round', 70, 70, 'available'),
-        (i, 'T2', 2, 'round', 170, 70, 'available'),
-        (i, 'T3', 2, 'round', 270, 70, 'occupied'),
-        (i, 'T4', 4, 'rect', 400, 55, 'available'),
-        (i, 'T5', 4, 'rect', 540, 55, 'available'),
-        (i, 'T6', 4, 'round', 70, 200, 'available'),
-        (i, 'T7', 4, 'rect', 200, 185, 'occupied'),
-        (i, 'T8', 6, 'rect', 370, 185, 'available'),
-        (i, 'T9', 6, 'rect', 540, 185, 'occupied'),
-        (i, 'T10', 2, 'round', 70, 340, 'available'),
-        (i, 'T11', 4, 'rect', 200, 325, 'available'),
-        (i, 'T12', 4, 'rect', 370, 325, 'available'),
-        (i, 'T13', 8, 'rect', 510, 310, 'occupied'),
-        (i, 'T14', 2, 'round', 610, 340, 'available');
+      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES
+        (i, 'T1', 2, 'round', 70, 70),
+        (i, 'T2', 2, 'round', 170, 70),
+        (i, 'T3', 2, 'round', 270, 70),
+        (i, 'T4', 4, 'rect', 400, 55),
+        (i, 'T5', 4, 'rect', 540, 55),
+        (i, 'T6', 4, 'round', 70, 200),
+        (i, 'T7', 4, 'rect', 200, 185),
+        (i, 'T8', 6, 'rect', 370, 185),
+        (i, 'T9', 6, 'rect', 540, 185),
+        (i, 'T10', 2, 'round', 70, 340),
+        (i, 'T11', 4, 'rect', 200, 325),
+        (i, 'T12', 4, 'rect', 370, 325),
+        (i, 'T13', 8, 'rect', 510, 310),
+        (i, 'T14', 2, 'round', 610, 340);
     ELSE
       -- Pattern C: Large restaurant - 18 tables
-      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos, status) VALUES
-        (i, 'T1', 2, 'round', 60, 60, 'available'),
-        (i, 'T2', 2, 'round', 150, 60, 'occupied'),
-        (i, 'T3', 4, 'rect', 250, 45, 'available'),
-        (i, 'T4', 4, 'rect', 380, 45, 'available'),
-        (i, 'T5', 4, 'rect', 500, 45, 'occupied'),
-        (i, 'T6', 2, 'round', 610, 60, 'available'),
-        (i, 'T7', 4, 'round', 60, 180, 'available'),
-        (i, 'T8', 4, 'rect', 180, 165, 'occupied'),
-        (i, 'T9', 6, 'rect', 340, 165, 'available'),
-        (i, 'T10', 6, 'rect', 500, 165, 'available'),
-        (i, 'T11', 8, 'rect', 60, 300, 'available'),
-        (i, 'T12', 4, 'rect', 240, 300, 'occupied'),
-        (i, 'T13', 4, 'round', 380, 310, 'available'),
-        (i, 'T14', 4, 'round', 470, 310, 'available'),
-        (i, 'T15', 2, 'round', 570, 310, 'available'),
-        (i, 'T16', 6, 'rect', 60, 390, 'available'),
-        (i, 'T17', 4, 'rect', 280, 390, 'occupied'),
-        (i, 'T18', 8, 'rect', 490, 385, 'available');
+      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES
+        (i, 'T1', 2, 'round', 60, 60),
+        (i, 'T2', 2, 'round', 150, 60),
+        (i, 'T3', 4, 'rect', 250, 45),
+        (i, 'T4', 4, 'rect', 380, 45),
+        (i, 'T5', 4, 'rect', 500, 45),
+        (i, 'T6', 2, 'round', 610, 60),
+        (i, 'T7', 4, 'round', 60, 180),
+        (i, 'T8', 4, 'rect', 180, 165),
+        (i, 'T9', 6, 'rect', 340, 165),
+        (i, 'T10', 6, 'rect', 500, 165),
+        (i, 'T11', 8, 'rect', 60, 300),
+        (i, 'T12', 4, 'rect', 240, 300),
+        (i, 'T13', 4, 'round', 380, 310),
+        (i, 'T14', 4, 'round', 470, 310),
+        (i, 'T15', 2, 'round', 570, 310),
+        (i, 'T16', 6, 'rect', 60, 390),
+        (i, 'T17', 4, 'rect', 280, 390),
+        (i, 'T18', 8, 'rect', 490, 385);
     END IF;
 
     SET i = i + 1;
