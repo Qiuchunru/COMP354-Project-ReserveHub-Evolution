@@ -114,7 +114,9 @@ try {
                 'username' => $username,
                 'name' => $name,
                 'email' => $email,
-                'phone' => ''
+                'role' => 'user',
+                'phone' => '',
+                'profile_picture' => null
             ]
         ]);
     }

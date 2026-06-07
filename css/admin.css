@@ -16,6 +16,12 @@
     --glass-border: rgba(0, 0, 0, 0.08);
     --radius-md: 16px;
     --transition: all 0.3s ease;
+    
+    --display-sun: none;
+    --display-moon: block;
+    --calendar-filter: none;
+    --toggle-bg: var(--glass);
+    --toggle-color: var(--text-muted);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,6 +33,11 @@
         --text-muted: #a0a0a0;
         --glass: rgba(255, 255, 255, 0.03);
         --glass-border: rgba(255, 255, 255, 0.08);
+        --display-sun: block;
+        --display-moon: none;
+        --calendar-filter: invert(1);
+        --toggle-bg: rgba(255, 255, 255, 0.05);
+        --toggle-color: var(--text);
     }
 }
 
@@ -38,17 +49,16 @@
     --text-muted: #a0a0a0;
     --glass: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
+    --display-sun: block;
+    --display-moon: none;
+    --calendar-filter: invert(1);
+    --toggle-bg: rgba(255, 255, 255, 0.05);
+    --toggle-color: var(--text);
 }
 
 /* Fix for browser-native date/time icons in dark mode */
-[data-theme="dark"] input::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) input::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-    }
+input::-webkit-calendar-picker-indicator {
+    filter: var(--calendar-filter);
 }
 
 .theme-transition,
@@ -130,7 +140,7 @@ body {
     width: 100%;
     border-radius: 12px;
     margin: 0;
-    background: var(--glass);
+    background: var(--toggle-bg);
     border: 1px solid var(--glass-border);
     padding: 12px 16px;
     font-family: inherit;
@@ -146,27 +156,8 @@ body {
     text-align: center;
 }
 
-.theme-toggle .fa-sun { display: none; color: #f1c40f; }
-.theme-toggle .fa-moon { display: block; color: #34495e; }
-
-[data-theme="dark"] .theme-toggle {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text) !important;
-}
-
-[data-theme="dark"] .theme-toggle .fa-sun { display: block; }
-[data-theme="dark"] .theme-toggle .fa-moon { display: none; }
-
-[data-theme="dark"] .theme-toggle .fa-sun { color: #f1c40f; }
-
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-toggle {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text) !important;
-    }
-    :root:not([data-theme="light"]) .theme-toggle .fa-sun { display: block; }
-    :root:not([data-theme="light"]) .theme-toggle .fa-moon { display: none; }
-}
+.theme-toggle .fa-sun { display: var(--display-sun); color: #f1c40f; }
+.theme-toggle .fa-moon { display: var(--display-moon); color: #34495e; }
 
 .theme-toggle:hover {
     background: var(--surface) !important;

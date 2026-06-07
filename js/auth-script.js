@@ -151,8 +151,10 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                     if (rememberMe) {
                         localStorage.setItem('reservehub_user', JSON.stringify({
                             id: data.user.id,
+                            username: data.user.username,
                             email: data.user.email,
                             name: data.user.name,
+                            role: data.user.role,
                             phone: data.user.phone,
                             role: data.user.role,
                             timestamp: new Date().toISOString()
@@ -160,8 +162,10 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                     } else {
                         sessionStorage.setItem('reservehub_user', JSON.stringify({
                             id: data.user.id,
+                            username: data.user.username,
                             email: data.user.email,
                             name: data.user.name,
+                            role: data.user.role,
                             phone: data.user.phone,
                             role: data.user.role,
                             timestamp: new Date().toISOString()
@@ -359,7 +363,11 @@ document.getElementById('forgotPasswordFormElement')?.addEventListener('submit',
                 submitBtn.disabled = false;
 
                 if (data.success) {
-                    showSuccessModal('Reset Link Sent!', data.message || `We've sent a password reset link to ${email}`);
+                    let successMessage = data.message || `We've sent a password reset link to ${email}`;
+                    if (data.debug_link) {
+                        successMessage += `<br><br><div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.9em; word-break: break-all; text-align: left;"><strong>[Dev Mode] Reset Link:</strong><br><a href="${data.debug_link}" style="color: #00b4db; text-decoration: underline;">${data.debug_link}</a></div>`;
+                    }
+                    showSuccessModal('Reset Link Sent!', successMessage);
                     this.reset();
                     setTimeout(() => {
                         switchForm('login');
@@ -381,7 +389,7 @@ document.getElementById('forgotPasswordFormElement')?.addEventListener('submit',
 function showSuccessModal(title, message) {
     const modal = document.getElementById('successModal');
     document.getElementById('successTitle').textContent = title;
-    document.getElementById('successText').textContent = message;
+    document.getElementById('successText').innerHTML = message;
     modal.classList.add('show');
 
     // Auto-close after 3 seconds
@@ -497,8 +505,10 @@ function processSocialLogin(data) {
             if (res.success) {
                 localStorage.setItem('reservehub_user', JSON.stringify({
                     id: res.user.id,
+                    username: res.user.username,
                     email: res.user.email,
                     name: res.user.name,
+                    role: res.user.role,
                     phone: res.user.phone,
                     role: res.user.role,
                     timestamp: new Date().toISOString()
