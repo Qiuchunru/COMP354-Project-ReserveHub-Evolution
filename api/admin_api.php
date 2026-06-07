@@ -43,8 +43,95 @@ try {
 
         case 'users':
             if ($method === 'GET') {
-                $users = $pdo->query("SELECT id, name, email, phone, created_at FROM users ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+                $users = $pdo->query("SELECT id, username, name, email, phone, role, created_at FROM users ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $users]);
+            } elseif ($method === 'POST') {
+                $input = !empty($_POST) ? $_POST : $data;
+                $username_val = trim($input['username'] ?? '');
+                $name = trim($input['name'] ?? '');
+                $email = trim($input['email'] ?? '');
+                $phone = trim($input['phone'] ?? '');
+                $password = trim($input['password'] ?? '');
+                $role = trim($input['role'] ?? 'vendor');
+
+                if (!in_array($role, ['user', 'vendor', 'admin'])) {
+                    $role = 'vendor';
+                }
+
+                if (empty($username_val) || empty($name) || empty($email) || empty($password)) {
+                    echo json_encode(['success' => false, 'message' => 'Username, name, email, and password are required.']);
+                    exit;
+                }
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
+                    exit;
+                }
+
+                if (strlen($password) < 6) {
+                    echo json_encode(['success' => false, 'message' => 'Password must be at least 6 characters.']);
+                    exit;
+                }
+
+                // Check if username or email already exists
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+                $stmt->execute([$email, $username_val]);
+                if ($stmt->rowCount() > 0) {
+                    echo json_encode(['success' => false, 'message' => 'Email or Username is already registered.']);
+                    exit;
+                }
+
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("INSERT INTO users (username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$username_val, $name, $email, $phone, $hashed_password, $role]);
+
+                echo json_encode(['success' => true, 'message' => 'Account created successfully!']);
+            } elseif ($method === 'PUT') {
+                $id = $_GET['id'] ?? 0;
+                $input = $data;
+
+                if (!$id) {
+                    echo json_encode(['success' => false, 'message' => 'User ID is required.']);
+                    exit;
+                }
+
+                $role = trim($input['role'] ?? '');
+                $name = trim($input['name'] ?? '');
+                $email = trim($input['email'] ?? '');
+                $phone = trim($input['phone'] ?? '');
+
+                if (empty($role) || !in_array($role, ['user', 'vendor', 'admin'])) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid or missing role.']);
+                    exit;
+                }
+
+                if (empty($name) || empty($email)) {
+                    echo json_encode(['success' => false, 'message' => 'Name and email are required.']);
+                    exit;
+                }
+
+                // Check if email already registered to someone else
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+                $stmt->execute([$email, $id]);
+                if ($stmt->rowCount() > 0) {
+                    echo json_encode(['success' => false, 'message' => 'Email is already in use by another account.']);
+                    exit;
+                }
+
+                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, phone = ?, role = ? WHERE id = ?");
+                $stmt->execute([$name, $email, $phone, $role, $id]);
+
+                echo json_encode(['success' => true, 'message' => 'User updated successfully.']);
+            } elseif ($method === 'DELETE') {
+                $id = $_GET['id'] ?? 0;
+                if (!$id) {
+                    echo json_encode(['success' => false, 'message' => 'User ID is required.']);
+                    exit;
+                }
+
+                $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['success' => true, 'message' => 'User deleted successfully.']);
             }
             break;
 
@@ -162,6 +249,29 @@ try {
                 $stmt = $pdo->prepare("DELETE FROM `tables` WHERE id = ?");
                 $stmt->execute([$id]);
                 echo json_encode(['success' => true]);
+            }
+            break;
+        case 'approvals':
+            if ($method === 'GET') {
+                $approvals = $pdo->query("
+                    SELECT r.*, u.name as vendor_name, u.email as vendor_email 
+                    FROM restaurants r 
+                    JOIN users u ON r.vendor_id = u.id 
+                    ORDER BY CASE WHEN r.status = 'pending' THEN 0 ELSE 1 END, r.id DESC
+                ")->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode(['success' => true, 'data' => $approvals]);
+            } elseif ($method === 'POST') {
+                $id = $data['id'] ?? $_POST['id'] ?? null;
+                $status = $data['status'] ?? $_POST['status'] ?? null;
+
+                if (!$id || !in_array($status, ['approved', 'rejected'])) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid parameters.']);
+                    exit;
+                }
+
+                $stmt = $pdo->prepare("UPDATE restaurants SET status = ? WHERE id = ?");
+                $stmt->execute([$status, $id]);
+                echo json_encode(['success' => true, 'message' => 'Listing status updated successfully.']);
             }
             break;
 

@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Forms
     document.getElementById('restForm').addEventListener('submit', saveRestaurant);
+    document.getElementById('userForm')?.addEventListener('submit', saveUser);
 
     // Initial load
     loadSection('dashboard');
@@ -41,6 +42,7 @@ function loadSection(section) {
     if (section === 'tables') loadFloorPlan();
     if (section === 'reservations') loadReservations();
     if (section === 'users') loadUsers();
+    if (section === 'approvals') loadApprovals();
 }
 
 // ===== DASHBOARD =====
@@ -639,17 +641,26 @@ function renderUsers(data) {
     const tbody = document.getElementById('usersTbody');
     tbody.innerHTML = '';
     if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);">No users found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="color:var(--text-muted); text-align:center;">No users found.</td></tr>';
         return;
     }
     data.forEach(u => {
+        const roleColor = u.role === 'admin' ? '#e74c3c' : (u.role === 'vendor' ? '#3498db' : '#2ecc71');
         tbody.innerHTML += `
             <tr>
                 <td>${u.id}</td>
+                <td>@${u.username || 'n/a'}</td>
                 <td><strong>${u.name}</strong></td>
                 <td>${u.email}</td>
                 <td>${u.phone || '-'}</td>
+                <td><span style="padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${roleColor}; color: #fff;">${u.role || 'user'}</span></td>
                 <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="action-btn edit" style="margin: 0; padding: 4px 8px; font-size: 12px;" onclick='editUser(${JSON.stringify(u).replace(/'/g, "&apos;")})'><i class="fa-solid fa-pen"></i></button>
+                        <button class="action-btn delete" style="margin: 0; padding: 4px 8px; font-size: 12px;" onclick="deleteUser(${u.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </td>
             </tr>
         `;
     });
@@ -660,13 +671,147 @@ function filterUsers() {
     const filtered = allUsers.filter(u => 
         u.name.toLowerCase().includes(q) || 
         u.email.toLowerCase().includes(q) ||
+        (u.username && u.username.toLowerCase().includes(q)) ||
+        (u.role && u.role.toLowerCase().includes(q)) ||
         (u.phone && u.phone.toLowerCase().includes(q)) ||
         u.id.toString().includes(q)
     );
     renderUsers(filtered);
 }
 
+function openUserModal() {
+    document.getElementById('userForm').reset();
+    document.getElementById('userId').value = '';
+    document.getElementById('passwordGroup').style.display = 'block';
+    document.getElementById('userPassword').required = true;
+    document.getElementById('userUsername').disabled = false;
+    document.getElementById('userModalTitle').textContent = 'Add New Vendor/User';
+    document.getElementById('userModal').classList.add('show');
+}
+
+function editUser(u) {
+    document.getElementById('userId').value = u.id;
+    document.getElementById('userUsername').value = u.username || '';
+    document.getElementById('userUsername').disabled = true;
+    document.getElementById('userName').value = u.name;
+    document.getElementById('userEmail').value = u.email;
+    document.getElementById('userPhone').value = u.phone || '';
+    document.getElementById('passwordGroup').style.display = 'none';
+    document.getElementById('userPassword').required = false;
+    document.getElementById('userRole').value = u.role || 'vendor';
+    
+    document.getElementById('userModalTitle').textContent = 'Edit Account Details';
+    document.getElementById('userModal').classList.add('show');
+}
+
+async function saveUser(e) {
+    e.preventDefault();
+    const id = document.getElementById('userId').value;
+    const username = document.getElementById('userUsername').value.trim();
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const phone = document.getElementById('userPhone').value.trim();
+    const role = document.getElementById('userRole').value;
+    
+    if (id) {
+        // Edit existing user
+        const payload = { name, email, phone, role };
+        const json = await apiFetch(`users&id=${id}`, 'PUT', payload);
+        if (json.success) {
+            closeModal('userModal');
+            loadUsers();
+        } else {
+            alert(json.message || 'Failed to update user.');
+        }
+    } else {
+        // Create new user/vendor
+        const password = document.getElementById('userPassword').value.trim();
+        const payload = { username, name, email, phone, password, role };
+        const json = await apiFetch('users', 'POST', payload);
+        if (json.success) {
+            closeModal('userModal');
+            loadUsers();
+        } else {
+            alert(json.message || 'Failed to create user/vendor.');
+        }
+    }
+}
+
+async function deleteUser(id) {
+    if (confirm('Are you sure you want to delete this user? This will delete all their reservations and vendor listings.')) {
+        const json = await apiFetch(`users&id=${id}`, 'DELETE');
+        if (json.success) {
+            loadUsers();
+        } else {
+            alert(json.message || 'Failed to delete user.');
+        }
+    }
+}
+
+
 // ===== MODALS =====
 function closeModal(id) {
     document.getElementById(id).classList.remove('show');
+}
+
+// ===== VENDOR APPROVALS =====
+let allApprovals = [];
+
+async function loadApprovals() {
+    const json = await apiFetch('approvals');
+    if (json.success) {
+        allApprovals = json.data;
+        renderApprovals(allApprovals);
+    }
+}
+
+function renderApprovals(data) {
+    const list = document.getElementById('approvalsList');
+    list.innerHTML = '';
+    if (data.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No vendor listings to review.</p>';
+        return;
+    }
+    data.forEach(r => {
+        const imgUrl = r.image_url ? r.image_url : '../pictures/restaurants/restaurant-placeholder.jpg';
+        const statusClass = r.status || 'pending';
+        list.innerHTML += `
+            <div style="background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column;">
+                <div style="height: 140px; background: url('${imgUrl}'); background-size: cover; background-position: center; position: relative;">
+                    <span style="position: absolute; top: 10px; right: 10px; padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${r.status === 'approved' ? '#2ecc71' : (r.status === 'pending' ? '#f1c40f' : '#e74c3c')}; color: #fff;">
+                        ${r.status}
+                    </span>
+                </div>
+                <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
+                    <h3 style="margin-bottom: 8px; font-size: 1.15rem;">${r.name}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px;"><strong>Owner:</strong> ${r.vendor_name} (${r.vendor_email})</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${r.description || 'No description'}</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+                        <i class="fa-solid fa-utensils" style="color: var(--orange); width: 14px;"></i> ${r.cuisine} &nbsp;|&nbsp; 
+                        <i class="fa-solid fa-location-dot" style="color: var(--orange); width: 14px;"></i> ${r.location}
+                    </p>
+                    
+                    ${r.status === 'pending' ? `
+                        <div style="margin-top: auto; display: flex; gap: 10px; border-top: 1px solid var(--glass-border); padding-top: 12px;">
+                            <button class="action-btn edit" style="flex: 1; background: #2ecc71; color: #fff; text-align: center; justify-content: center; cursor: pointer; padding: 8px 12px; border-radius: 8px;" onclick="moderateListing(${r.id}, 'approved')"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button class="action-btn delete" style="flex: 1; background: #e74c3c; color: #fff; text-align: center; justify-content: center; cursor: pointer; padding: 8px 12px; border-radius: 8px;" onclick="moderateListing(${r.id}, 'rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                        </div>
+                    ` : `
+                        <div style="margin-top: auto; font-size: 12px; color: var(--text-muted); text-align: center; border-top: 1px solid var(--glass-border); padding-top: 12px;">
+                            Reviewed (Status: <strong>${r.status}</strong>)
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+    });
+}
+
+async function moderateListing(id, status) {
+    const json = await apiFetch('approvals', 'POST', { id, status });
+    if (json.success) {
+        loadApprovals();
+    } else {
+        alert(json.message || 'Failed to moderate listing.');
+    }
 }

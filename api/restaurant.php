@@ -12,7 +12,7 @@ if (!$id || !is_numeric($id)) {
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM restaurants WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT * FROM restaurants WHERE id = ? AND status = 'approved'");
     $stmt->execute([$id]);
     $restaurant = $stmt->fetch(PDO::FETCH_ASSOC);
 

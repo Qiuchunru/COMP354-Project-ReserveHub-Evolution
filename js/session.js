@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // SECURITY CHECK: If on vendor-dashboard.html but not a vendor, redirect
+            if (window.location.pathname.includes('vendor-dashboard.html')) {
+                if (user.role !== 'vendor') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+            }
+
             // HIDE SECTIONS FOR LOGGED IN USERS (HOMEPAGE)
             if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
                 const howSection = document.getElementById('how-it-works');
@@ -30,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('a[href="#how-it-works"]').forEach(el => el.style.display = 'none');
             }
 
-            // If logged in, update the navbar buttons
             authButtonsContainer.innerHTML = `
                 ${user.role === 'admin' ? '<a href="admin.html" class="top-btn" style="border: 1px solid #f1c40f; color:#f1c40f;"><i class="fa-solid fa-gauge"></i> Admin</a>' : ''}
+                ${user.role === 'vendor' ? '<a href="vendor-dashboard.html" class="top-btn" style="border: 1px solid var(--orange); color:var(--orange);"><i class="fa-solid fa-gauge"></i> Dashboard</a>' : ''}
                 <a href="profile.html" class="top-btn" style="color:var(--orange); border: 1px solid var(--orange);">
                     <i class="fa-solid fa-user"></i> Profile
                 </a>
@@ -41,13 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
             `;
             
-            // Update mobile nav if it exists
             const mobileNav = document.getElementById('mobileNav');
             if (mobileNav) {
                 const mobCta = mobileNav.querySelector('.mob-cta');
                 if (mobCta) {
                     mobCta.outerHTML = `
                         ${user.role === 'admin' ? '<a href="admin.html" class="mob-link" style="color:#f1c40f;"><i class="fa-solid fa-gauge"></i> Admin Panel</a>' : ''}
+                        ${user.role === 'vendor' ? '<a href="vendor-dashboard.html" class="mob-link" style="color:var(--orange);"><i class="fa-solid fa-gauge"></i> Vendor Panel</a>' : ''}
                         <a href="profile.html" class="mob-link" style="color:var(--orange);"><i class="fa-solid fa-user"></i> Profile</a>
                         <a href="#" onclick="logoutUser(); return false;" class="mob-link" style="color:#ff4757;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
                     `;
