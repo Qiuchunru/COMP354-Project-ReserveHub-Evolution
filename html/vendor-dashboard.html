@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard | ReserveHub</title>
+    <link rel="icon" type="image/x-icon" href="../pictures/reservehub-favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/vendor.css">
+</head>
+<body>
+    <aside class="admin-sidebar">
+        <a href="index.html" class="admin-logo" style="text-decoration: none; justify-content: center; margin-bottom: 50px;">
+            <img src="../pictures/reservehub-full-logo-light-mode.png" alt="ReserveHub Logo" style="width: 100%; max-width: 180px; height: auto;">
+        </a>
+        <nav class="admin-nav">
+            <a href="#" data-target="dashboard" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#" data-target="restaurants"><i class="fa-solid fa-utensils"></i> My Restaurants</a>
+            <a href="#" data-target="reservations"><i class="fa-solid fa-book"></i> Reservations</a>
+            <div style="margin-top: auto; padding: 20px 0;">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fa-solid fa-moon" style="margin-right: 8px;"></i>
+                    <i class="fa-solid fa-sun" style="margin-right: 8px;"></i>
+                    <span class="theme-text">Switch Theme</span>
+                </button>
+            </div>
+            <a href="index.html" style="color: #e74c3c;"><i class="fa-solid fa-arrow-left"></i> Exit Dashboard</a>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="admin-section active">
+            <div class="admin-header">
+                <h1 id="welcomeText">Vendor Overview</h1>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(52, 152, 219, 0.1); color: #3492db;"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="stat-info">
+                        <h3>My Restaurants</h3>
+                        <div class="stat-val" id="statRests">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Reservations</h3>
+                        <div class="stat-val" id="statReservations">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(241, 196, 15, 0.1); color: #f1c40f;"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-info">
+                        <h3>Pending Approvals</h3>
+                        <div class="stat-val" id="statPendingRests">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-header" style="margin-top: 40px;">
+                <h2>Recent Notifications</h2>
+            </div>
+            <div class="admin-table-container" style="padding: 24px;">
+                <p style="color: var(--text-muted);">Welcome to ReserveHub Restaurant Owner Panel! Here you can add new restaurants, manage tables, and accept or reject reservations from users in real-time.</p>
+            </div>
+        </section>
+
+        <!-- Restaurants Section -->
+        <section id="restaurants" class="admin-section">
+            <div class="admin-header">
+                <h1>My Restaurants</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="searchRestaurants" class="form-control" placeholder="Search my restaurants..." style="width:250px;" onkeyup="filterRestaurants()">
+                    <button class="btn btn-primary" onclick="openRestaurantModal()">+ Add New Restaurant</button>
+                </div>
+            </div>
+            <div id="restGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                <!-- Cards injected here -->
+            </div>
+        </section>
+
+        <!-- Reservations Section -->
+        <section id="reservations" class="admin-section">
+            <div class="admin-header">
+                <h1>Manage Reservations</h1>
+            </div>
+            <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
+                <div id="resList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Reservations injected here as cards -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Restaurant Modal -->
+    <div class="modal" id="restModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="restModalTitle">Add Restaurant</h3>
+                <button class="modal-close" onclick="closeModal('restModal')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="restForm">
+                <input type="hidden" id="restId">
+                <div class="form-group"><label>Name</label><input type="text" id="restName" class="form-control" required></div>
+                <div class="form-group"><label>Description</label><textarea id="restDesc" class="form-control" rows="3"></textarea></div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Cuisine</label><input type="text" id="restCuisine" class="form-control" required></div>
+                    <div class="form-group" style="flex:1;"><label>Location</label><input type="text" id="restLocation" class="form-control" required></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
+                    <div class="form-group" style="flex:1;"><label>Opening Time</label><input type="time" id="restOpen" class="form-control" value="11:00"></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;"><label>Closing Time</label><input type="time" id="restClose" class="form-control" value="22:00"></div>
+                </div>
+                <div class="form-group">
+                    <label>Restaurant Image</label>
+                    <div id="imagePreview" class="preview-box">
+                        <div class="preview-placeholder">
+                            <i class="fa-solid fa-image"></i>
+                            <p>No image selected</p>
+                        </div>
+                        <img src="" alt="Preview" style="display: none; max-height: 200px; width: 100%; object-fit: cover; border-radius: 8px;">
+                    </div>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="restImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
+                        <label for="restImage" class="file-upload-btn">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span id="fileLabelText">Choose Restaurant Image</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Submit Restaurant Listing</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert / Toast Modal -->
+    <div id="toast" class="toast-notification"></div>
+
+    <script src="../js/theme.js"></script>
+    <script src="../js/vendor.js"></script>
+</body>
+</html>
