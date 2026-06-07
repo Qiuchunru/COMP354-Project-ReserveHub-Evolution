@@ -186,7 +186,7 @@ function editRestaurant(r) {
     document.getElementById('restCuisine').value = r.cuisine;
     document.getElementById('restLocation').value = r.location;
     document.getElementById('restPrice').value = r.price_range;
-    document.getElementById('restRating').value = r.rating;
+    document.getElementById('restRating').value = r.seed_rating ?? r.rating;
     document.getElementById('restOpen').value = r.opening_time;
     document.getElementById('restClose').value = r.closing_time;
     
@@ -219,7 +219,7 @@ async function saveRestaurant(e) {
     formData.append('cuisine', document.getElementById('restCuisine').value);
     formData.append('location', document.getElementById('restLocation').value);
     formData.append('price_range', document.getElementById('restPrice').value);
-    formData.append('rating', document.getElementById('restRating').value);
+    formData.append('seed_rating', document.getElementById('restRating').value);
     formData.append('opening_time', document.getElementById('restOpen').value);
     formData.append('closing_time', document.getElementById('restClose').value);
     
@@ -257,7 +257,7 @@ async function deleteRestaurant(id) {
 }
 
 // ===== FLOOR PLAN EDITOR =====
-let floorTables = [];      // { id, table_number, capacity, shape, status, x_pos, y_pos, _new, _dirty, _delete }
+let floorTables = [];      // { id, table_number, capacity, shape, x_pos, y_pos, _new, _dirty, _delete }
 let selectedTableId = null;
 let dragState = null;
 let nextTempId = -1;       // negative IDs for unsaved tables
@@ -293,7 +293,7 @@ function renderFloorPlan() {
 function createTableElement(t) {
     const room = document.getElementById('floorRoom');
     const el = document.createElement('div');
-    el.className = `floor-table ${t.shape} ${t.status}`;
+    el.className = `floor-table ${t.shape}`;
     el.dataset.id = t.id;
 
     const bodySize = t.shape === 'round' ? 80 : 110;
@@ -441,13 +441,6 @@ function renderSidebar(t) {
                 </select>
             </div>
             <div class="form-group">
-                <label>Status</label>
-                <select class="form-control" id="sp-status" onchange="updateSelectedTable('status', this.value)">
-                    <option value="available" ${t.status==='available'?'selected':''}>Available</option>
-                    <option value="occupied"  ${t.status==='occupied' ?'selected':''}>Occupied</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Position</label>
                 <div style="display:flex; gap:8px;">
                     <input type="number" class="form-control" placeholder="X" value="${t.x_pos}" style="flex:1;" oninput="updateSelectedTablePos('x_pos', this.value)">
@@ -497,7 +490,6 @@ function addTableToFloor(shape, capacity) {
         table_number: String(count),
         capacity,
         shape,
-        status: 'available',
         x_pos: 60 + Math.floor(Math.random() * 300),
         y_pos: 60 + Math.floor(Math.random() * 200),
         _new: true,
@@ -544,7 +536,6 @@ async function saveFloorPlan() {
             table_number:  t.table_number,
             capacity:      t.capacity,
             shape:         t.shape,
-            status:        t.status,
             x_pos:         t.x_pos,
             y_pos:         t.y_pos
         };

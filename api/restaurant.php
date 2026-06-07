@@ -12,7 +12,15 @@ if (!$id || !is_numeric($id)) {
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM restaurants WHERE id = ? AND status = 'approved'");
+    // Compute rating live from reviews; fall back to seed_rating when no reviews exist yet
+    $stmt = $pdo->prepare("
+        SELECT r.*,
+               ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
+        FROM restaurants r
+        LEFT JOIN reviews rev ON rev.restaurant_id = r.id
+        WHERE r.id = ?
+        GROUP BY r.id
+    ");
     $stmt->execute([$id]);
     $restaurant = $stmt->fetch(PDO::FETCH_ASSOC);
 
