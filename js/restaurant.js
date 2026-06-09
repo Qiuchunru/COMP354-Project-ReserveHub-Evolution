@@ -131,6 +131,51 @@ function renderFloorPlan(tables) {
     const group = document.getElementById('tablesGroup');
     const svgNS = 'http://www.w3.org/2000/svg';
 
+    const svg = document.getElementById('floorPlanSvg');
+    const bgRect = document.querySelector('.floor-rect');
+    const gridGroup = document.querySelector('.floor-grid');
+    const entranceRect = document.querySelector('rect[stroke="var(--orange)"]');
+    const entranceText = document.querySelector('text[fill="var(--orange)"]');
+    const barRect = document.querySelector('.floor-counter');
+    const barText = document.querySelector('.floor-counter-text');
+
+    // Calculate maximum extents based on table positions
+    let maxX = 600; // minimum width
+    let maxY = 400; // minimum height
+    tables.forEach(t => {
+        const right = parseInt(t.x_pos) + 150;
+        const bottom = parseInt(t.y_pos) + 150;
+        if (right > maxX) maxX = right;
+        if (bottom > maxY) maxY = bottom;
+    });
+
+    // Round up to nearest 100
+    const svgWidth = Math.ceil(maxX / 100) * 100;
+    const svgHeight = Math.ceil(maxY / 100) * 100 + 50; // extra 50px for entrance indicator
+
+    if (svg) svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+    if (bgRect) { bgRect.setAttribute('width', svgWidth); bgRect.setAttribute('height', svgHeight); }
+    if (barRect) barRect.setAttribute('width', svgWidth);
+    if (barText) barText.setAttribute('x', svgWidth / 2);
+    if (entranceRect) { entranceRect.setAttribute('x', svgWidth / 2 - 70); entranceRect.setAttribute('y', svgHeight - 35); }
+    if (entranceText) { entranceText.setAttribute('x', svgWidth / 2); entranceText.setAttribute('y', svgHeight - 25); }
+
+    if (gridGroup) {
+        gridGroup.innerHTML = '';
+        for (let y = 100; y < svgHeight; y += 100) {
+            const line = document.createElementNS(svgNS, 'line');
+            line.setAttribute('x1', 0); line.setAttribute('y1', y);
+            line.setAttribute('x2', svgWidth); line.setAttribute('y2', y);
+            gridGroup.appendChild(line);
+        }
+        for (let x = 100; x < svgWidth; x += 100) {
+            const line = document.createElementNS(svgNS, 'line');
+            line.setAttribute('x1', x); line.setAttribute('y1', 0);
+            line.setAttribute('x2', x); line.setAttribute('y2', svgHeight);
+            gridGroup.appendChild(line);
+        }
+    }
+
     tables.forEach(table => {
         const g = document.createElementNS(svgNS, 'g');
         g.setAttribute('class', `table-group ${table.status}`);
