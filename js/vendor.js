@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const lbl = document.getElementById('fileLabelText');
         if (lbl) lbl.innerText = 'Choose Restaurant Image';
 
-        showStep(1);
         document.getElementById('restModal').classList.add('show');
     };
 
@@ -58,32 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('restModal')?.addEventListener('click', (e) => {
         if (e.target === document.getElementById('restModal')) window.closeModal('restModal');
     });
-
-    // ── Step switching ──
-    function showStep(n) {
-        document.getElementById('stepDetails').style.display = (n === 1) ? 'block' : 'none';
-        document.getElementById('stepFloor').style.display   = (n === 2) ? 'flex' : 'none';
-
-        const s1 = document.getElementById('step1dot');
-        const s2 = document.getElementById('step2dot');
-        const ln = document.getElementById('stepLine');
-
-        if (n === 1) {
-            s1.className = 'step-dot active';
-            s2.className = 'step-dot';
-            ln.className = 'step-line';
-            document.getElementById('restModalContent').classList.remove('step2');
-            document.getElementById('restModalTitle').innerText = currentRestId ? 'Edit Restaurant' : 'Add New Restaurant';
-        } else {
-            s1.className = 'step-dot done';
-            s2.className = 'step-dot active';
-            ln.className = 'step-line done';
-            document.getElementById('restModalContent').classList.add('step2');
-            document.getElementById('restModalTitle').innerText = 'Set Up Floor Plan';
-        }
-    }
-
-    window.goBackToDetails = () => showStep(1);
 
     // =========================================================
     // 2. AUTH / SESSION CHECK
@@ -116,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sections.forEach(sec => sec.classList.toggle('active', sec.id === target));
             if (target === 'dashboard')    loadStats();
             if (target === 'restaurants')  loadRestaurants();
+            if (target === 'tables')       vLoadFloorPlanSection();
             if (target === 'reservations') loadReservations();
         });
     });
@@ -264,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rest.image_url) { img.src = rest.image_url; img.style.display='block'; if(ph) ph.style.display='none'; if(lbl) lbl.innerText='Change Image'; }
         else { if(img) img.style.display='none'; if(ph) ph.style.display='flex'; if(lbl) lbl.innerText='Choose Restaurant Image'; }
 
-        showStep(1);
+        document.getElementById('restModalTitle').innerText = 'Edit Restaurant';
         document.getElementById('restModal').classList.add('show');
     };
 
@@ -272,11 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.editFloorPlan = (id) => {
         const rest = vendorRestaurants.find(r => r.id === id);
         if (!rest) return;
-        currentRestId = id;
-        document.getElementById('restId').value = id;
-        showStep(2);
-        loadVendorFloorPlan(id);
-        document.getElementById('restModal').classList.add('show');
+        
+        // Switch to tables tab
+        navLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector('.admin-nav a[data-target="tables"]');
+        if (link) link.classList.add('active');
+        sections.forEach(sec => sec.classList.toggle('active', sec.id === 'tables'));
+        
+        vLoadFloorPlanSection(id);
     };
 
     window.deleteRestaurant = (id) => {
@@ -319,48 +296,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const res = await fetch(url, { method: 'POST', body: formData }).then(r => r.json());
-            if (!res.success) { showToast(res.message || 'Failed to save.', 'error'); btn.disabled=false; btn.innerHTML='Next — Set Up Floor Plan <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>'; return; }
-
-            // If new restaurant, reload list to get the new ID
-            if (!id) {
-                const listRes = await fetch(`../api/vendor_api.php?endpoint=restaurants&user_id=${userId}`).then(r => r.json());
-                if (listRes.success && listRes.data.length > 0) {
-                    vendorRestaurants = listRes.data;
-                    // Newest restaurant has highest id
-                    const newest = listRes.data.reduce((a,b) => (b.id > a.id ? b : a));
-                    currentRestId = newest.id;
-                    document.getElementById('restId').value = newest.id;
-                }
-            } else {
-                currentRestId = parseInt(id);
-            }
+            if (!res.success) { showToast(res.message || 'Failed to save.', 'error'); btn.disabled=false; btn.innerHTML='Save Restaurant'; return; }
 
             showToast('Restaurant details saved!');
             btn.disabled = false;
-            btn.innerHTML = 'Next — Set Up Floor Plan <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>';
+            btn.innerHTML = 'Save Restaurant';
 
-            // Transition to Step 2
-            showStep(2);
-            await loadVendorFloorPlan(currentRestId);
+            window.closeModal('restModal');
+            loadRestaurants();
             loadStats();
         } catch (err) {
             console.error(err); showToast('Network error.', 'error');
-            btn.disabled = false; btn.innerHTML = 'Next — Set Up Floor Plan <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>';
+            btn.disabled = false; btn.innerHTML = 'Save Restaurant';
         }
     });
 
     // =========================================================
-    // 10. FLOOR PLAN EDITOR (Step 2)
+    // 10. FLOOR PLAN EDITOR
     // =========================================================
 
-    async function loadVendorFloorPlan(restId) {
+    window.vLoadFloorPlanSection = async (preselectId = null) => {
+        const select = document.getElementById('vTableRestSelect');
+        if (!select) return;
+        
+        if (vendorRestaurants.length === 0) {
+            const res = await fetch(`../api/vendor_api.php?endpoint=restaurants&user_id=${userId}`).then(r=>r.json());
+            if (res.success) vendorRestaurants = res.data || [];
+        }
+
+        select.innerHTML = '<option value="">Select Restaurant...</option>';
+        vendorRestaurants.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.id;
+            opt.textContent = r.name;
+            select.appendChild(opt);
+        });
+
+        if (preselectId) {
+            select.value = preselectId;
+            vLoadVendorFloorPlan(preselectId);
+        } else {
+            vLoadVendorFloorPlan(null);
+        }
+    };
+
+    window.vLoadVendorFloorPlan = async (restId) => {
         vFloorTables  = [];
         vSelectedId   = null;
         vNextTempId   = -1;
-        renderVendorSidebar(null);
-
+        
         const room = document.getElementById('vendorFloorRoom');
         if (room) room.querySelectorAll('.floor-table').forEach(el => el.remove());
+        renderVendorSidebar(null);
+
+        if (!restId) {
+            currentRestId = null;
+            return;
+        }
+
+        currentRestId = parseInt(restId);
 
         try {
             const res = await fetch(`../api/vendor_tables.php?restaurant_id=${restId}&user_id=${userId}`).then(r => r.json());
@@ -585,20 +579,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 t._dirty = false;
             }
 
-            showToast('Restaurant & floor plan saved successfully!');
+            showToast('Floor plan saved successfully!');
             btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
             setTimeout(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Restaurant';
-                window.closeModal('restModal');
-                loadRestaurants();
-                loadStats();
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Layout';
             }, 1200);
         } catch (err) {
             console.error(err);
             showToast('Save failed. Please try again.', 'error');
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Restaurant';
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Layout';
         }
     };
 

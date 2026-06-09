@@ -110,14 +110,6 @@
 
 .step-line.done { background: #2ecc71; }
 
-/* ── Floor plan modal expands wider on step 2 ── */
-#restModalContent.step2 {
-    max-width: 95vw !important;
-    height: 95vh !important;
-    display: flex;
-    flex-direction: column;
-}
-
 /* ── Vendor floor plan inherits admin floor styles ── */
 #vendorFloorRoom {
     position: relative;
