@@ -118,7 +118,6 @@ function renderRestaurants(data) {
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px;"><i class="fa-solid fa-utensils" style="color: var(--orange); width: 16px;"></i> ${r.cuisine}</p>
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;"><i class="fa-solid fa-location-dot" style="color: var(--orange); width: 16px;"></i> ${r.location}</p>
                     <div style="margin-top: auto; display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 12px;">
-                        <button class="action-btn edit" onclick='editRestaurant(${JSON.stringify(r).replace(/'/g, "&apos;")})'><i class="fa-solid fa-pen"></i> Edit</button>
                         <button class="action-btn delete" onclick="deleteRestaurant(${r.id})"><i class="fa-solid fa-trash"></i> Delete</button>
                     </div>
                 </div>
@@ -214,6 +213,10 @@ async function saveRestaurant(e) {
     e.preventDefault();
     const id = document.getElementById('restId').value;
     const formData = new FormData();
+    const userStr = localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user');
+    if (userStr) {
+        formData.append('vendor_id', JSON.parse(userStr).id);
+    }
     
     formData.append('name', document.getElementById('restName').value);
     formData.append('description', document.getElementById('restDesc').value);

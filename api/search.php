@@ -16,7 +16,7 @@ $sql = "
            ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
     FROM restaurants r
     LEFT JOIN reviews rev ON rev.restaurant_id = r.id
-    WHERE 1=1
+    WHERE r.status = 'approved'
 ";
 
 if (!empty($query)) {

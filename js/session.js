@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             authButtonsContainer.innerHTML = `
                 ${user.role === 'admin' ? '<a href="admin.html" class="top-btn" style="border: 1px solid #f1c40f; color:#f1c40f;"><i class="fa-solid fa-gauge"></i> Admin</a>' : ''}
-                ${user.role === 'vendor' ? '<a href="vendor-dashboard.html" class="top-btn" style="border: 1px solid var(--orange); color:var(--orange);"><i class="fa-solid fa-gauge"></i> Dashboard</a>' : ''}
+                ${user.role === 'vendor' ? '<a href="vendor-dashboard.html" class="top-btn" style="border: 1px solid #3498db; color:#3498db;"><i class="fa-solid fa-gauge"></i> Vendor</a>' : ''}
                 <a href="profile.html" class="top-btn" style="color:var(--orange); border: 1px solid var(--orange);">
                     <i class="fa-solid fa-user"></i> Profile
                 </a>
