@@ -118,11 +118,11 @@ try {
                     $newRestId = $pdo->lastInsertId();
 
                     // Automatically create default tables for the restaurant so users can reserve
-                    $tableStmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos, status) VALUES 
-                        (?, 'T1', 2, 'round', 100, 100, 'available'),
-                        (?, 'T2', 4, 'rect', 300, 100, 'available'),
-                        (?, 'T3', 4, 'rect', 500, 100, 'available'),
-                        (?, 'T4', 6, 'rect', 700, 100, 'available')");
+                    $tableStmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES 
+                        (?, 'T1', 2, 'round', 100, 100),
+                        (?, 'T2', 4, 'rect', 300, 100),
+                        (?, 'T3', 4, 'rect', 500, 100),
+                        (?, 'T4', 6, 'rect', 700, 100)");
                     $tableStmt->execute([$newRestId, $newRestId, $newRestId, $newRestId]);
 
                     echo json_encode(['success' => true, 'message' => 'Restaurant listing submitted for approval!']);

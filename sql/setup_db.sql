@@ -1,15 +1,22 @@
 CREATE TABLE IF NOT EXISTS restaurants (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    vendor_id INT DEFAULT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     cuisine VARCHAR(100),
     location VARCHAR(100),
     price_range VARCHAR(10),
-    rating DECIMAL(3,1),
+    seed_rating DECIMAL(3,1),
     opening_time TIME,
     closing_time TIME,
+    opening_hours VARCHAR(100) DEFAULT NULL,
     image_gradient VARCHAR(100),
-    icon VARCHAR(50)
+    icon VARCHAR(50),
+    image_url VARCHAR(255) DEFAULT NULL,
+    image VARCHAR(255) DEFAULT NULL,
+    is_halal TINYINT(1) NOT NULL DEFAULT 1,
+    status VARCHAR(50) DEFAULT 'approved',
+    FOREIGN KEY (vendor_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Clear existing to avoid duplicates if run multiple times
