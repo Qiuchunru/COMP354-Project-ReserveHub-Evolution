@@ -481,7 +481,7 @@ function updateSelectedTablePos(key, value) {
 
 function addTableToFloor(shape, capacity) {
     const restId = document.getElementById('tableRestSelect').value;
-    if (!restId) { alert('Please select a restaurant first.'); return; }
+    if (!restId) { showToast('Please select a restaurant first.', 'error'); return; }
 
     const count = floorTables.filter(t => !t._delete).length + 1;
     const newTable = {
@@ -712,7 +712,7 @@ async function saveUser(e) {
             closeModal('userModal');
             loadUsers();
         } else {
-            alert(json.message || 'Failed to update user.');
+            showToast(json.message || 'Failed to update user.', 'error');
         }
     } else {
         // Create new user/vendor
@@ -723,7 +723,7 @@ async function saveUser(e) {
             closeModal('userModal');
             loadUsers();
         } else {
-            alert(json.message || 'Failed to create user/vendor.');
+            showToast(json.message || 'Failed to create user/vendor.', 'error');
         }
     }
 }
@@ -734,7 +734,7 @@ async function deleteUser(id) {
         if (json.success) {
             loadUsers();
         } else {
-            alert(json.message || 'Failed to delete user.');
+            showToast(json.message || 'Failed to delete user.', 'error');
         }
     }
 }
@@ -803,6 +803,6 @@ async function moderateListing(id, status) {
     if (json.success) {
         loadApprovals();
     } else {
-        alert(json.message || 'Failed to moderate listing.');
+        showToast(json.message || 'Failed to moderate listing.', 'error');
     }
 }

@@ -427,15 +427,15 @@ function googleLogin() {
 
                 // Fallback: If One Tap is suppressed or skipped, try to use the manual picker
                 if (reason === 'suppressed_by_user' || reason === 'skipped_by_user') {
-                    alert('Google login was dismissed. Try clearing your browser cookies or use a different browser.');
+                    showToast('Google login was dismissed. Try clearing your browser cookies or use a different browser.', 'error');
                 } else {
-                    alert('Google login failed: ' + reason);
+                    showToast('Google login failed: ' + reason, 'error');
                 }
             }
         });
     } else {
         console.error('Google SDK not loaded');
-        alert('Google Login is currently unavailable. Please refresh the page.');
+        showToast('Google Login is currently unavailable. Please refresh the page.', 'error');
     }
 }
 
@@ -481,7 +481,7 @@ function processSocialLogin(data) {
 
     if (!data.email) {
         console.error('Social Login Error: No email provided by ' + data.provider);
-        alert('Could not retrieve your email from ' + data.provider + '. Please make sure your email is verified and public.');
+        showToast('Could not retrieve your email from ' + data.provider + '. Please make sure your email is verified and public.', 'error');
         return;
     }
 
@@ -529,7 +529,7 @@ function processSocialLogin(data) {
                     submitBtn.innerHTML = originalBtnText;
                     submitBtn.disabled = false;
                 }
-                alert(res.message || 'Social login failed. Please try again.');
+                showToast(res.message || 'Social login failed. Please try again.', 'error');
             }
         })
         .catch(err => {
