@@ -167,7 +167,7 @@
             </div>
 
             <!-- ─── STEP 2: FLOOR PLAN EDITOR ─── -->
-            <div id="stepFloor" style="display:none;">
+            <div id="stepFloor" style="display:none; flex-direction:column; flex:1;">
                 <!-- Toolbar -->
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -199,7 +199,7 @@
                 </div>
 
                 <!-- Floor plan area + properties panel -->
-                <div style="display:flex; gap:12px; height:420px;">
+                <div style="display:flex; gap:12px; flex:1; min-height:0;">
                     <!-- Canvas -->
                     <div class="floor-canvas" style="flex:1; overflow:hidden;" id="vendorFloorCanvas">
                         <div class="floor-room" id="vendorFloorRoom" style="width:100%; height:100%;">

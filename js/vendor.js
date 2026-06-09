@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Step switching ──
     function showStep(n) {
         document.getElementById('stepDetails').style.display = (n === 1) ? 'block' : 'none';
-        document.getElementById('stepFloor').style.display   = (n === 2) ? 'block' : 'none';
+        document.getElementById('stepFloor').style.display   = (n === 2) ? 'flex' : 'none';
 
         const s1 = document.getElementById('step1dot');
         const s2 = document.getElementById('step2dot');
