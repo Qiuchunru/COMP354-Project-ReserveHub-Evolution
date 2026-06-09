@@ -123,10 +123,9 @@
         repeating-linear-gradient(90deg, var(--glass-border) 0 1px, transparent 1px 40px);
     background-color: var(--card);
     border-radius: 8px;
-    margin: 20px;
     box-shadow: 0 0 0 2px var(--glass-border);
-    width: 860px;
-    height: 560px;
+    width: 100%;
+    height: 100%;
 }
 
 #vendorFloorSidebar {
