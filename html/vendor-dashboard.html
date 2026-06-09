@@ -95,47 +95,133 @@
         </section>
     </main>
 
-    <!-- Restaurant Modal -->
+    <!-- =====================================================
+         RESTAURANT MODAL — 2-step: Details → Floor Plan
+         ===================================================== -->
     <div class="modal" id="restModal">
-        <div class="modal-content">
+        <div class="modal-content" id="restModalContent" style="max-width: 560px; transition: max-width 0.4s ease;">
+
+            <!-- ─── STEP INDICATOR ─── -->
+            <div id="stepIndicator" style="display:flex; align-items:center; gap:0; margin-bottom:24px;">
+                <div class="step-dot active" id="step1dot">
+                    <span>1</span>
+                    <label>Details</label>
+                </div>
+                <div class="step-line" id="stepLine"></div>
+                <div class="step-dot" id="step2dot">
+                    <span>2</span>
+                    <label>Floor Plan</label>
+                </div>
+            </div>
+
             <div class="modal-header">
                 <h3 class="modal-title" id="restModalTitle">Add Restaurant</h3>
                 <button class="modal-close" onclick="closeModal('restModal')"><i class="fa-solid fa-times"></i></button>
             </div>
-            <form id="restForm">
-                <input type="hidden" id="restId">
-                <div class="form-group"><label>Name</label><input type="text" id="restName" class="form-control" required></div>
-                <div class="form-group"><label>Description</label><textarea id="restDesc" class="form-control" rows="3"></textarea></div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Cuisine</label><input type="text" id="restCuisine" class="form-control" required></div>
-                    <div class="form-group" style="flex:1;"><label>Location</label><input type="text" id="restLocation" class="form-control" required></div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
-                    <div class="form-group" style="flex:1;"><label>Opening Time</label><input type="time" id="restOpen" class="form-control" value="11:00"></div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Closing Time</label><input type="time" id="restClose" class="form-control" value="22:00"></div>
-                </div>
-                <div class="form-group">
-                    <label>Restaurant Image</label>
-                    <div id="imagePreview" class="preview-box">
-                        <div class="preview-placeholder">
-                            <i class="fa-solid fa-image"></i>
-                            <p>No image selected</p>
+
+            <!-- ─── STEP 1: DETAILS FORM ─── -->
+            <div id="stepDetails">
+                <form id="restForm">
+                    <input type="hidden" id="restId">
+                    <div class="form-group"><label>Name</label><input type="text" id="restName" class="form-control" required></div>
+                    <div class="form-group"><label>Description</label><textarea id="restDesc" class="form-control" rows="3"></textarea></div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;"><label>Cuisine</label><input type="text" id="restCuisine" class="form-control" required></div>
+                        <div class="form-group" style="flex:1;"><label>Location</label><input type="text" id="restLocation" class="form-control" required></div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;"><label>Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
+                        <div class="form-group" style="flex:1;"><label>Opening Time</label><input type="time" id="restOpen" class="form-control" value="11:00"></div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;"><label>Closing Time</label><input type="time" id="restClose" class="form-control" value="22:00"></div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Halal</label>
+                            <select id="restHalal" class="form-control">
+                                <option value="1">Halal</option>
+                                <option value="0">Non-Halal</option>
+                            </select>
                         </div>
-                        <img src="" alt="Preview" style="display: none; max-height: 200px; width: 100%; object-fit: cover; border-radius: 8px;">
                     </div>
-                    <div class="file-upload-wrapper">
-                        <input type="file" id="restImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
-                        <label for="restImage" class="file-upload-btn">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span id="fileLabelText">Choose Restaurant Image</span>
-                        </label>
+                    <div class="form-group">
+                        <label>Restaurant Image</label>
+                        <div id="imagePreview" class="preview-box">
+                            <div class="preview-placeholder">
+                                <i class="fa-solid fa-image"></i>
+                                <p>No image selected</p>
+                            </div>
+                            <img src="" alt="Preview" style="display: none; max-height: 200px; width: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="restImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
+                            <label for="restImage" class="file-upload-btn">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span id="fileLabelText">Choose Restaurant Image</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">
+                        Next — Set Up Floor Plan <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ─── STEP 2: FLOOR PLAN EDITOR ─── -->
+            <div id="stepFloor" style="display:none;">
+                <!-- Toolbar -->
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-primary" style="font-size:12px; padding:8px 14px;" onclick="vAddTable('round',2)">
+                            <i class="fa-solid fa-circle"></i> Round (2)
+                        </button>
+                        <button class="btn btn-primary" style="font-size:12px; padding:8px 14px;" onclick="vAddTable('rect',4)">
+                            <i class="fa-solid fa-square"></i> Rect (4)
+                        </button>
+                        <button class="btn btn-primary" style="font-size:12px; padding:8px 14px;" onclick="vAddTable('rect',6)">
+                            <i class="fa-solid fa-table-cells"></i> Rect (6)
+                        </button>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-primary" style="background:transparent; border:1px solid var(--glass-border); color:var(--text); font-size:12px;" onclick="goBackToDetails()">
+                            <i class="fa-solid fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary" id="vendorSaveBtn" onclick="vendorSaveAll()" style="font-size:12px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Restaurant
+                        </button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Submit Restaurant Listing</button>
-            </form>
+
+                <!-- Legend -->
+                <div class="floor-legend" style="margin-bottom:12px; font-size:11px;">
+                    <span><span class="floor-legend-dot" style="background:#27ae60;"></span> Drag to move</span>
+                    <span><span class="floor-legend-dot" style="background:var(--orange);"></span> Selected</span>
+                    <span style="color:var(--text-muted);">Click a table to edit its properties</span>
+                </div>
+
+                <!-- Floor plan area + properties panel -->
+                <div style="display:flex; gap:12px; height:380px;">
+                    <!-- Canvas -->
+                    <div class="floor-canvas" style="flex:1; overflow:auto;" id="vendorFloorCanvas">
+                        <div class="floor-room" id="vendorFloorRoom" style="width:900px; height:600px;">
+                            <!-- tables rendered here -->
+                        </div>
+                    </div>
+                    <!-- Properties sidebar -->
+                    <div class="floor-sidebar" id="vendorFloorSidebar" style="width:180px; min-width:180px;">
+                        <div class="floor-sidebar-header">Properties</div>
+                        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+                            <p style="color:var(--text-muted); font-size:12px; text-align:center; padding:16px;">
+                                Click a table to select and edit it
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="font-size:11px; color:var(--text-muted); margin-top:10px; text-align:center;">
+                    <i class="fa-solid fa-circle-info"></i> Drag tables to rearrange. Click a table to edit capacity, shape, and number.
+                </p>
+            </div>
+
         </div>
     </div>
 
