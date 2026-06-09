@@ -332,12 +332,20 @@ input::-webkit-calendar-picker-indicator {
 }
 .hero-accent { color: var(--orange); }
 
+.hero-tagline,
 .hero-subtitle {
     font-size: clamp(1rem, 2vw, 1.25rem);
     color: rgba(255,255,255,0.75);
-    margin-bottom: 40px;
     font-weight: 300;
     animation: fadeDown 0.7s 0.3s ease both;
+}
+
+.hero-tagline {
+    margin-bottom: 8px;
+}
+
+.hero-subtitle {
+    margin-bottom: 40px;
 }
 
 /* Hero Search */
