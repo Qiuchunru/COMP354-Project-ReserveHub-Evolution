@@ -151,7 +151,7 @@ document.addEventListener('click', e => {
             btn.classList.toggle('liked');
             icon.className = !currentlyLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
             icon.style.color = !currentlyLiked ? '#ff4757' : '';
-            alert(data.message);
+            showToast(data.message, 'error');
         }
     })
     .catch(err => {

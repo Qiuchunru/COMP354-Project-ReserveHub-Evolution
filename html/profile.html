@@ -311,15 +311,15 @@
                     document.getElementById('profilePhone').innerHTML = data.user.phone ? `<i class="fa-solid fa-phone" style="font-size: 12px; margin-right: 5px;"></i> ${data.user.phone}` : 'No phone number provided';
                     document.getElementById('profileAvatar').innerHTML = data.user.name.charAt(0).toUpperCase();
                     
-                    alert('Profile updated successfully!');
+                    showToast('Profile updated successfully!', 'success');
                     closeEditModal();
                 } else {
-                    alert(data.message);
+                    showToast(data.message, 'error');
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
             })
             .finally(() => {
                 submitBtn.innerHTML = originalBtnText;
@@ -359,16 +359,16 @@
                         sessionStorage.setItem('reservehub_user', JSON.stringify(updatedUser));
                     }
                     
-                    alert('Profile picture updated!');
+                    showToast('Profile picture updated!', 'success');
                 } else {
                     avatarDiv.innerHTML = originalContent;
-                    alert(data.message);
+                    showToast(data.message, 'error');
                 }
             })
             .catch(err => {
                 console.error(err);
                 avatarDiv.innerHTML = originalContent;
-                alert('Upload failed. Please try again.');
+                showToast('Upload failed. Please try again.', 'error');
             });
         }
 
@@ -404,10 +404,10 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    alert('Review submitted successfully!');
+                    showToast('Review submitted successfully!', 'success');
                     closeReviewModal();
                 } else {
-                    alert(data.message);
+                    showToast(data.message, 'error');
                 }
             });
         }
