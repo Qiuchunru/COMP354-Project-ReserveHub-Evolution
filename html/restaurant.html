@@ -97,29 +97,33 @@
             </div>
 
             <div class="svg-wrapper">
-                <svg id="floorPlanSvg" viewBox="0 0 700 450" xmlns="http://www.w3.org/2000/svg">
+                <svg id="floorPlanSvg" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
                     <!-- Floor decorations -->
-                    <rect width="700" height="450" class="floor-rect" rx="8" />
+                    <rect width="1000" height="700" class="floor-rect" rx="8" />
                     <!-- Grid lines -->
                     <g class="floor-grid" opacity="0.5" stroke-width="1">
-                        <line x1="0" y1="90" x2="700" y2="90" />
-                        <line x1="0" y1="180" x2="700" y2="180" />
-                        <line x1="0" y1="270" x2="700" y2="270" />
-                        <line x1="0" y1="360" x2="700" y2="360" />
-                        <line x1="140" y1="0" x2="140" y2="450" />
-                        <line x1="280" y1="0" x2="280" y2="450" />
-                        <line x1="420" y1="0" x2="420" y2="450" />
-                        <line x1="560" y1="0" x2="560" y2="450" />
+                        <line x1="0" y1="100" x2="1000" y2="100" />
+                        <line x1="0" y1="200" x2="1000" y2="200" />
+                        <line x1="0" y1="300" x2="1000" y2="300" />
+                        <line x1="0" y1="400" x2="1000" y2="400" />
+                        <line x1="0" y1="500" x2="1000" y2="500" />
+                        <line x1="0" y1="600" x2="1000" y2="600" />
+                        <line x1="100" y1="0" x2="100" y2="700" />
+                        <line x1="200" y1="0" x2="200" y2="700" />
+                        <line x1="300" y1="0" x2="300" y2="700" />
+                        <line x1="400" y1="0" x2="400" y2="700" />
+                        <line x1="500" y1="0" x2="500" y2="700" />
+                        <line x1="600" y1="0" x2="600" y2="700" />
+                        <line x1="700" y1="0" x2="700" y2="700" />
+                        <line x1="800" y1="0" x2="800" y2="700" />
+                        <line x1="900" y1="0" x2="900" y2="700" />
                     </g>
                     <!-- Entrance indicator -->
-                    <rect x="280" y="435" width="140" height="15" fill="none" stroke="var(--orange)" stroke-width="2"
-                        rx="2" opacity="0.5" />
-                    <text x="350" y="445" fill="var(--orange)" font-size="9" font-family="Inter" text-anchor="middle"
-                        opacity="0.6">ENTRANCE</text>
+                    <rect x="430" y="685" width="140" height="15" fill="none" stroke="var(--orange)" stroke-width="2" rx="2" opacity="0.5" />
+                    <text x="500" y="695" fill="var(--orange)" font-size="9" font-family="Inter" text-anchor="middle" opacity="0.6">ENTRANCE</text>
                     <!-- Bar/Counter area -->
-                    <rect x="0" y="0" width="700" height="30" class="floor-counter" rx="0" />
-                    <text x="350" y="19" class="floor-counter-text" font-size="10" font-family="Inter"
-                        text-anchor="middle">BAR / COUNTER AREA</text>
+                    <rect x="0" y="0" width="1000" height="30" class="floor-counter" rx="0" />
+                    <text x="500" y="19" class="floor-counter-text" font-size="10" font-family="Inter" text-anchor="middle">BAR / COUNTER AREA</text>
 
                     <!-- Dynamic tables will be injected here -->
                     <g id="tablesGroup"></g>
