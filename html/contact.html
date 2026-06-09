@@ -217,7 +217,7 @@
                     <div class="contact-form-wrapper">
                         <h3 class="contact-form-title">Send a Message</h3>
                         <p class="contact-form-desc">Fill out the form below and our operations desk will route your message to the correct team member.</p>
-                        <form id="contactForm" onsubmit="event.preventDefault(); alert('Thank you for reaching out! We will get back to you shortly.'); this.reset();">
+                        <form id="contactForm">
                             <div class="form-group-row">
                                 <div class="form-group">
                                     <label for="name">Name</label>
@@ -328,6 +328,53 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateSupportStatus();
             setInterval(updateSupportStatus, 60000);
+
+            // Handle contact form submission
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const submitBtn = contactForm.querySelector('.submit-btn');
+                    const originalBtnHTML = submitBtn.innerHTML;
+                    
+                    // Loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Sending... <i class="fa-solid fa-spinner fa-spin"></i>';
+                    
+                    const payload = {
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        subject: document.getElementById('subject').value,
+                        message: document.getElementById('message').value
+                    };
+                    
+                    try {
+                        const response = await fetch('../api/admin_api.php?endpoint=messages', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showToast(result.message, 'success');
+                            contactForm.reset();
+                        } else {
+                            showToast(result.message || 'Failed to send message.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error submitting contact form:', error);
+                        showToast('A network error occurred. Please try again.', 'error');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHTML;
+                    }
+                });
+            }
         });
     </script>
 </body>

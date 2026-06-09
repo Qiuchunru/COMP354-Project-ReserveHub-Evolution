@@ -22,6 +22,7 @@
             <a href="#" data-target="reservations"><i class="fa-solid fa-book"></i> Reservations</a>
             <a href="#" data-target="users"><i class="fa-solid fa-users"></i> Users</a>
             <a href="#" data-target="approvals"><i class="fa-solid fa-clipboard-check"></i> Vendor Approvals</a>
+            <a href="#" data-target="inbox"><i class="fa-solid fa-inbox"></i> Inbox</a>
             <div style="margin-top: auto; padding: 20px 0;">
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                     <i class="fa-solid fa-moon" style="margin-right: 8px;"></i>
@@ -146,6 +147,21 @@
             <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
                 <div id="approvalsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
                     <!-- Pending approvals cards go here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Inbox Section -->
+        <section id="inbox" class="admin-section">
+            <div class="admin-header">
+                <h1>Inbox Messages</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="searchMessages" class="form-control" placeholder="Search messages..." style="width:300px;" onkeyup="filterMessages()">
+                </div>
+            </div>
+            <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
+                <div id="messagesList" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Messages will be rendered here as cards -->
                 </div>
             </div>
         </section>

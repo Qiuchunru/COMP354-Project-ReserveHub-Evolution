@@ -9,6 +9,20 @@ try {
     // Ignore if already exists or other issues, but at least we tried
 }
 
+// Auto-migration: Ensure contact_messages table exists
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `contact_messages` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `name` VARCHAR(100) NOT NULL,
+        `email` VARCHAR(100) NOT NULL,
+        `subject` VARCHAR(255) NOT NULL,
+        `message` TEXT NOT NULL,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+} catch (Exception $e) {
+    // Ignore
+}
+
 header('Content-Type: application/json');
 
 $endpoint = $_GET['endpoint'] ?? '';
@@ -297,6 +311,33 @@ try {
                 $stmt = $pdo->prepare("UPDATE restaurants SET status = ? WHERE id = ?");
                 $stmt->execute([$status, $id]);
                 echo json_encode(['success' => true, 'message' => 'Listing status updated successfully.']);
+            }
+            break;
+
+        case 'messages':
+            if ($method === 'GET') {
+                $messages = $pdo->query("SELECT * FROM contact_messages ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode(['success' => true, 'data' => $messages]);
+            } elseif ($method === 'POST') {
+                $input = !empty($_POST) ? $_POST : $data;
+                $name = trim($input['name'] ?? '');
+                $email = trim($input['email'] ?? '');
+                $subject = trim($input['subject'] ?? '');
+                $message = trim($input['message'] ?? '');
+
+                if (empty($name) || empty($email) || empty($subject) || empty($message)) {
+                    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
+                    exit;
+                }
+
+                $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$name, $email, $subject, $message]);
+                echo json_encode(['success' => true, 'message' => 'Thank you for reaching out! We will get back to you shortly.']);
+            } elseif ($method === 'DELETE') {
+                $id = $_GET['id'] ?? 0;
+                $stmt = $pdo->prepare("DELETE FROM contact_messages WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['success' => true]);
             }
             break;
 
