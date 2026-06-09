@@ -1,0 +1,525 @@
+/* ===== CONTACT PAGE CUSTOM STYLES ===== */
+
+.contact-main {
+    min-height: 100vh;
+    padding-top: 80px; /* navbar height */
+}
+
+/* ---- Contact Hero ---- */
+.contact-hero {
+    position: relative;
+    padding: 120px 32px 80px;
+    text-align: center;
+    background: var(--bg-gradient);
+    border-bottom: 1px solid var(--glass-border);
+    overflow: hidden;
+}
+
+.contact-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle 600px at 50% 120%, var(--orange-glow) 0%, transparent 80%);
+    pointer-events: none;
+}
+
+/* Subtle background pattern */
+.contact-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(var(--glass-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.contact-hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.contact-hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.contact-hero-title .accent {
+    color: var(--orange);
+}
+
+.contact-hero-desc {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ---- Operational Hours & Status Banner ---- */
+.status-section {
+    padding: 60px 0;
+    background: var(--bg);
+}
+
+.status-card {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    align-items: center;
+    box-shadow: var(--shadow-premium);
+}
+
+.status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.status-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.status-indicator.open {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.status-indicator.closed {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* Pulsing dot animation */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.status-indicator.open .status-dot {
+    background: #2ecc71;
+    box-shadow: 0 0 8px #2ecc71;
+    animation: pulseOpen 2s infinite;
+}
+
+.status-indicator.closed .status-dot {
+    background: #e74c3c;
+    box-shadow: 0 0 8px #e74c3c;
+}
+
+@keyframes pulseOpen {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.4; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.status-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.status-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.hours-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.hours-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.hours-row:last-child {
+    border-bottom: none;
+}
+
+.hours-day {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.hours-time {
+    color: var(--text-muted);
+}
+
+.hours-row.today {
+    border-left: 3px solid var(--orange);
+    padding-left: 12px;
+}
+
+.hours-row.today .hours-day {
+    color: var(--orange);
+}
+
+/* ---- Team Grid Section ---- */
+.team-section {
+    padding: 80px 0;
+    background: var(--surface);
+    border-top: 1px solid var(--glass-border);
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 32px;
+    margin-top: 48px;
+}
+
+.team-card {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--orange);
+    box-shadow: var(--shadow-premium);
+}
+
+/* Profile Picture & Emoji Overlay */
+.avatar-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 24px;
+    z-index: 1;
+}
+
+.team-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--glass-border);
+    transition: var(--transition);
+    background: var(--surface);
+}
+
+.team-card:hover .team-avatar {
+    border-color: var(--orange);
+    transform: scale(1.03);
+}
+
+.role-emoji-badge {
+    position: absolute;
+    bottom: 0;
+    right: 4px;
+    width: 38px;
+    height: 38px;
+    background: var(--card);
+    border: 2px solid var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+    transition: var(--transition);
+}
+
+.team-card:hover .role-emoji-badge {
+    transform: scale(1.1) rotate(10deg);
+    border-color: var(--orange);
+    background: var(--orange-glow);
+}
+
+.team-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.team-role {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.team-contact-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: var(--transition);
+    border: 1px solid var(--glass-border);
+}
+
+.action-btn.phone-btn {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.action-btn.phone-btn:hover {
+    background: var(--orange-glow);
+    border-color: var(--orange);
+    color: var(--orange);
+}
+
+.action-btn.email-btn {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+}
+
+.action-btn.email-btn:hover {
+    background: var(--orange-dark);
+    box-shadow: 0 4px 12px var(--orange-glow);
+    transform: translateY(-1px);
+}
+
+/* ---- Contact Form Section ---- */
+.form-section {
+    padding: 80px 0;
+    background: var(--bg);
+}
+
+.contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.info-item-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    transition: var(--transition);
+}
+
+.info-item-box:hover {
+    border-color: var(--orange);
+    box-shadow: var(--shadow-premium);
+}
+
+.info-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--orange-glow);
+    border: 1px solid rgba(255, 107, 43, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--orange);
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.info-item-box:hover .info-icon-wrapper {
+    background: var(--orange);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.info-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.info-content p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.info-content a {
+    color: var(--orange);
+}
+
+/* Form Styling */
+.contact-form-wrapper {
+    background: var(--card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-premium);
+}
+
+.contact-form-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.contact-form-desc {
+    color: var(--text-muted);
+    font-size: 14.5px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.form-group-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14.5px;
+    transition: var(--transition);
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: var(--orange);
+    background: var(--card);
+    box-shadow: 0 0 12px var(--orange-glow);
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--accent-gradient);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px var(--orange-glow);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px var(--orange-glow);
+}
+
+/* ---- Responsive Styles ---- */
+@media (max-width: 900px) {
+    .status-card {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 32px 24px;
+    }
+    .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .form-group-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .contact-hero {
+        padding: 100px 20px 60px;
+    }
+    .status-section, .team-section, .form-section {
+        padding: 60px 0;
+    }
+    .contact-form-wrapper {
+        padding: 32px 20px;
+    }
+}
