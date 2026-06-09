@@ -43,6 +43,7 @@ function loadSection(section) {
     if (section === 'reservations') loadReservations();
     if (section === 'users') loadUsers();
     if (section === 'approvals') loadApprovals();
+    if (section === 'inbox') loadInbox();
 }
 
 // ===== DASHBOARD =====
@@ -804,5 +805,81 @@ async function moderateListing(id, status) {
         loadApprovals();
     } else {
         showToast(json.message || 'Failed to moderate listing.', 'error');
+    }
+}
+
+// ===== INBOX MESSAGES =====
+let allMessages = [];
+
+async function loadInbox() {
+    const json = await apiFetch('messages');
+    if (json.success) {
+        allMessages = json.data || [];
+        renderMessages(allMessages);
+    } else {
+        showToast(json.message || 'Failed to load inbox messages.', 'error');
+    }
+}
+
+function renderMessages(data) {
+    const list = document.getElementById('messagesList');
+    if (!list) return;
+    
+    list.innerHTML = '';
+    if (data.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted); padding: 20px; text-align: center;">Your inbox is empty.</p>';
+        return;
+    }
+    
+    data.forEach(r => {
+        list.innerHTML += `
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); position: relative; transition: var(--transition);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
+                    <div>
+                        <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: #fff;">${r.subject}</h4>
+                        <span style="font-size: 0.85rem; color: var(--orange); font-weight: 600;">
+                            From: ${r.name} (<a href="mailto:${r.email}" style="color: var(--orange); text-decoration: underline;">${r.email}</a>)
+                        </span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                        <span style="font-size: 0.8rem; color: #888;">
+                            <i class="fa-regular fa-clock"></i> ${new Date(r.created_at).toLocaleString()}
+                        </span>
+                        <span style="font-size: 0.75rem; color: #666;">ID: #${r.id}</span>
+                    </div>
+                </div>
+                <div style="font-size: 0.92rem; color: #ccc; line-height: 1.6; white-space: pre-wrap; padding: 5px 0 10px 0;">
+                    ${r.message}
+                </div>
+                <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--glass-border); padding-top: 12px;">
+                    <button class="action-btn delete" onclick="deleteMessage(${r.id})" title="Delete Message" style="margin: 0; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function filterMessages() {
+    const q = document.getElementById('searchMessages').value.toLowerCase();
+    const filtered = allMessages.filter(r => 
+        r.name.toLowerCase().includes(q) || 
+        r.email.toLowerCase().includes(q) ||
+        r.subject.toLowerCase().includes(q) ||
+        r.message.toLowerCase().includes(q) ||
+        r.id.toString().includes(q)
+    );
+    renderMessages(filtered);
+}
+
+async function deleteMessage(id) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        const json = await apiFetch(`messages&id=${id}`, 'DELETE');
+        if (json.success) {
+            loadInbox();
+        } else {
+            showToast(json.message || 'Failed to delete message.', 'error');
+        }
     }
 }
