@@ -25,6 +25,12 @@ try {
 
 header('Content-Type: application/json');
 
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
 $endpoint = $_GET['endpoint'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 $data = json_decode(file_get_contents("php://input"), true) ?? [];
@@ -204,21 +210,26 @@ try {
                     }
                 }
 
+                $vendor_id = isset($input['vendor_id']) && is_numeric($input['vendor_id']) ? (int)$input['vendor_id'] : null;
+                $seed_rating = (isset($input['seed_rating']) && $input['seed_rating'] !== '') ? (float)$input['seed_rating'] : ((isset($input['rating']) && $input['rating'] !== '') ? (float)$input['rating'] : null);
+
                 if ($id) {
                     // Update — write to seed_rating (computed rating is derived at query time)
-                    $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE id=?");
+                    $stmt = $pdo->prepare("UPDATE restaurants SET vendor_id=COALESCE(?, vendor_id), name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE id=?");
                     $stmt->execute([
+                        $vendor_id,
                         $input['name'], $input['description'], $input['cuisine'], $input['location'],
-                        $input['price_range'], $input['seed_rating'] ?? $input['rating'] ?? null,
+                        $input['price_range'], $seed_rating,
                         $input['opening_time'], $input['closing_time'],
                         $imageUrl, $input['icon'] ?? 'fa-utensils', $input['image_gradient'] ?? '', $id
                     ]);
                 } else {
                     // Create
-                    $stmt = $pdo->prepare("INSERT INTO restaurants (name, description, cuisine, location, price_range, seed_rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt = $pdo->prepare("INSERT INTO restaurants (vendor_id, name, description, cuisine, location, price_range, seed_rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([
+                        $vendor_id,
                         $input['name'], $input['description'], $input['cuisine'], $input['location'],
-                        $input['price_range'], $input['seed_rating'] ?? $input['rating'] ?? null,
+                        $input['price_range'], $seed_rating,
                         $input['opening_time'], $input['closing_time'],
                         $imageUrl, $input['icon'] ?? 'fa-utensils', $input['image_gradient'] ?? ''
                     ]);

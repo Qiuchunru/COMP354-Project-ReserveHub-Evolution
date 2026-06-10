@@ -3,8 +3,14 @@
 header('Content-Type: application/json');
 require_once 'db.php';
 
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
 $data = json_decode(file_get_contents('php://input'), true);
-$user_id = $data['user_id'] ?? null;
+$user_id = $_SESSION['user_id'];
 $restaurant_id = $data['restaurant_id'] ?? null;
 $reservation_id = $data['reservation_id'] ?? null;
 $rating = $data['rating'] ?? null;

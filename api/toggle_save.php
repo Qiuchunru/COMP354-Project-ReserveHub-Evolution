@@ -3,12 +3,18 @@
 header('Content-Type: application/json');
 require_once 'db.php';
 
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
 $data = json_decode(file_get_contents('php://input'), true);
-$user_id = $data['user_id'] ?? null;
+$user_id = $_SESSION['user_id'];
 $restaurant_id = $data['restaurant_id'] ?? null;
 
-if (!$user_id || !$restaurant_id) {
-    echo json_encode(['success' => false, 'message' => 'User ID and Restaurant ID are required']);
+if (!$restaurant_id) {
+    echo json_encode(['success' => false, 'message' => 'Restaurant ID is required']);
     exit;
 }
 

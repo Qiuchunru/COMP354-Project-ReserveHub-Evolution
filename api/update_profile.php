@@ -3,14 +3,20 @@
 header('Content-Type: application/json');
 require_once 'db.php';
 
-$data = json_decode(file_get_contents("php://input"));
-
-if (!$data || empty($data->user_id) || empty($data->name)) {
-    echo json_encode(['success' => false, 'message' => 'User ID and Name are required.']);
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
 
-$user_id = $data->user_id;
+$data = json_decode(file_get_contents("php://input"));
+
+if (!$data || empty($data->name)) {
+    echo json_encode(['success' => false, 'message' => 'Name is required.']);
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
 $name = trim($data->name);
 $username = trim($data->username ?? '');
 $phone = trim($data->phone ?? '');

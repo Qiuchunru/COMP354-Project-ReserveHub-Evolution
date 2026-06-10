@@ -13,28 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'db.php';
 
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'vendor') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
 $endpoint = $_GET['endpoint'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Get inputs from either GET, POST or JSON body
 $data = json_decode(file_get_contents("php://input"), true) ?? [];
-$userId = $_POST['user_id'] ?? $data['user_id'] ?? $_GET['user_id'] ?? null;
-
-if (!$userId || !is_numeric($userId)) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized: User ID is required']);
-    exit;
-}
+$userId = $_SESSION['user_id'];
 
 try {
-    // Verify user is a vendor
-    $userStmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
-    $userStmt->execute([$userId]);
-    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user || $user['role'] !== 'vendor') {
-        echo json_encode(['success' => false, 'message' => 'Unauthorized: Access denied']);
-        exit;
-    }
 
     switch ($endpoint) {
         case 'restaurants':
