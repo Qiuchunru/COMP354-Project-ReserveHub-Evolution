@@ -1,4 +1,5 @@
 <?php
+session_start();
 // api/db.php
 // Auto-detects environment: uses local XAMPP credentials when running on localhost,
 // and InfinityFree credentials when running on the live server.

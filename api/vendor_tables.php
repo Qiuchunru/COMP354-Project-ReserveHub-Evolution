@@ -9,25 +9,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
 
 require_once 'db.php';
 
-$method   = $_SERVER['REQUEST_METHOD'];
-$userId   = $_GET['user_id'] ?? $_POST['user_id'] ?? null;
-$restId   = $_GET['restaurant_id'] ?? null;
-$tableId  = $_GET['id'] ?? null;
-
-// Always require user_id
-if (!$userId || !is_numeric($userId)) {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'vendor') {
+    http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
 
-// Verify vendor role
-$stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
-$stmt->execute([$userId]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$user || $user['role'] !== 'vendor') {
-    echo json_encode(['success' => false, 'message' => 'Access denied']);
-    exit;
-}
+$method   = $_SERVER['REQUEST_METHOD'];
+$userId   = $_SESSION['user_id'];
+$restId   = $_GET['restaurant_id'] ?? null;
+$tableId  = $_GET['id'] ?? null;
 
 try {
     if ($method === 'GET') {
