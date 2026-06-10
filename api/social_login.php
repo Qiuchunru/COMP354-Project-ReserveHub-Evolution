@@ -74,6 +74,8 @@ try {
 
     if ($user) {
         // User exists, log them in
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['role'] = $user['role'];
         echo json_encode([
             'success' => true,
             'message' => 'Login successful!',
@@ -106,6 +108,8 @@ try {
             exit;
         }
         
+        $_SESSION['user_id'] = $newUserId;
+        $_SESSION['role'] = 'user';
         echo json_encode([
             'success' => true,
             'message' => 'Account created via ' . ucfirst($provider),

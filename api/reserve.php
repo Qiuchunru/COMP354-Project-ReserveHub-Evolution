@@ -11,9 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
 $data = json_decode(file_get_contents('php://input'), true);
 
-$user_id        = $data['user_id'] ?? null;
+$user_id        = $_SESSION['user_id'];
 $restaurant_id  = $data['restaurant_id'] ?? null;
 $table_id       = $data['table_id'] ?? null;
 $date           = $data['date'] ?? null;

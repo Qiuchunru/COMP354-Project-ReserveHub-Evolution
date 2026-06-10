@@ -79,7 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function logoutUser() {
-    localStorage.removeItem('reservehub_user');
-    sessionStorage.removeItem('reservehub_user');
-    window.location.href = 'index.html';
+    fetch('../api/logout.php', { method: 'POST' })
+        .finally(() => {
+            localStorage.removeItem('reservehub_user');
+            sessionStorage.removeItem('reservehub_user');
+            window.location.href = 'index.html';
+        });
 }
