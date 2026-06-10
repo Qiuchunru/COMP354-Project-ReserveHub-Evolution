@@ -113,8 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadStats() {
         Promise.all([
-            fetch(`../api/vendor_api.php?endpoint=restaurants&user_id=${userId}`).then(r => r.json()),
-            fetch(`../api/vendor_api.php?endpoint=reservations&user_id=${userId}`).then(r => r.json())
+            fetch(`../api/vendor_api.php?endpoint=restaurants`).then(r => r.json()),
+            fetch(`../api/vendor_api.php?endpoint=reservations`).then(r => r.json())
         ]).then(([rr, resr]) => {
             if (rr.success)   { vendorRestaurants  = rr.data   || []; document.getElementById('statRests').innerText = vendorRestaurants.length; document.getElementById('statPendingRests').innerText = vendorRestaurants.filter(r => r.status === 'pending').length; }
             if (resr.success) { vendorReservations = resr.data || []; document.getElementById('statReservations').innerText = vendorReservations.length; }
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const grid = document.getElementById('restGrid');
         if (!grid) return;
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>Loading...</div>';
-        fetch(`../api/vendor_api.php?endpoint=restaurants&user_id=${userId}`)
+        fetch(`../api/vendor_api.php?endpoint=restaurants`)
             .then(r => r.json())
             .then(res => {
                 if (res.success) { vendorRestaurants = res.data || []; renderRestaurants(vendorRestaurants); }
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('resList');
         if (!container) return;
         container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i></div>';
-        fetch(`../api/vendor_api.php?endpoint=reservations&user_id=${userId}`)
+        fetch(`../api/vendor_api.php?endpoint=reservations`)
             .then(r => r.json())
             .then(res => { if (res.success) { vendorReservations = res.data || []; renderReservations(vendorReservations); } else showToast(res.message, 'error'); })
             .catch(() => showToast('Failed to load reservations.', 'error'));
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.updateReservation = (id, status) => {
-        fetch('../api/vendor_api.php?endpoint=update_reservation', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId,reservation_id:id,status}) })
+        fetch('../api/vendor_api.php?endpoint=update_reservation', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({reservation_id:id,status}) })
             .then(r=>r.json()).then(res => { if(res.success){showToast(`Reservation ${status==='confirmed'?'accepted':'cancelled'}.`); loadReservations();} else showToast(res.message,'error'); })
             .catch(()=>showToast('Failed to update.','error'));
     };
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.deleteRestaurant = (id) => {
         const rest = vendorRestaurants.find(r => r.id === id);
         if (!rest || !confirm(`Delete "${rest.name}"? This will remove all its tables and cannot be undone.`)) return;
-        fetch(`../api/vendor_api.php?endpoint=restaurants&id=${id}&user_id=${userId}`, {method:'DELETE'})
+        fetch(`../api/vendor_api.php?endpoint=restaurants&id=${id}`, {method:'DELETE'})
             .then(r=>r.json()).then(res => { if(res.success){showToast('Restaurant deleted.'); loadRestaurants(); loadStats();} else showToast(res.message,'error'); })
             .catch(()=>showToast('Delete failed.','error'));
     };
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const id = document.getElementById('restId').value;
         const formData = new FormData();
-        formData.append('user_id',       userId);
+
         formData.append('name',          document.getElementById('restName').value.trim());
         formData.append('description',   document.getElementById('restDesc').value.trim());
         formData.append('cuisine',       document.getElementById('restCuisine').value.trim());
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!select) return;
         
         if (vendorRestaurants.length === 0) {
-            const res = await fetch(`../api/vendor_api.php?endpoint=restaurants&user_id=${userId}`).then(r=>r.json());
+            const res = await fetch(`../api/vendor_api.php?endpoint=restaurants`).then(r=>r.json());
             if (res.success) vendorRestaurants = res.data || [];
         }
 
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentRestId = parseInt(restId);
 
         try {
-            const res = await fetch(`../api/vendor_tables.php?restaurant_id=${restId}&user_id=${userId}`).then(r => r.json());
+            const res = await fetch(`../api/vendor_tables.php?restaurant_id=${restId}`).then(r => r.json());
             if (res.success) {
                 vFloorTables = (res.data || []).map(t => ({...t, _dirty:false, _new:false, _delete:false}));
                 renderVendorFloorPlan();
@@ -550,13 +550,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // 1. Delete flagged
             for (const t of vFloorTables.filter(x => x._delete && !x._new)) {
-                await fetch(`../api/vendor_tables.php?id=${t.id}&user_id=${userId}`, {method:'DELETE'});
+                await fetch(`../api/vendor_tables.php?id=${t.id}`, {method:'DELETE'});
             }
             vFloorTables = vFloorTables.filter(x => !x._delete);
 
             // 2. Create new
             for (const t of vFloorTables.filter(x => x._new && x._dirty)) {
-                const res = await fetch(`../api/vendor_tables.php?user_id=${userId}`, {
+                const res = await fetch(`../api/vendor_tables.php`, {
                     method: 'POST',
                     headers: {'Content-Type':'application/json'},
                     body: JSON.stringify({ restaurant_id: currentRestId, table_number: t.table_number, capacity: t.capacity, shape: t.shape, x_pos: t.x_pos, y_pos: t.y_pos })
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Update dirty existing
             for (const t of vFloorTables.filter(x => x._dirty && !x._new)) {
-                await fetch(`../api/vendor_tables.php?id=${t.id}&user_id=${userId}`, {
+                await fetch(`../api/vendor_tables.php?id=${t.id}`, {
                     method: 'PUT',
                     headers: {'Content-Type':'application/json'},
                     body: JSON.stringify({ table_number: t.table_number, capacity: t.capacity, shape: t.shape, x_pos: t.x_pos, y_pos: t.y_pos })

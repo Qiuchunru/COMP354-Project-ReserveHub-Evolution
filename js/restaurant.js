@@ -53,11 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
         reserveBtn.style.background = 'var(--orange)';
         
         // Disable form inputs but keep them visible
-        const formInputs = document.querySelectorAll('#bookingForm select, #bookingForm textarea');
+        const formInputs = document.querySelectorAll(
+            '#bookingForm select, #bookingForm textarea, #bookingForm input[type="date"], #bookingForm input[type="time"]'
+        );
         formInputs.forEach(input => {
             input.disabled = true;
-            input.style.opacity = '0.6';
+            input.style.opacity = '0.5';
             input.style.cursor = 'not-allowed';
+            input.style.pointerEvents = 'none';
         });
         
         // Add a helpful message
@@ -84,6 +87,7 @@ async function loadRestaurant() {
         document.title = `${restaurantData.name} | ReserveHub`;
 
         await loadFloorPlan();
+        checkActiveReservation();
     } catch (err) {
         console.error('Failed to load restaurant:', err);
     }
@@ -93,12 +97,15 @@ async function loadRestaurant() {
 function renderHero(r) {
     document.getElementById('heroBg').style.backgroundImage = `url('${r.image_url}')`;
     document.getElementById('heroName').textContent = r.name;
-    document.getElementById('heroRating').textContent = r.rating;
+    document.getElementById('heroRating').textContent = r.rating ?? '–';
     document.getElementById('heroLocation').textContent = r.location;
     document.getElementById('heroPrice').textContent = r.price_range;
     const open = r.opening_time.slice(0,5);
     const close = r.closing_time.slice(0,5);
     document.getElementById('heroHours').textContent = `${open} – ${close}`;
+
+    // Store seed rating as fallback for live update
+    document.getElementById('heroRating').dataset.seedRating = r.rating ?? 0;
 }
 
 // ===== LOAD FLOOR PLAN =====
@@ -369,7 +376,6 @@ async function submitReservation(e) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Confirming...';
 
     const payload = {
-        user_id: user.id,
         restaurant_id: restaurantId,
         table_id: selectedTable.id,
         date: document.getElementById('bookDate').value,
@@ -448,10 +454,12 @@ async function loadReviews() {
         const googleJson = await googleRes.json();
         
         let allReviewsHtml = '';
-        
+        const allRatings = [];
+
         // Render Local Reviews
         if (localJson.success && localJson.data.length > 0) {
             localJson.data.forEach(rev => {
+                allRatings.push(parseFloat(rev.rating));
                 allReviewsHtml += renderReviewItem(rev.user_name, rev.rating, rev.comment, new Date(rev.created_at).toLocaleDateString(), 'ReserveHub', rev.user_role);
             });
         }
@@ -459,10 +467,25 @@ async function loadReviews() {
         // Render Google Reviews
         if (googleJson.success && googleJson.data.length > 0) {
             googleJson.data.forEach(rev => {
+                allRatings.push(parseFloat(rev.rating));
                 allReviewsHtml += renderReviewItem(rev.author, rev.rating, rev.text, rev.time, 'Google');
             });
         }
         
+        // ===== UPDATE HERO RATING DYNAMICALLY =====
+        const heroRatingEl = document.getElementById('heroRating');
+        if (heroRatingEl) {
+            if (allRatings.length > 0) {
+                const avg = allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
+                const rounded = Math.round(avg * 10) / 10;
+                heroRatingEl.textContent = rounded.toFixed(1);
+            } else {
+                // No reviews yet — show seed rating with a note
+                const seed = parseFloat(heroRatingEl.dataset.seedRating || 0);
+                heroRatingEl.textContent = seed > 0 ? seed.toFixed(1) : '–';
+            }
+        }
+
         if (allReviewsHtml) {
             list.innerHTML = allReviewsHtml;
         } else {
@@ -502,4 +525,93 @@ function renderReviewItem(name, rating, text, time, source, role = 'user') {
             <small style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.4; margin-top: 8px; display: block;">${time}</small>
         </div>
     `;
+}
+
+// ===== ACTIVE RESERVATION TIMER =====
+let timerInterval = null;
+
+async function checkActiveReservation() {
+    const userStr = localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user');
+    if (!userStr) return;
+
+    try {
+        const res = await fetch(`../api/active_reservation.php?restaurant_id=${restaurantId}`);
+        const json = await res.json();
+        
+        if (json.success && json.data) {
+            startCountdownTimer(json.data);
+        } else {
+            const timerContainer = document.getElementById('activeReservationTimer');
+            if(timerContainer) timerContainer.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Failed to check active reservation', err);
+    }
+}
+
+function startCountdownTimer(reservation) {
+    const timerContainer = document.getElementById('activeReservationTimer');
+    const countdownEl = document.getElementById('timerCountdown');
+    if (!timerContainer || !countdownEl) return;
+    
+    // Calculate the end time: reservation time + 1 hour
+    const resDateTime = new Date(`${reservation.date}T${reservation.time}`);
+    const endTime = new Date(resDateTime.getTime() + 60 * 60 * 1000);
+    
+    // Stop any existing timer
+    if (timerInterval) clearInterval(timerInterval);
+    
+    const updateTimer = () => {
+        const now = new Date();
+        const diffMs = endTime - now;
+        
+        if (now < resDateTime) {
+            // Reservation hasn't started yet
+            timerContainer.style.display = 'none';
+            return;
+        }
+
+        if (diffMs <= 0) {
+            // Time is up
+            clearInterval(timerInterval);
+            countdownEl.textContent = '00:00';
+            completeReservation(reservation.id);
+            return;
+        }
+        
+        // Show timer
+        timerContainer.style.display = 'flex';
+        
+        const minutes = Math.floor(diffMs / 60000);
+        const seconds = Math.floor((diffMs % 60000) / 1000);
+        
+        countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (minutes < 15) {
+            countdownEl.style.color = '#ff4757'; // Red warning
+        } else {
+            countdownEl.style.color = 'var(--text)';
+        }
+    };
+    
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+async function completeReservation(id) {
+    try {
+        await fetch('../api/complete_reservation.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reservation_id: id })
+        });
+        
+        const timerContainer = document.getElementById('activeReservationTimer');
+        if(timerContainer) timerContainer.style.display = 'none';
+        
+        // Refresh floor plan since a table just became available
+        loadFloorPlan();
+    } catch (err) {
+        console.error('Failed to complete reservation', err);
+    }
 }
