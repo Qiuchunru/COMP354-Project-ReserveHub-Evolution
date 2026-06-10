@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial load
     loadSection('dashboard');
     loadRestaurantSelects();
+
+    // Pre-load inbox badge count so it shows on sidebar immediately
+    apiFetch('messages').then(json => {
+        if (json.success) updateInboxBadge((json.data || []).length);
+    });
 });
 
 // Generic Fetch
@@ -811,6 +816,29 @@ async function moderateListing(id, status) {
     }
 }
 
+// ===== TOAST NOTIFICATIONS =====
+function showToast(message, type = 'info') {
+    // Remove existing toast
+    const existing = document.getElementById('adminToast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'adminToast';
+    const color = type === 'error' ? '#e74c3c' : (type === 'success' ? '#2ecc71' : '#3498db');
+    toast.style.cssText = `
+        position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+        background: ${color}; color: #fff;
+        padding: 14px 22px; border-radius: 10px;
+        font-size: 0.95rem; font-weight: 500;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        animation: fadeIn 0.3s ease;
+        max-width: 360px;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
 // ===== INBOX MESSAGES =====
 let allMessages = [];
 
@@ -819,9 +847,34 @@ async function loadInbox() {
     if (json.success) {
         allMessages = json.data || [];
         renderMessages(allMessages);
+        updateInboxBadge(allMessages.length);
     } else {
-        showToast(json.message || 'Failed to load inbox messages.', 'error');
+        const list = document.getElementById('messagesList');
+        if (list) list.innerHTML = '<p style="color:var(--text-muted); padding: 20px; text-align: center;">Could not load messages. Please try again.</p>';
     }
+}
+
+function updateInboxBadge(count) {
+    // Remove existing badge
+    const existing = document.querySelector('.inbox-badge');
+    if (existing) existing.remove();
+    if (count === 0) return;
+
+    const inboxLink = document.querySelector('.admin-nav a[data-target="inbox"]');
+    if (!inboxLink) return;
+    const badge = document.createElement('span');
+    badge.className = 'inbox-badge';
+    badge.textContent = count;
+    badge.style.cssText = `
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #e74c3c; color: #fff;
+        font-size: 11px; font-weight: 700;
+        width: 20px; height: 20px; border-radius: 50%;
+        margin-left: auto;
+    `;
+    inboxLink.style.display = 'flex';
+    inboxLink.style.alignItems = 'center';
+    inboxLink.appendChild(badge);
 }
 
 function renderMessages(data) {
