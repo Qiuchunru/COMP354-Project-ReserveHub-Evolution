@@ -21,6 +21,7 @@
             <a href="#" data-target="restaurants"><i class="fa-solid fa-utensils"></i> My Restaurants</a>
             <a href="#" data-target="tables"><i class="fa-solid fa-chair"></i> Tables</a>
             <a href="#" data-target="reservations"><i class="fa-solid fa-book"></i> Reservations</a>
+            <a href="#" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i> Reservation History</a>
             <div style="margin-top: auto; padding: 20px 0;">
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                     <i class="fa-solid fa-moon" style="margin-right: 8px;"></i>
@@ -126,6 +127,35 @@
                 <div id="resList" style="display: flex; flex-direction: column; gap: 15px;">
                     <!-- Reservations injected here as cards -->
                 </div>
+            </div>
+        </section>
+
+        <!-- Reservation History Section -->
+        <section id="history" class="admin-section">
+            <div class="admin-header">
+                <h1>Reservation History</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="searchHistory" class="form-control" placeholder="Search past reservations..." style="width:250px;" onkeyup="filterVendorHistory()">
+                </div>
+            </div>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Res ID</th>
+                            <th>Customer</th>
+                            <th>Restaurant</th>
+                            <th>Date & Time</th>
+                            <th>Table</th>
+                            <th>Guests</th>
+                            <th>Managed By</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vHistoryTableBody">
+                        <!-- Injected via JS -->
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>

@@ -18,7 +18,7 @@
         <nav class="admin-nav">
             <a href="#" data-target="dashboard" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
             <a href="#" data-target="restaurants"><i class="fa-solid fa-utensils"></i> Restaurants</a>
-            <a href="#" data-target="reservations"><i class="fa-solid fa-book"></i> Reservations</a>
+            <a href="#" data-target="tables"><i class="fa-solid fa-chair"></i> Tables</a>
             <a href="#" data-target="users"><i class="fa-solid fa-users"></i> Users</a>
             <a href="#" data-target="approvals"><i class="fa-solid fa-clipboard-check"></i> Vendor Approvals</a>
             <a href="#" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i> Reservation History</a>
@@ -92,21 +92,6 @@
             </div>
             <div id="restGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
                 <!-- Cards injected here -->
-            </div>
-        </section>
-
-        <!-- Reservations Section -->
-        <section id="reservations" class="admin-section">
-            <div class="admin-header">
-                <h1>Reservations</h1>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="searchReservations" class="form-control" placeholder="Search reservations..." style="width:250px;" onkeyup="filterReservations()">
-                </div>
-            </div>
-            <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
-                <div id="resList" style="display: flex; flex-direction: column; gap: 15px;">
-                    <!-- Reservations will be rendered here as cards -->
-                </div>
             </div>
         </section>
 

@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target === 'restaurants')  loadRestaurants();
             if (target === 'tables')       vLoadFloorPlanSection();
             if (target === 'reservations') loadReservations();
+            if (target === 'history')      loadHistory();
         });
     });
 
@@ -292,6 +293,88 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('../api/vendor_api.php?endpoint=update_reservation', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({reservation_id:id,status}) })
             .then(r=>r.json()).then(res => { if(res.success){showToast(`Reservation ${status==='confirmed'?'accepted':'cancelled'}.`); loadReservations();} else showToast(res.message,'error'); })
             .catch(()=>showToast('Failed to update.','error'));
+    };
+
+    // =========================================================
+    // 7.5. RESERVATION HISTORY
+    // =========================================================
+    let vendorHistory = [];
+    
+    function loadHistory() {
+        const tbody = document.getElementById('vHistoryTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i></td></tr>';
+        
+        fetch('../api/vendor_api.php?endpoint=reservation_history')
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    vendorHistory = res.data || [];
+                    renderHistory(vendorHistory);
+                } else {
+                    showToast(res.message, 'error');
+                }
+            })
+            .catch(() => showToast('Failed to load history.', 'error'));
+    }
+
+    function renderHistory(data) {
+        const tbody = document.getElementById('vHistoryTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No past reservations found.</td></tr>';
+            return;
+        }
+
+        data.forEach(r => {
+            const statusColor = r.status === 'cancelled' ? '#e74c3c' : '#888';
+            const statusText = r.status === 'cancelled' ? 'Cancelled' : 'Past';
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${r.id}</td>
+                <td>
+                    <strong>${escHtml(r.user_name)}</strong><br>
+                    <span style="font-size: 12px; color: var(--text-muted);">${escHtml(r.user_phone || '—')}</span>
+                </td>
+                <td>${escHtml(r.restaurant_name)}</td>
+                <td>
+                    ${r.date}<br>
+                    <span style="font-size: 12px; color: var(--text-muted);">${r.time.slice(0,5)}</span>
+                </td>
+                <td>${escHtml(r.table_number)}</td>
+                <td>${r.guests}</td>
+                <td>
+                    ${r.manager_name ? 
+                        `<span style="padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; background: rgba(52, 152, 219, 0.1); color: #3492db; border-radius: 4px; border: 1px solid rgba(52, 152, 219, 0.3);">
+                            <i class="fa-solid fa-user-tie" style="margin-right: 4px;"></i>${escHtml(r.manager_name)} (ID: ${r.manager_id})
+                        </span>` : 
+                        '<span style="color:var(--text-muted);font-size:12px;">—</span>'
+                    }
+                </td>
+                <td>
+                    <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(128,128,128,0.1); border-radius: 4px;">
+                        ${statusText}
+                    </span>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.filterVendorHistory = () => {
+        const q = document.getElementById('searchHistory').value.toLowerCase();
+        const filtered = vendorHistory.filter(r => 
+            (r.restaurant_name && r.restaurant_name.toLowerCase().includes(q)) || 
+            (r.user_name && r.user_name.toLowerCase().includes(q)) ||
+            (r.user_phone && r.user_phone.toLowerCase().includes(q)) ||
+            (r.manager_name && r.manager_name.toLowerCase().includes(q)) ||
+            (r.id && r.id.toString().includes(q)) ||
+            (r.date && r.date.toLowerCase().includes(q))
+        );
+        renderHistory(filtered);
     };
 
     // =========================================================

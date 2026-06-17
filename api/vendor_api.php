@@ -144,7 +144,25 @@ try {
                     JOIN users u ON res.user_id = u.id
                     JOIN restaurants r ON res.restaurant_id = r.id
                     JOIN `tables` t ON res.table_id = t.id
-                    WHERE r.vendor_id = ?
+                    WHERE r.vendor_id = ? AND (res.status = 'pending' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.time) >= NOW()))
+                    ORDER BY res.date ASC, res.time ASC
+                ");
+                $stmt->execute([$userId]);
+                $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode(['success' => true, 'data' => $reservations]);
+            }
+            break;
+
+        case 'reservation_history':
+            if ($method === 'GET') {
+                $stmt = $pdo->prepare("
+                    SELECT res.id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.time, res.guests, res.status, m.name as manager_name, m.id as manager_id
+                    FROM reservations res
+                    JOIN users u ON res.user_id = u.id
+                    JOIN restaurants r ON res.restaurant_id = r.id
+                    JOIN `tables` t ON res.table_id = t.id
+                    LEFT JOIN users m ON res.managed_by = m.id
+                    WHERE r.vendor_id = ? AND (res.status = 'cancelled' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.time) < NOW()))
                     ORDER BY res.date DESC, res.time DESC
                 ");
                 $stmt->execute([$userId]);
@@ -176,8 +194,8 @@ try {
                     exit;
                 }
 
-                $updateStmt = $pdo->prepare("UPDATE reservations SET status = ? WHERE id = ?");
-                $updateStmt->execute([$status, $reservationId]);
+                $updateStmt = $pdo->prepare("UPDATE reservations SET status = ?, managed_by = ? WHERE id = ?");
+                $updateStmt->execute([$status, $userId, $reservationId]);
                 echo json_encode(['success' => true, 'message' => 'Reservation status updated successfully.']);
             }
             break;
