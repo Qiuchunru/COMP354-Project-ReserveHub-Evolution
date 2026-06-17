@@ -44,6 +44,7 @@ function loadSection(section) {
     if (section === 'users') loadUsers();
     if (section === 'approvals') loadApprovals();
     if (section === 'inbox') loadInbox();
+    if (section === 'history') loadHistory();
 }
 
 // ===== DASHBOARD =====
@@ -120,27 +121,61 @@ async function loadDashboard() {
 
 // ===== PDF EXPORT =====
 function downloadAnalyticsPDF() {
-    const dashboard = document.getElementById('dashboard');
     const btn = document.getElementById('exportPdfBtn');
-    
-    if (!dashboard) return;
-    
     const originalBtnText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
 
-    // Temporarily hide the button itself so it doesn't appear in the PDF
-    btn.style.display = 'none';
+    // 1. Collect Data
+    const users = document.getElementById('statUsers').innerText;
+    const res = document.getElementById('statRes').innerText;
+    const rests = document.getElementById('statRests').innerText;
 
-    html2canvas(dashboard, { 
-        backgroundColor: '#151515', 
+    // 2. Create an offscreen clean printable container
+    const printDiv = document.createElement('div');
+    printDiv.style.position = 'absolute';
+    printDiv.style.left = '-9999px';
+    printDiv.style.top = '-9999px';
+    printDiv.style.width = '800px';
+    printDiv.style.background = '#ffffff';
+    printDiv.style.color = '#000000';
+    printDiv.style.padding = '40px';
+    printDiv.style.fontFamily = 'Arial, sans-serif';
+    printDiv.innerHTML = `
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #ccc; padding-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 28px; color: #333;">ReserveHub Analytics Report</h1>
+            <p style="margin: 5px 0 0; font-size: 14px; color: #666;">Generated on: ${new Date().toLocaleString()}</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+            <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Total Users</h3>
+                <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${users}</p>
+            </div>
+            <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Total Reservations</h3>
+                <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${res}</p>
+            </div>
+            <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Restaurants</h3>
+                <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${rests}</p>
+            </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Platform Overview</h2>
+            <p style="font-size: 14px; line-height: 1.6;">This report provides a snapshot of the core metrics on the ReserveHub platform. The data above reflects the current totals across all verified vendors and user accounts.</p>
+        </div>
+    `;
+
+    document.body.appendChild(printDiv);
+
+    // 3. Render PDF
+    html2canvas(printDiv, { 
+        backgroundColor: '#ffffff', 
         scale: 2,
         useCORS: true,
         logging: false 
     }).then(canvas => {
         const { jsPDF } = window.jspdf;
-        
-        // Calculate dimensions to fit A4 page
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -149,12 +184,12 @@ function downloadAnalyticsPDF() {
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save('ReserveHub_Admin_Analytics_Report.pdf');
         
-        btn.style.display = '';
+        document.body.removeChild(printDiv);
         btn.disabled = false;
         btn.innerHTML = originalBtnText;
     }).catch(err => {
         console.error("Error generating report:", err);
-        btn.style.display = '';
+        if (document.body.contains(printDiv)) document.body.removeChild(printDiv);
         btn.disabled = false;
         btn.innerHTML = originalBtnText;
         showToast('error', 'Export Failed', 'Could not generate the PDF report.');
@@ -737,6 +772,53 @@ async function deleteRes(id) {
         await apiFetch(`reservations&id=${id}`, 'DELETE');
         loadReservations();
     }
+}
+
+// ===== RESERVATION HISTORY =====
+let allHistory = [];
+
+async function loadHistory() {
+    const json = await apiFetch('reservation_history');
+    if (json.success) {
+        allHistory = json.data;
+        renderHistory(allHistory);
+    }
+}
+
+function renderHistory(data) {
+    const tbody = document.getElementById('historyTbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No past reservations found.</td></tr>';
+        return;
+    }
+    data.forEach(r => {
+        const managerText = r.manager_name ? `${r.manager_name} (ID: ${r.manager_id})` : 'Auto-confirmed / System';
+        tbody.innerHTML += `
+            <tr>
+                <td>#${r.id}</td>
+                <td>${r.user_name}</td>
+                <td>${r.date} ${r.time}</td>
+                <td>${r.table_number}</td>
+                <td>${r.guests}</td>
+                <td style="color:var(--orange); font-weight:bold;">${managerText}</td>
+            </tr>
+        `;
+    });
+}
+
+function filterHistory() {
+    const q = document.getElementById('searchHistory').value.toLowerCase();
+    const filtered = allHistory.filter(r => 
+        (r.id && r.id.toString().includes(q)) ||
+        (r.user_name && r.user_name.toLowerCase().includes(q)) ||
+        (r.restaurant_name && r.restaurant_name.toLowerCase().includes(q)) ||
+        (r.date && r.date.toLowerCase().includes(q)) ||
+        (r.manager_name && r.manager_name.toLowerCase().includes(q)) ||
+        (r.manager_id && r.manager_id.toString().includes(q))
+    );
+    renderHistory(filtered);
 }
 
 // ===== USERS =====

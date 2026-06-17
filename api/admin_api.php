@@ -23,6 +23,13 @@ try {
     // Ignore
 }
 
+// Auto-migration: Ensure managed_by column exists
+try {
+    $pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS managed_by INT DEFAULT NULL");
+} catch (Exception $e) {
+    // Ignore
+}
+
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -178,14 +185,32 @@ try {
                     exit;
                 }
                 
-                $stmt = $pdo->prepare("UPDATE reservations SET status = ? WHERE id = ?");
-                $stmt->execute([$status, $id]);
+                $manager_id = $_SESSION['user_id'];
+                $stmt = $pdo->prepare("UPDATE reservations SET status = ?, managed_by = ? WHERE id = ?");
+                $stmt->execute([$status, $manager_id, $id]);
                 echo json_encode(['success' => true, 'message' => 'Reservation status updated.']);
             } elseif ($method === 'DELETE') {
                 $id = $_GET['id'] ?? 0;
                 $stmt = $pdo->prepare("DELETE FROM reservations WHERE id = ?");
                 $stmt->execute([$id]);
                 echo json_encode(['success' => true]);
+            }
+            break;
+
+        case 'reservation_history':
+            if ($method === 'GET') {
+                $res = $pdo->query("
+                    SELECT res.id, u.name as user_name, r.name as restaurant_name, t.table_number, res.date, res.time, res.guests,
+                           m.name as manager_name, m.id as manager_id
+                    FROM reservations res
+                    JOIN users u ON res.user_id = u.id
+                    JOIN restaurants r ON res.restaurant_id = r.id
+                    JOIN `tables` t ON res.table_id = t.id
+                    LEFT JOIN users m ON res.managed_by = m.id
+                    WHERE res.status = 'confirmed' AND CONCAT(res.date, ' ', res.time) < NOW()
+                    ORDER BY res.date DESC, res.time DESC
+                ")->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode(['success' => true, 'data' => $res]);
             }
             break;
 
