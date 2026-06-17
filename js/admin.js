@@ -709,10 +709,10 @@ function renderReservations(data) {
                 <img src="${r.image_url}" style="width: 100px; height: 75px; object-fit: cover; border-radius: 8px;" onerror="this.src='../pictures/eating-bg.jpg'">
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 1.1rem; color: #fff;">${r.restaurant_name}</h4>
-                        <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px;">${statusText}</span>
+                        <h4 style="margin: 0; font-size: 1.1rem; color: var(--text);">${r.restaurant_name}</h4>
+                        <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(128,128,128,0.1); border-radius: 4px;">${statusText}</span>
                     </div>
-                    <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: #ccc;">
+                    <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: var(--text-muted);">
                         <i class="fa-solid fa-user" style="color: var(--orange); width: 16px;"></i> ${r.user_name}
                         ${r.user_phone ? `&nbsp;|&nbsp; <i class="fa-solid fa-phone" style="width: 16px;"></i> ${r.user_phone}` : ''}
                     </p>
@@ -1052,7 +1052,7 @@ function renderMessages(data) {
             <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); position: relative; transition: var(--transition);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
                     <div>
-                        <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: #fff;">${r.subject}</h4>
+                        <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text);">${r.subject}</h4>
                         <span style="font-size: 0.85rem; color: var(--orange); font-weight: 600;">
                             From: ${r.name} (<a href="mailto:${r.email}" style="color: var(--orange); text-decoration: underline;">${r.email}</a>)
                         </span>
