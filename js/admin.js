@@ -49,6 +49,7 @@ function loadSection(section) {
     if (section === 'users') loadUsers();
     if (section === 'approvals') loadApprovals();
     if (section === 'inbox') loadInbox();
+    if (section === 'history') loadHistory();
 }
 
 // ===== DASHBOARD =====
@@ -121,6 +122,83 @@ async function loadDashboard() {
             }
         });
     }
+}
+
+// ===== PDF EXPORT =====
+function downloadAnalyticsPDF() {
+    const btn = document.getElementById('exportPdfBtn');
+    const originalBtnText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+
+    // 1. Collect Data
+    const users = document.getElementById('statUsers').innerText;
+    const res = document.getElementById('statRes').innerText;
+    const rests = document.getElementById('statRests').innerText;
+
+    // 2. Create an offscreen clean printable container
+    const printDiv = document.createElement('div');
+    printDiv.style.position = 'absolute';
+    printDiv.style.left = '-9999px';
+    printDiv.style.top = '-9999px';
+    printDiv.style.width = '800px';
+    printDiv.style.background = '#ffffff';
+    printDiv.style.color = '#000000';
+    printDiv.style.padding = '40px';
+    printDiv.style.fontFamily = 'Arial, sans-serif';
+    printDiv.innerHTML = `
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #ccc; padding-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 28px; color: #333;">ReserveHub Analytics Report</h1>
+            <p style="margin: 5px 0 0; font-size: 14px; color: #666;">Generated on: ${new Date().toLocaleString()}</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+            <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Total Users</h3>
+                <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${users}</p>
+            </div>
+            <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Total Reservations</h3>
+                <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${res}</p>
+            </div>
+            <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Restaurants</h3>
+                <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${rests}</p>
+            </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Platform Overview</h2>
+            <p style="font-size: 14px; line-height: 1.6;">This report provides a snapshot of the core metrics on the ReserveHub platform. The data above reflects the current totals across all verified vendors and user accounts.</p>
+        </div>
+    `;
+
+    document.body.appendChild(printDiv);
+
+    // 3. Render PDF
+    html2canvas(printDiv, { 
+        backgroundColor: '#ffffff', 
+        scale: 2,
+        useCORS: true,
+        logging: false 
+    }).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('ReserveHub_Admin_Analytics_Report.pdf');
+        
+        document.body.removeChild(printDiv);
+        btn.disabled = false;
+        btn.innerHTML = originalBtnText;
+    }).catch(err => {
+        console.error("Error generating report:", err);
+        if (document.body.contains(printDiv)) document.body.removeChild(printDiv);
+        btn.disabled = false;
+        btn.innerHTML = originalBtnText;
+        showToast('error', 'Export Failed', 'Could not generate the PDF report.');
+    });
 }
 
 // ===== RESTAURANTS =====
@@ -619,19 +697,27 @@ function renderReservations(data) {
         return;
     }
     data.forEach(r => {
-        const isPast = new Date(r.date + ' ' + r.time) < new Date();
-        const statusColor = isPast ? '#888' : '#27ae60';
-        const statusText = isPast ? 'Past' : 'Upcoming';
+        let statusColor, statusText;
+        if (r.status === 'pending') {
+            statusColor = '#f1c40f';
+            statusText = 'Pending Approval';
+        } else if (r.status === 'cancelled') {
+            statusColor = '#e74c3c';
+            statusText = 'Cancelled';
+        } else {
+            statusColor = isPast ? '#888' : '#27ae60';
+            statusText = isPast ? 'Past' : 'Confirmed';
+        }
 
         list.innerHTML += `
             <div style="display: flex; gap: 20px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); align-items: center; transition: var(--transition);">
                 <img src="${r.image_url}" style="width: 100px; height: 75px; object-fit: cover; border-radius: 8px;" onerror="this.src='../pictures/eating-bg.jpg'">
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 1.1rem; color: #fff;">${r.restaurant_name}</h4>
-                        <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px;">${statusText}</span>
+                        <h4 style="margin: 0; font-size: 1.1rem; color: var(--text);">${r.restaurant_name}</h4>
+                        <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(128,128,128,0.1); border-radius: 4px;">${statusText}</span>
                     </div>
-                    <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: #ccc;">
+                    <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: var(--text-muted);">
                         <i class="fa-solid fa-user" style="color: var(--orange); width: 16px;"></i> ${r.user_name}
                         ${r.user_phone ? `&nbsp;|&nbsp; <i class="fa-solid fa-phone" style="width: 16px;"></i> ${r.user_phone}` : ''}
                     </p>
@@ -645,9 +731,20 @@ function renderReservations(data) {
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
                     <span style="font-size: 0.75rem; color: #666;">ID: #${r.id}</span>
-                    <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    ${r.status === 'pending' ? `
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn edit" onclick="updateResStatus(${r.id}, 'confirmed')" title="Approve" style="margin:0; background: #2ecc71; color: #fff; padding: 6px 12px; border-radius: 6px;">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="updateResStatus(${r.id}, 'cancelled')" title="Reject" style="margin:0; background: #e74c3c; color: #fff; padding: 6px 12px; border-radius: 6px;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    ` : `
+                        <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `}
                 </div>
             </div>
         `;
@@ -666,11 +763,67 @@ function filterReservations() {
     renderReservations(filtered);
 }
 
+async function updateResStatus(id, status) {
+    const json = await apiFetch('reservations', 'PUT', { id, status });
+    if (json.success) {
+        loadReservations();
+    } else {
+        showToast(json.message || 'Failed to update reservation.', 'error');
+    }
+}
+
 async function deleteRes(id) {
     if (confirm('Delete this reservation?')) {
         await apiFetch(`reservations&id=${id}`, 'DELETE');
         loadReservations();
     }
+}
+
+// ===== RESERVATION HISTORY =====
+let allHistory = [];
+
+async function loadHistory() {
+    const json = await apiFetch('reservation_history');
+    if (json.success) {
+        allHistory = json.data;
+        renderHistory(allHistory);
+    }
+}
+
+function renderHistory(data) {
+    const tbody = document.getElementById('historyTbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No past reservations found.</td></tr>';
+        return;
+    }
+    data.forEach(r => {
+        const managerText = r.manager_name ? `${r.manager_name} (ID: ${r.manager_id})` : 'Auto-confirmed / System';
+        tbody.innerHTML += `
+            <tr>
+                <td>#${r.id}</td>
+                <td>${r.user_name}</td>
+                <td>${r.date} ${r.time}</td>
+                <td>${r.table_number}</td>
+                <td>${r.guests}</td>
+                <td style="color:var(--orange); font-weight:bold;">${managerText}</td>
+            </tr>
+        `;
+    });
+}
+
+function filterHistory() {
+    const q = document.getElementById('searchHistory').value.toLowerCase();
+    const filtered = allHistory.filter(r => 
+        (r.id && r.id.toString().includes(q)) ||
+        (r.user_name && r.user_name.toLowerCase().includes(q)) ||
+        (r.restaurant_name && r.restaurant_name.toLowerCase().includes(q)) ||
+        (r.date && r.date.toLowerCase().includes(q)) ||
+        (r.manager_name && r.manager_name.toLowerCase().includes(q)) ||
+        (r.manager_id && r.manager_id.toString().includes(q))
+    );
+    renderHistory(filtered);
 }
 
 // ===== USERS =====
@@ -952,7 +1105,7 @@ function renderMessages(data) {
             <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); position: relative; transition: var(--transition);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
                     <div>
-                        <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: #fff;">${r.subject}</h4>
+                        <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text);">${r.subject}</h4>
                         <span style="font-size: 0.85rem; color: var(--orange); font-weight: 600;">
                             From: ${r.name} (<a href="mailto:${r.email}" style="color: var(--orange); text-decoration: underline;">${r.email}</a>)
                         </span>

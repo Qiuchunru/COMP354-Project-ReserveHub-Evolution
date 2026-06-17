@@ -60,14 +60,14 @@ try {
 
     // Insert reservation
     $stmt = $pdo->prepare(
-        "INSERT INTO reservations (user_id, restaurant_id, table_id, date, time, guests, special_requests)
-         VALUES (?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO reservations (user_id, restaurant_id, table_id, date, time, guests, special_requests, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')"
     );
     $stmt->execute([$user_id, $restaurant_id, $table_id, $date, $time, $guests, $special_req]);
 
     echo json_encode([
         'success' => true,
-        'message' => 'Reservation confirmed!',
+        'message' => 'Reservation request submitted and is awaiting approval!',
         'reservation_id' => $pdo->lastInsertId()
     ]);
 } catch (PDOException $e) {
