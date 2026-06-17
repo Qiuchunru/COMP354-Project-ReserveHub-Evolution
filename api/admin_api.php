@@ -52,11 +52,14 @@ try {
                     LIMIT 5
                 ")->fetchAll(PDO::FETCH_ASSOC);
 
+                $usersByRole = $pdo->query("SELECT role, COUNT(*) as count FROM users GROUP BY role")->fetchAll(PDO::FETCH_ASSOC);
+
                 echo json_encode(['success' => true, 'data' => [
                     'users' => $totalUsers,
                     'reservations' => $totalRes,
                     'restaurants' => $totalRests,
-                    'popular' => $popRes
+                    'popular' => $popRes,
+                    'users_by_role' => $usersByRole
                 ]]);
             }
             break;
@@ -259,7 +262,7 @@ try {
                 $restId = $_GET['restaurant_id'] ?? 0;
                 if ($restId) {
                     // Compute live availability: a table is 'occupied' if it has an active
-                    // reservation within 90 minutes of the current time today
+                    // reservation within 60 minutes of the current time today
                     $stmt = $pdo->prepare("
                         SELECT t.*,
                                CASE WHEN r.id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
@@ -267,8 +270,8 @@ try {
                         LEFT JOIN reservations r
                             ON r.table_id = t.id
                             AND r.date = CURDATE()
-                            AND ABS(TIMESTAMPDIFF(MINUTE, r.time, CURTIME())) < 90
-                            AND r.status != 'cancelled'
+                            AND ABS(TIMESTAMPDIFF(MINUTE, r.time, CURTIME())) < 60
+                            AND r.status IN ('pending', 'confirmed')
                         WHERE t.restaurant_id = ?
                         ORDER BY t.table_number ASC
                     ");

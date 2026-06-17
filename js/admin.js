@@ -53,6 +53,7 @@ function loadSection(section) {
 
 // ===== DASHBOARD =====
 let popularityChart = null;
+let usersChart = null;
 
 async function loadDashboard() {
     const json = await apiFetch('analytics');
@@ -89,6 +90,33 @@ async function loadDashboard() {
                 scales: {
                     y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a0a0a0', stepSize: 1 } },
                     x: { grid: { display: false }, ticks: { color: '#a0a0a0' } }
+                }
+            }
+        });
+
+        // Users pie chart
+        const roleLabels = json.data.users_by_role.map(u => u.role);
+        const roleData = json.data.users_by_role.map(u => u.count);
+
+        if (usersChart) usersChart.destroy();
+        
+        const ctxUsers = document.getElementById('usersChart').getContext('2d');
+        usersChart = new Chart(ctxUsers, {
+            type: 'pie',
+            data: {
+                labels: roleLabels,
+                datasets: [{
+                    data: roleData,
+                    backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f'],
+                    borderWidth: 1,
+                    borderColor: '#151515'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#a0a0a0' } },
+                    tooltip: { backgroundColor: '#151515', bodyColor: '#fff' }
                 }
             }
         });
@@ -573,50 +601,69 @@ function openTableModal() { addTableToFloor('round', 4); }
 function loadTables() { loadFloorPlan(); }
 
 // ===== RESERVATIONS =====
+let allReservations = [];
+
 async function loadReservations() {
     const json = await apiFetch('reservations');
     if (json.success) {
-        const list = document.getElementById('resList');
-        list.innerHTML = '';
-        if (json.data.length === 0) {
-            list.innerHTML = '<p style="color:var(--text-muted);">No reservations found.</p>';
-            return;
-        }
-        json.data.forEach(r => {
-            const isPast = new Date(r.date + ' ' + r.time) < new Date();
-            const statusColor = isPast ? '#888' : '#27ae60';
-            const statusText = isPast ? 'Past' : 'Upcoming';
-
-            list.innerHTML += `
-                <div style="display: flex; gap: 20px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); align-items: center; transition: var(--transition);">
-                    <img src="${r.image_url}" style="width: 100px; height: 75px; object-fit: cover; border-radius: 8px;" onerror="this.src='../pictures/eating-bg.jpg'">
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                            <h4 style="margin: 0; font-size: 1.1rem; color: #fff;">${r.restaurant_name}</h4>
-                            <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px;">${statusText}</span>
-                        </div>
-                        <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: #ccc;">
-                            <i class="fa-solid fa-user" style="color: var(--orange); width: 16px;"></i> ${r.user_name}
-                            ${r.user_phone ? `&nbsp;|&nbsp; <i class="fa-solid fa-phone" style="width: 16px;"></i> ${r.user_phone}` : ''}
-                        </p>
-                        <p style="margin: 0 0 6px 0; font-size: 0.85rem; color: #888;">
-                            <i class="fa-regular fa-calendar" style="width: 16px;"></i> ${r.date} &nbsp;|&nbsp; 
-                            <i class="fa-regular fa-clock" style="width: 16px;"></i> ${r.time.slice(0,5)}
-                        </p>
-                        <p style="margin: 0; font-size: 0.85rem; color: var(--orange); font-weight: 600;">
-                            Table ${r.table_number} &nbsp;|&nbsp; ${r.guests} Guests
-                        </p>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
-                        <span style="font-size: 0.75rem; color: #666;">ID: #${r.id}</span>
-                        <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
+        allReservations = json.data;
+        renderReservations(allReservations);
     }
+}
+
+function renderReservations(data) {
+    const list = document.getElementById('resList');
+    list.innerHTML = '';
+    if (data.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted);">No reservations found.</p>';
+        return;
+    }
+    data.forEach(r => {
+        const isPast = new Date(r.date + ' ' + r.time) < new Date();
+        const statusColor = isPast ? '#888' : '#27ae60';
+        const statusText = isPast ? 'Past' : 'Upcoming';
+
+        list.innerHTML += `
+            <div style="display: flex; gap: 20px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); align-items: center; transition: var(--transition);">
+                <img src="${r.image_url}" style="width: 100px; height: 75px; object-fit: cover; border-radius: 8px;" onerror="this.src='../pictures/eating-bg.jpg'">
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <h4 style="margin: 0; font-size: 1.1rem; color: #fff;">${r.restaurant_name}</h4>
+                        <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px;">${statusText}</span>
+                    </div>
+                    <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: #ccc;">
+                        <i class="fa-solid fa-user" style="color: var(--orange); width: 16px;"></i> ${r.user_name}
+                        ${r.user_phone ? `&nbsp;|&nbsp; <i class="fa-solid fa-phone" style="width: 16px;"></i> ${r.user_phone}` : ''}
+                    </p>
+                    <p style="margin: 0 0 6px 0; font-size: 0.85rem; color: #888;">
+                        <i class="fa-regular fa-calendar" style="width: 16px;"></i> ${r.date} &nbsp;|&nbsp; 
+                        <i class="fa-regular fa-clock" style="width: 16px;"></i> ${r.time.slice(0,5)}
+                    </p>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--orange); font-weight: 600;">
+                        Table ${r.table_number} &nbsp;|&nbsp; ${r.guests} Guests
+                    </p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                    <span style="font-size: 0.75rem; color: #666;">ID: #${r.id}</span>
+                    <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function filterReservations() {
+    const q = document.getElementById('searchReservations').value.toLowerCase();
+    const filtered = allReservations.filter(r => 
+        (r.restaurant_name && r.restaurant_name.toLowerCase().includes(q)) || 
+        (r.user_name && r.user_name.toLowerCase().includes(q)) ||
+        (r.user_phone && r.user_phone.toLowerCase().includes(q)) ||
+        (r.id && r.id.toString().includes(q)) ||
+        (r.date && r.date.toLowerCase().includes(q))
+    );
+    renderReservations(filtered);
 }
 
 async function deleteRes(id) {
@@ -802,9 +849,22 @@ function renderApprovals(data) {
                         </div>
                     `}
                 </div>
-            </div>
-        `;
+        </div>
+    `;
     });
+}
+
+function filterApprovals() {
+    const q = document.getElementById('searchApprovals').value.toLowerCase();
+    const filtered = allApprovals.filter(r => 
+        (r.name && r.name.toLowerCase().includes(q)) || 
+        (r.vendor_name && r.vendor_name.toLowerCase().includes(q)) ||
+        (r.vendor_email && r.vendor_email.toLowerCase().includes(q)) ||
+        (r.cuisine && r.cuisine.toLowerCase().includes(q)) ||
+        (r.location && r.location.toLowerCase().includes(q)) ||
+        (r.status && r.status.toLowerCase().includes(q))
+    );
+    renderApprovals(filtered);
 }
 
 async function moderateListing(id, status) {

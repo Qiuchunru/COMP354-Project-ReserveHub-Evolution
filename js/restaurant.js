@@ -26,14 +26,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextHalfHour = new Date(Math.ceil(now.getTime() / 1800000) * 1800000);
     const timeStr = `${pad(nextHalfHour.getHours())}:${pad(nextHalfHour.getMinutes())}`;
 
-    ['fpDate', 'bookDate'].forEach(id => document.getElementById(id).value = todayStr);
-    ['fpTime', 'bookTime'].forEach(id => document.getElementById(id).value = timeStr);
+    // Set min date to today so users cannot pick past dates
+    ['fpDate', 'bookDate'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = todayStr;
+        el.min = todayStr;
+    });
 
-    // Sync date/time between panels
-    document.getElementById('fpDate').addEventListener('change', e => document.getElementById('bookDate').value = e.target.value);
-    document.getElementById('fpTime').addEventListener('change', e => document.getElementById('bookTime').value = e.target.value);
-    document.getElementById('bookDate').addEventListener('change', e => document.getElementById('fpDate').value = e.target.value);
-    document.getElementById('bookTime').addEventListener('change', e => document.getElementById('fpTime').value = e.target.value);
+    // Set min time to next half-hour (since today is pre-selected)
+    const minTimeStr = `${pad(nextHalfHour.getHours())}:${pad(nextHalfHour.getMinutes())}`;
+    ['fpTime', 'bookTime'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = timeStr;
+        el.min = minTimeStr;
+    });
+
+    // Helper: update time min based on whether selected date is today
+    function updateTimeMin(dateVal, timeIds) {
+        const selectedDate = new Date(dateVal + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isToday = selectedDate.getTime() === today.getTime();
+        timeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (isToday) {
+                el.min = minTimeStr;
+                // If the current value is in the past, reset it
+                if (el.value && el.value < minTimeStr) {
+                    el.value = minTimeStr;
+                }
+            } else {
+                el.min = '00:00';
+            }
+        });
+    }
+
+    // Sync date/time between panels + enforce min time on date change
+    document.getElementById('fpDate').addEventListener('change', e => {
+        document.getElementById('bookDate').value = e.target.value;
+        updateTimeMin(e.target.value, ['fpTime', 'bookTime']);
+    });
+    document.getElementById('fpTime').addEventListener('change', e => {
+        document.getElementById('bookTime').value = e.target.value;
+    });
+    document.getElementById('bookDate').addEventListener('change', e => {
+        document.getElementById('fpDate').value = e.target.value;
+        updateTimeMin(e.target.value, ['fpTime', 'bookTime']);
+    });
+    document.getElementById('bookTime').addEventListener('change', e => {
+        document.getElementById('fpTime').value = e.target.value;
+    });
 
     // Load restaurant info and floor plan
     loadRestaurant();
@@ -53,11 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
         reserveBtn.style.background = 'var(--orange)';
         
         // Disable form inputs but keep them visible
-        const formInputs = document.querySelectorAll('#bookingForm select, #bookingForm textarea');
+        const formInputs = document.querySelectorAll(
+            '#bookingForm select, #bookingForm textarea, #bookingForm input[type="date"], #bookingForm input[type="time"]'
+        );
         formInputs.forEach(input => {
             input.disabled = true;
-            input.style.opacity = '0.6';
+            input.style.opacity = '0.5';
             input.style.cursor = 'not-allowed';
+            input.style.pointerEvents = 'none';
         });
         
         // Add a helpful message
@@ -84,6 +129,7 @@ async function loadRestaurant() {
         document.title = `${restaurantData.name} | ReserveHub`;
 
         await loadFloorPlan();
+        checkActiveReservation();
     } catch (err) {
         console.error('Failed to load restaurant:', err);
     }
@@ -93,12 +139,15 @@ async function loadRestaurant() {
 function renderHero(r) {
     document.getElementById('heroBg').style.backgroundImage = `url('${r.image_url}')`;
     document.getElementById('heroName').textContent = r.name;
-    document.getElementById('heroRating').textContent = r.rating;
+    document.getElementById('heroRating').textContent = r.rating ?? '–';
     document.getElementById('heroLocation').textContent = r.location;
     document.getElementById('heroPrice').textContent = r.price_range;
     const open = r.opening_time.slice(0,5);
     const close = r.closing_time.slice(0,5);
     document.getElementById('heroHours').textContent = `${open} – ${close}`;
+
+    // Store seed rating as fallback for live update
+    document.getElementById('heroRating').dataset.seedRating = r.rating ?? 0;
 }
 
 // ===== LOAD FLOOR PLAN =====
@@ -369,7 +418,6 @@ async function submitReservation(e) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Confirming...';
 
     const payload = {
-        user_id: user.id,
         restaurant_id: restaurantId,
         table_id: selectedTable.id,
         date: document.getElementById('bookDate').value,
@@ -448,10 +496,12 @@ async function loadReviews() {
         const googleJson = await googleRes.json();
         
         let allReviewsHtml = '';
-        
+        const allRatings = [];
+
         // Render Local Reviews
         if (localJson.success && localJson.data.length > 0) {
             localJson.data.forEach(rev => {
+                allRatings.push(parseFloat(rev.rating));
                 allReviewsHtml += renderReviewItem(rev.user_name, rev.rating, rev.comment, new Date(rev.created_at).toLocaleDateString(), 'ReserveHub', rev.user_role);
             });
         }
@@ -459,10 +509,25 @@ async function loadReviews() {
         // Render Google Reviews
         if (googleJson.success && googleJson.data.length > 0) {
             googleJson.data.forEach(rev => {
+                allRatings.push(parseFloat(rev.rating));
                 allReviewsHtml += renderReviewItem(rev.author, rev.rating, rev.text, rev.time, 'Google');
             });
         }
         
+        // ===== UPDATE HERO RATING DYNAMICALLY =====
+        const heroRatingEl = document.getElementById('heroRating');
+        if (heroRatingEl) {
+            if (allRatings.length > 0) {
+                const avg = allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
+                const rounded = Math.round(avg * 10) / 10;
+                heroRatingEl.textContent = rounded.toFixed(1);
+            } else {
+                // No reviews yet — show seed rating with a note
+                const seed = parseFloat(heroRatingEl.dataset.seedRating || 0);
+                heroRatingEl.textContent = seed > 0 ? seed.toFixed(1) : '–';
+            }
+        }
+
         if (allReviewsHtml) {
             list.innerHTML = allReviewsHtml;
         } else {
@@ -502,4 +567,182 @@ function renderReviewItem(name, rating, text, time, source, role = 'user') {
             <small style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.4; margin-top: 8px; display: block;">${time}</small>
         </div>
     `;
+}
+
+// ===== ACTIVE RESERVATION TIMER =====
+let timerInterval = null;
+
+async function checkActiveReservation() {
+    const userStr = localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user');
+    if (!userStr) return;
+
+    try {
+        const res = await fetch(`../api/active_reservation.php?restaurant_id=${restaurantId}`);
+        const json = await res.json();
+        
+        if (json.success && json.data) {
+            startCountdownTimer(json.data);
+        } else {
+            const timerContainer = document.getElementById('activeReservationTimer');
+            if(timerContainer) timerContainer.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Failed to check active reservation', err);
+    }
+}
+
+function startCountdownTimer(reservation) {
+    const timerContainer = document.getElementById('activeReservationTimer');
+    const countdownEl = document.getElementById('timerCountdown');
+    if (!timerContainer || !countdownEl) return;
+    
+    // Calculate the end time: reservation time + 1 hour
+    const resDateTime = new Date(`${reservation.date}T${reservation.time}`);
+    const endTime = new Date(resDateTime.getTime() + 60 * 60 * 1000);
+    
+    // Stop any existing timer
+    if (timerInterval) clearInterval(timerInterval);
+    
+    const updateTimer = () => {
+        const now = new Date();
+        const diffMs = endTime - now;
+        
+        if (now < resDateTime) {
+            // Reservation hasn't started yet
+            timerContainer.style.display = 'none';
+            return;
+        }
+
+        if (diffMs <= 0) {
+            // Time is up
+            clearInterval(timerInterval);
+            countdownEl.textContent = '00:00';
+            completeReservation(reservation.id);
+            return;
+        }
+        
+        // Show timer
+        timerContainer.style.display = 'flex';
+        
+        const minutes = Math.floor(diffMs / 60000);
+        const seconds = Math.floor((diffMs % 60000) / 1000);
+        
+        countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (minutes < 15) {
+            countdownEl.style.color = '#ff4757'; // Red warning
+        } else {
+            countdownEl.style.color = 'var(--text)';
+        }
+    };
+    
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+async function completeReservation(id) {
+    try {
+        await fetch('../api/complete_reservation.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reservation_id: id })
+        });
+        
+        const timerContainer = document.getElementById('activeReservationTimer');
+        if(timerContainer) timerContainer.style.display = 'none';
+        
+        // Refresh floor plan since a table just became available
+        loadFloorPlan();
+    } catch (err) {
+        console.error('Failed to complete reservation', err);
+    }
+}
+
+// ===== DOWNLOAD RECEIPT =====
+function downloadReceipt(format) {
+    const bookingId = document.getElementById('modalBookingId').textContent.replace('#', '');
+    const receiptBox = document.getElementById('receiptBox');
+    
+    const btnPdf = document.getElementById('downloadPdfBtn');
+    const btnImg = document.getElementById('downloadImageBtn');
+    
+    const origPdfHtml = btnPdf ? btnPdf.innerHTML : '';
+    const origImgHtml = btnImg ? btnImg.innerHTML : '';
+    
+    if (btnPdf) { btnPdf.disabled = true; btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; }
+    if (btnImg) { btnImg.disabled = true; btnImg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; }
+    
+    // Create an off-screen clone to avoid html2canvas issues with backdrop-filter and fixed positioning
+    const clone = receiptBox.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    clone.style.width = '350px'; // Set a fixed width
+    clone.style.background = '#1e1e1e'; // Ensure opaque background
+    clone.style.padding = '20px';
+    clone.style.margin = '0';
+    clone.style.borderRadius = '12px';
+    clone.style.border = '1px solid #333';
+    
+    // Add the ReserveHub Logo to the top of the receipt
+    const logoContainer = document.createElement('div');
+    logoContainer.style.textAlign = 'center';
+    logoContainer.style.marginBottom = '20px';
+    logoContainer.style.borderBottom = '1px dashed #444';
+    logoContainer.style.paddingBottom = '15px';
+    
+    const logoImg = document.createElement('img');
+    logoImg.src = '../pictures/reservehub-full-logo-dark-mode.png';
+    logoImg.style.width = '140px';
+    logoImg.style.display = 'inline-block';
+    
+    logoContainer.appendChild(logoImg);
+    clone.insertBefore(logoContainer, clone.firstChild);
+    
+    document.body.appendChild(clone);
+    
+    // Wait for the image to load before capturing to avoid blank image
+    logoImg.onload = () => {
+        html2canvas(clone, { 
+            backgroundColor: '#1e1e1e', 
+            scale: 2,
+            useCORS: true,
+            logging: false 
+        }).then(canvas => {
+            document.body.removeChild(clone);
+            
+            if (format === 'image') {
+                const link = document.createElement('a');
+                link.download = `ReserveHub_Receipt_${bookingId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } else if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                
+                const pdf = new jsPDF({
+                    orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save(`ReserveHub_Receipt_${bookingId}.pdf`);
+            }
+            
+            if (btnPdf) { btnPdf.disabled = false; btnPdf.innerHTML = origPdfHtml; }
+            if (btnImg) { btnImg.disabled = false; btnImg.innerHTML = origImgHtml; }
+        }).catch(err => {
+            if (document.body.contains(clone)) document.body.removeChild(clone);
+            console.error("Error generating receipt:", err);
+            showToast('error', 'Download Failed', 'Could not generate receipt file. Check console for details.');
+            if (btnPdf) { btnPdf.disabled = false; btnPdf.innerHTML = origPdfHtml; }
+            if (btnImg) { btnImg.disabled = false; btnImg.innerHTML = origImgHtml; }
+        });
+    };
+    
+    // Fallback if image fails to load
+    logoImg.onerror = () => {
+        logoImg.onload(); // just run it anyway without the image
+    };
 }

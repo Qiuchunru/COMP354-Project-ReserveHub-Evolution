@@ -69,6 +69,15 @@
             <div class="admin-table-container" style="padding: 24px;">
                 <canvas id="popularityChart" width="100%" height="30"></canvas>
             </div>
+            
+            <div class="admin-header" style="margin-top: 40px;">
+                <h2>Users By Role</h2>
+            </div>
+            <div class="admin-table-container" style="padding: 24px; display: flex; justify-content: center;">
+                <div style="width: 300px; height: 300px;">
+                    <canvas id="usersChart"></canvas>
+                </div>
+            </div>
         </section>
 
         <!-- Restaurants Section -->
@@ -86,7 +95,12 @@
 
         <!-- Reservations Section -->
         <section id="reservations" class="admin-section">
-            <div class="admin-header"><h1>Reservations</h1></div>
+            <div class="admin-header">
+                <h1>Reservations</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="searchReservations" class="form-control" placeholder="Search reservations..." style="width:250px;" onkeyup="filterReservations()">
+                </div>
+            </div>
             <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
                 <div id="resList" style="display: flex; flex-direction: column; gap: 15px;">
                     <!-- Reservations will be rendered here as cards -->
@@ -115,6 +129,9 @@
         <section id="approvals" class="admin-section">
             <div class="admin-header">
                 <h1>Vendor Approvals</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="searchApprovals" class="form-control" placeholder="Search approvals..." style="width:250px;" onkeyup="filterApprovals()">
+                </div>
             </div>
             <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
                 <div id="approvalsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">

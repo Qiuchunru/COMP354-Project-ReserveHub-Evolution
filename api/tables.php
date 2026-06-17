@@ -15,7 +15,7 @@ if (!$restaurant_id || !is_numeric($restaurant_id)) {
 
 try {
     if ($date && $time) {
-        // Compute per-table availability for a specific date/time window (±90 min)
+        // Compute per-table availability for a specific date/time window (±60 min)
         $stmt = $pdo->prepare("
             SELECT t.*,
                    CASE WHEN r.id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
@@ -23,8 +23,8 @@ try {
             LEFT JOIN reservations r
                 ON  r.table_id      = t.id
                 AND r.date          = ?
-                AND ABS(TIMESTAMPDIFF(MINUTE, r.time, CAST(? AS TIME))) < 90
-                AND r.status       != 'cancelled'
+                AND ABS(TIMESTAMPDIFF(MINUTE, r.time, CAST(? AS TIME))) < 60
+                AND r.status IN ('pending', 'confirmed')
             WHERE t.restaurant_id = ?
             ORDER BY t.table_number
         ");

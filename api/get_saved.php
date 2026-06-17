@@ -11,6 +11,16 @@ if (!$user_id) {
 }
 
 try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `saved_restaurants` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `user_id` INT NOT NULL,
+        `restaurant_id` INT NOT NULL,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY `unique_save` (`user_id`, `restaurant_id`)
+    )");
+} catch (Exception $e) {}
+
+try {
     $sql = "SELECT r.* FROM restaurants r
             JOIN saved_restaurants s ON r.id = s.restaurant_id
             WHERE s.user_id = ?

@@ -36,8 +36,8 @@ try {
     // Check if table is still available at this time
     $checkStmt = $pdo->prepare(
         "SELECT id FROM reservations
-         WHERE table_id = ? AND date = ? AND ABS(TIMESTAMPDIFF(MINUTE, time, CAST(? AS TIME))) < 90
-         AND status != 'cancelled'"
+         WHERE table_id = ? AND date = ? AND ABS(TIMESTAMPDIFF(MINUTE, time, CAST(? AS TIME))) < 60
+         AND status IN ('pending', 'confirmed')"
     );
     $checkStmt->execute([$table_id, $date, $time]);
     if ($checkStmt->fetch()) {

@@ -91,4 +91,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--error-color)">Could not connect to the server.</div>';
             });
     }
+
+    // ===== WISHLIST TOGGLE =====
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('.wishlist-btn');
+        if (!btn) return;
+
+        const userStr = localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user');
+        if (!userStr) {
+            window.location.href = 'login-signup.html';
+            return;
+        }
+
+        const user = JSON.parse(userStr);
+        const restId = btn.dataset.id;
+        if (!restId) return;
+
+        // Visual feedback immediately
+        btn.classList.toggle('liked');
+        const icon = btn.querySelector('i');
+        const currentlyLiked = btn.classList.contains('liked');
+        icon.className = currentlyLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        icon.style.color = currentlyLiked ? '#ff4757' : '';
+
+        fetch('../api/toggle_save.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ restaurant_id: restId, user_id: user.id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                // Revert if failed
+                btn.classList.toggle('liked');
+                icon.className = !currentlyLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+                icon.style.color = !currentlyLiked ? '#ff4757' : '';
+                
+                // If there's a toast function, show error
+                if(typeof showToast === 'function') {
+                    showToast(data.message, 'error');
+                } else {
+                    alert(data.message);
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    });
 });
