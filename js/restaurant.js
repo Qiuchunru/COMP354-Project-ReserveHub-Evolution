@@ -154,8 +154,14 @@ function renderHero(r) {
 async function loadFloorPlan() {
     const date = document.getElementById('fpDate').value;
     const time = document.getElementById('fpTime').value;
+    const guests = document.getElementById('fpGuests') ? document.getElementById('fpGuests').value : '';
     const group = document.getElementById('tablesGroup');
     const loadingText = document.getElementById('svgLoadingText');
+
+    if (!guests) {
+        showToast('error', 'Select Guests', 'Please select the number of guests first.');
+        return;
+    }
 
     group.innerHTML = '';
     loadingText.style.display = 'block';
@@ -163,7 +169,7 @@ async function loadFloorPlan() {
     updateBookingPanel(null);
 
     try {
-        const res = await fetch(`../api/tables.php?restaurant_id=${restaurantId}&date=${date}&time=${time}`);
+        const res = await fetch(`../api/tables.php?restaurant_id=${restaurantId}&date=${date}&time=${time}&guests=${guests}`);
         const json = await res.json();
         if (!json.success) throw new Error(json.message);
 
@@ -422,7 +428,7 @@ async function submitReservation(e) {
         table_id: selectedTable.id,
         date: document.getElementById('bookDate').value,
         time: document.getElementById('bookTime').value,
-        guests: document.getElementById('bookGuests').value,
+        guests: document.getElementById('fpGuests').value,
         special_requests: document.getElementById('bookRequests').value
     };
 

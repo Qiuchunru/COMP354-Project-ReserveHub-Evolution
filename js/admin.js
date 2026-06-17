@@ -118,6 +118,49 @@ async function loadDashboard() {
     }
 }
 
+// ===== PDF EXPORT =====
+function downloadAnalyticsPDF() {
+    const dashboard = document.getElementById('dashboard');
+    const btn = document.getElementById('exportPdfBtn');
+    
+    if (!dashboard) return;
+    
+    const originalBtnText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+
+    // Temporarily hide the button itself so it doesn't appear in the PDF
+    btn.style.display = 'none';
+
+    html2canvas(dashboard, { 
+        backgroundColor: '#151515', 
+        scale: 2,
+        useCORS: true,
+        logging: false 
+    }).then(canvas => {
+        const { jsPDF } = window.jspdf;
+        
+        // Calculate dimensions to fit A4 page
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('ReserveHub_Admin_Analytics_Report.pdf');
+        
+        btn.style.display = '';
+        btn.disabled = false;
+        btn.innerHTML = originalBtnText;
+    }).catch(err => {
+        console.error("Error generating report:", err);
+        btn.style.display = '';
+        btn.disabled = false;
+        btn.innerHTML = originalBtnText;
+        showToast('error', 'Export Failed', 'Could not generate the PDF report.');
+    });
+}
+
 // ===== RESTAURANTS =====
 let allRestaurants = [];
 
@@ -614,9 +657,17 @@ function renderReservations(data) {
         return;
     }
     data.forEach(r => {
-        const isPast = new Date(r.date + ' ' + r.time) < new Date();
-        const statusColor = isPast ? '#888' : '#27ae60';
-        const statusText = isPast ? 'Past' : 'Upcoming';
+        let statusColor, statusText;
+        if (r.status === 'pending') {
+            statusColor = '#f1c40f';
+            statusText = 'Pending Approval';
+        } else if (r.status === 'cancelled') {
+            statusColor = '#e74c3c';
+            statusText = 'Cancelled';
+        } else {
+            statusColor = isPast ? '#888' : '#27ae60';
+            statusText = isPast ? 'Past' : 'Confirmed';
+        }
 
         list.innerHTML += `
             <div style="display: flex; gap: 20px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); align-items: center; transition: var(--transition);">
@@ -640,9 +691,20 @@ function renderReservations(data) {
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
                     <span style="font-size: 0.75rem; color: #666;">ID: #${r.id}</span>
-                    <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    ${r.status === 'pending' ? `
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn edit" onclick="updateResStatus(${r.id}, 'confirmed')" title="Approve" style="margin:0; background: #2ecc71; color: #fff; padding: 6px 12px; border-radius: 6px;">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="updateResStatus(${r.id}, 'cancelled')" title="Reject" style="margin:0; background: #e74c3c; color: #fff; padding: 6px 12px; border-radius: 6px;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    ` : `
+                        <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `}
                 </div>
             </div>
         `;
@@ -659,6 +721,15 @@ function filterReservations() {
         (r.date && r.date.toLowerCase().includes(q))
     );
     renderReservations(filtered);
+}
+
+async function updateResStatus(id, status) {
+    const json = await apiFetch('reservations', 'PUT', { id, status });
+    if (json.success) {
+        loadReservations();
+    } else {
+        showToast(json.message || 'Failed to update reservation.', 'error');
+    }
 }
 
 async function deleteRes(id) {

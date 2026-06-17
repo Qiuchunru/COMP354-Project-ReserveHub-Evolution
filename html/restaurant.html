@@ -80,6 +80,19 @@
                 <input type="date" id="fpDate">
                 <label for="fpTime"><i class="fa-regular fa-clock"></i> Time</label>
                 <input type="time" id="fpTime" step="1800">
+                <label for="fpGuests"><i class="fa-solid fa-users"></i> Guests</label>
+                <select id="fpGuests" required style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--dark-card); color: var(--text);">
+                    <option value="">Select...</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9+</option>
+                </select>
                 <button class="refresh-btn" id="checkAvailabilityBtn">
                     <i class="fa-solid fa-rotate"></i> Check Availability
                 </button>
@@ -163,18 +176,10 @@
                     <label for="bookTime"><i class="fa-regular fa-clock"></i> Time</label>
                     <input type="time" id="bookTime" step="1800" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none;">
                     <label for="bookGuests"><i class="fa-solid fa-users"></i> Number of Guests</label>
-                    <select id="bookGuests" required>
-                        <option value="">Select guests...</option>
-                        <option value="1">1 Guest</option>
-                        <option value="2">2 Guests</option>
-                        <option value="3">3 Guests</option>
-                        <option value="4">4 Guests</option>
-                        <option value="5">5 Guests</option>
-                        <option value="6">6 Guests</option>
-                        <option value="7">7 Guests</option>
-                        <option value="8">8 Guests</option>
+                    <select id="bookGuests">
+                        <option value="1">1</option>
                     </select>
                 </div>
                 <div class="form-group">

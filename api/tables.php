@@ -7,6 +7,7 @@ require_once 'db.php';
 $restaurant_id = $_GET['restaurant_id'] ?? null;
 $date          = $_GET['date']          ?? null;
 $time          = $_GET['time']          ?? null;
+$guests        = $_GET['guests']        ?? null;
 
 if (!$restaurant_id || !is_numeric($restaurant_id)) {
     echo json_encode(['success' => false, 'message' => 'Invalid restaurant ID']);
@@ -14,11 +15,16 @@ if (!$restaurant_id || !is_numeric($restaurant_id)) {
 }
 
 try {
-    if ($date && $time) {
+    if ($date && $time && $guests) {
         // Compute per-table availability for a specific date/time window (±60 min)
+        // Also check capacity against requested guests
         $stmt = $pdo->prepare("
             SELECT t.*,
-                   CASE WHEN r.id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
+                   CASE 
+                       WHEN t.capacity < ? THEN 'unavailable'
+                       WHEN r.id IS NOT NULL THEN 'occupied' 
+                       ELSE 'available' 
+                   END AS status
             FROM `tables` t
             LEFT JOIN reservations r
                 ON  r.table_id      = t.id
@@ -28,7 +34,7 @@ try {
             WHERE t.restaurant_id = ?
             ORDER BY t.table_number
         ");
-        $stmt->execute([$date, $time, $restaurant_id]);
+        $stmt->execute([$guests, $date, $time, $restaurant_id]);
     } else {
         // No date/time filter — all tables default to available
         $stmt = $pdo->prepare("
