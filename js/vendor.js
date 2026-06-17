@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================
     let vendorRestaurants  = [];
     let vendorReservations = [];
+    let vendorResChart = null;
 
     function loadStats() {
         Promise.all([
@@ -118,7 +119,52 @@ document.addEventListener('DOMContentLoaded', () => {
         ]).then(([rr, resr]) => {
             if (rr.success)   { vendorRestaurants  = rr.data   || []; document.getElementById('statRests').innerText = vendorRestaurants.length; document.getElementById('statPendingRests').innerText = vendorRestaurants.filter(r => r.status === 'pending').length; }
             if (resr.success) { vendorReservations = resr.data || []; document.getElementById('statReservations').innerText = vendorReservations.length; }
+            
+            drawVendorChart();
         }).catch(err => { console.error(err); showToast('Failed to load stats.', 'error'); });
+    }
+
+    function drawVendorChart() {
+        const restCounts = {};
+        vendorReservations.forEach(r => {
+            const name = r.restaurant_name || 'Unknown';
+            restCounts[name] = (restCounts[name] || 0) + 1;
+        });
+        
+        const labels = Object.keys(restCounts);
+        const data = Object.values(restCounts);
+        
+        if (vendorResChart) vendorResChart.destroy();
+        
+        const canvas = document.getElementById('vendorResChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        vendorResChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Reservations',
+                    data: data,
+                    backgroundColor: 'rgba(46, 204, 113, 0.8)',
+                    borderColor: '#2ecc71',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#151515', titleColor: '#2ecc71', bodyColor: '#fff' }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a0a0a0', stepSize: 1 } },
+                    x: { grid: { display: false }, ticks: { color: '#a0a0a0' } }
+                }
+            }
+        });
     }
 
     // =========================================================
@@ -151,22 +197,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const statusClass = rest.status || 'pending';
             const imgUrl = rest.image_url || '';
             const imgStyle = imgUrl ? `background-image:url('${imgUrl}');` : 'background:linear-gradient(135deg,#ff6b2b,#e85520);';
+            const isOpen = (rest.is_open === undefined || rest.is_open == 1);
+            const openStatusHtml = isOpen 
+                ? `<span style="background: #2ecc71; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px;"><i class="fa-solid fa-door-open"></i> OPEN</span>` 
+                : `<span style="background: #e74c3c; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px;"><i class="fa-solid fa-door-closed"></i> CLOSED</span>`;
+            
             card.innerHTML = `
                 <div style="position:absolute;top:12px;right:12px;z-index:10;"><span class="status-badge ${statusClass}">${statusClass}</span></div>
                 <div style="${imgStyle}height:180px;background-size:cover;background-position:center;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;">
                     ${!imgUrl ? '<i class="fa-solid fa-utensils" style="font-size:40px;color:rgba(255,255,255,0.6);"></i>' : ''}
                 </div>
                 <div style="padding:20px;">
-                    <h3 style="margin-bottom:6px;font-size:17px;">${escHtml(rest.name)}</h3>
+                    <h3 style="margin-bottom:6px;font-size:17px;display:flex;align-items:center;">${escHtml(rest.name)} ${openStatusHtml}</h3>
                     <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escHtml(rest.description || 'No description provided.')}</p>
                     <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:18px;">
                         <span><i class="fa-solid fa-utensils"></i> ${escHtml(rest.cuisine || '—')}</span>
                         <span><i class="fa-solid fa-location-dot"></i> ${escHtml(rest.location || '—')}</span>
                         <span><i class="fa-solid fa-clock"></i> ${rest.opening_time ? rest.opening_time.slice(0,5) : '—'}</span>
                     </div>
+                    <div style="display:flex;gap:8px;margin-bottom:10px;">
+                        <button class="btn btn-primary" style="flex:1;font-size:13px;background:${isOpen?'transparent':'#2ecc71'};border-color:${isOpen?'#e74c3c':'#2ecc71'};color:${isOpen?'#e74c3c':'#fff'};" onclick="toggleRestaurantOpen(${rest.id}, ${isOpen ? 0 : 1})">
+                            <i class="fa-solid ${isOpen?'fa-door-closed':'fa-door-open'}"></i> Mark as ${isOpen?'Closed':'Open'}
+                        </button>
+                    </div>
                     <div style="display:flex;gap:8px;">
                         <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editRestaurant(${rest.id})"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editFloorPlan(${rest.id})"><i class="fa-solid fa-table-cells"></i> Floor Plan</button>
+                        <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editFloorPlan(${rest.id})"><i class="fa-solid fa-table-cells"></i> Floor</button>
                         <button class="btn btn-primary" style="flex:1;font-size:13px;background:transparent;border:1px solid #ff4757;color:#ff4757;" onclick="deleteRestaurant(${rest.id})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>`;
@@ -179,6 +235,32 @@ document.addEventListener('DOMContentLoaded', () => {
     window.filterRestaurants = () => {
         const q = document.getElementById('searchRestaurants')?.value.toLowerCase() || '';
         renderRestaurants(vendorRestaurants.filter(r => (r.name||'').toLowerCase().includes(q) || (r.cuisine||'').toLowerCase().includes(q) || (r.location||'').toLowerCase().includes(q)));
+    };
+
+    window.toggleRestaurantOpen = (id, isOpen) => {
+        fetch('../api/vendor_api.php?endpoint=toggle_open', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({id, is_open: isOpen}) 
+        })
+        .then(r => r.json())
+        .then(res => { 
+            if(res.success){
+                showToast(`Restaurant marked as ${isOpen ? 'Open 🟢' : 'Closed 🔴'}.`); 
+                // Update local state immediately
+                const rest = vendorRestaurants.find(r => r.id == id);
+                if (rest) rest.is_open = isOpen;
+                loadRestaurants();
+                // If currently on the tables tab, reload the floor plan for this restaurant
+                const tablesSection = document.getElementById('tables');
+                if (tablesSection && tablesSection.classList.contains('active')) {
+                    vLoadFloorPlanSection(id);
+                }
+            } else {
+                showToast(res.message, 'error'); 
+            }
+        })
+        .catch(() => showToast('Failed to update status.', 'error'));
     };
 
     // =========================================================
@@ -326,9 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         select.innerHTML = '<option value="">Select Restaurant...</option>';
         vendorRestaurants.forEach(r => {
+            const isOpen = (r.is_open === undefined || r.is_open == 1);
             const opt = document.createElement('option');
             opt.value = r.id;
-            opt.textContent = r.name;
+            opt.textContent = `${r.name} ${isOpen ? '🟢 Open' : '🔴 Closed'}`;
             select.appendChild(opt);
         });
 
@@ -348,13 +431,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const room = document.getElementById('vendorFloorRoom');
         if (room) room.querySelectorAll('.floor-table').forEach(el => el.remove());
         renderVendorSidebar(null);
+        
+        // Remove any existing locked overlay
+        document.getElementById('floorPlanLockedOverlay')?.remove();
 
         if (!restId) {
             currentRestId = null;
+            setFloorPlanEditorEnabled(true);
             return;
         }
 
         currentRestId = parseInt(restId);
+        
+        // Check if this restaurant is open — if so, disable editing
+        const selectedRest = vendorRestaurants.find(r => r.id == restId);
+        const isOpen = selectedRest ? (selectedRest.is_open === undefined || selectedRest.is_open == 1) : true;
+        setFloorPlanEditorEnabled(!isOpen, selectedRest?.name);
 
         try {
             const res = await fetch(`../api/vendor_tables.php?restaurant_id=${restId}`).then(r => r.json());
@@ -365,6 +457,70 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast(res.message || 'Could not load floor plan.', 'error');
             }
         } catch (err) { console.error(err); showToast('Could not load floor plan.', 'error'); }
+    };
+
+    // Enable or disable the entire floor plan editor
+    function setFloorPlanEditorEnabled(enabled, restName = '') {
+        const addRoundBtn  = document.querySelector('[onclick="vAddTable(\'round\', 4)"]');
+        const addRectBtn   = document.querySelector('[onclick="vAddTable(\'rect\', 6)"]');
+        const saveBtn      = document.getElementById('vendorSaveBtn');
+        const canvas       = document.getElementById('vendorFloorCanvas');
+        const sidebar      = document.getElementById('vendorFloorSidebar');
+
+        [addRoundBtn, addRectBtn, saveBtn].forEach(btn => {
+            if (!btn) return;
+            btn.disabled = !enabled;
+            btn.style.opacity = enabled ? '1' : '0.35';
+            btn.style.cursor  = enabled ? 'pointer' : 'not-allowed';
+        });
+
+        // Remove old overlay if present
+        document.getElementById('floorPlanLockedOverlay')?.remove();
+
+        if (!enabled && canvas) {
+            const overlay = document.createElement('div');
+            overlay.id = 'floorPlanLockedOverlay';
+            overlay.style.cssText = `
+                position:absolute; inset:0; z-index:50;
+                background: rgba(0,0,0,0.6);
+                backdrop-filter: blur(3px);
+                display:flex; flex-direction:column;
+                align-items:center; justify-content:center;
+                border-radius: 12px;
+                pointer-events: all;
+            `;
+            overlay.innerHTML = `
+                <div style="background:var(--dark-card,#1e1e1e);border:1px solid #ff4757;border-radius:16px;padding:36px 40px;text-align:center;max-width:360px;">
+                    <div style="font-size:48px;margin-bottom:16px;">🔒</div>
+                    <h3 style="color:#fff;margin-bottom:10px;font-size:18px;">Floor Plan Locked</h3>
+                    <p style="color:#a0a0a0;font-size:14px;margin-bottom:20px;line-height:1.6;">
+                        <strong style="color:#ff6b2b;">${escHtml(restName)}</strong> is currently <span style="color:#2ecc71;font-weight:bold;">Open</span>.<br>
+                        You must mark the restaurant as <strong style="color:#e74c3c;">Closed</strong> before editing the floor plan.
+                    </p>
+                    <button onclick="toggleRestaurantOpen(${currentRestId}, 0)" style="
+                        background:#e74c3c;color:#fff;border:none;border-radius:8px;
+                        padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;
+                        transition:all 0.2s;
+                    ">
+                        <i class='fa-solid fa-door-closed' style='margin-right:8px;'></i>Close Restaurant to Edit
+                    </button>
+                </div>
+            `;
+            // Make canvas relatively positioned so overlay works
+            canvas.style.position = 'relative';
+            canvas.appendChild(overlay);
+            
+            // Also lock sidebar
+            if (sidebar) {
+                sidebar.style.opacity = '0.35';
+                sidebar.style.pointerEvents = 'none';
+            }
+        } else if (canvas) {
+            if (sidebar) {
+                sidebar.style.opacity = '1';
+                sidebar.style.pointerEvents = '';
+            }
+        }
     }
 
     function renderVendorFloorPlan() {

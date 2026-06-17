@@ -52,11 +52,14 @@ try {
                     LIMIT 5
                 ")->fetchAll(PDO::FETCH_ASSOC);
 
+                $usersByRole = $pdo->query("SELECT role, COUNT(*) as count FROM users GROUP BY role")->fetchAll(PDO::FETCH_ASSOC);
+
                 echo json_encode(['success' => true, 'data' => [
                     'users' => $totalUsers,
                     'reservations' => $totalRes,
                     'restaurants' => $totalRests,
-                    'popular' => $popRes
+                    'popular' => $popRes,
+                    'users_by_role' => $usersByRole
                 ]]);
             }
             break;

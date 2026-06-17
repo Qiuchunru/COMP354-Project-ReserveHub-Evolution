@@ -26,14 +26,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextHalfHour = new Date(Math.ceil(now.getTime() / 1800000) * 1800000);
     const timeStr = `${pad(nextHalfHour.getHours())}:${pad(nextHalfHour.getMinutes())}`;
 
-    ['fpDate', 'bookDate'].forEach(id => document.getElementById(id).value = todayStr);
-    ['fpTime', 'bookTime'].forEach(id => document.getElementById(id).value = timeStr);
+    // Set min date to today so users cannot pick past dates
+    ['fpDate', 'bookDate'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = todayStr;
+        el.min = todayStr;
+    });
 
-    // Sync date/time between panels
-    document.getElementById('fpDate').addEventListener('change', e => document.getElementById('bookDate').value = e.target.value);
-    document.getElementById('fpTime').addEventListener('change', e => document.getElementById('bookTime').value = e.target.value);
-    document.getElementById('bookDate').addEventListener('change', e => document.getElementById('fpDate').value = e.target.value);
-    document.getElementById('bookTime').addEventListener('change', e => document.getElementById('fpTime').value = e.target.value);
+    // Set min time to next half-hour (since today is pre-selected)
+    const minTimeStr = `${pad(nextHalfHour.getHours())}:${pad(nextHalfHour.getMinutes())}`;
+    ['fpTime', 'bookTime'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = timeStr;
+        el.min = minTimeStr;
+    });
+
+    // Helper: update time min based on whether selected date is today
+    function updateTimeMin(dateVal, timeIds) {
+        const selectedDate = new Date(dateVal + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isToday = selectedDate.getTime() === today.getTime();
+        timeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (isToday) {
+                el.min = minTimeStr;
+                // If the current value is in the past, reset it
+                if (el.value && el.value < minTimeStr) {
+                    el.value = minTimeStr;
+                }
+            } else {
+                el.min = '00:00';
+            }
+        });
+    }
+
+    // Sync date/time between panels + enforce min time on date change
+    document.getElementById('fpDate').addEventListener('change', e => {
+        document.getElementById('bookDate').value = e.target.value;
+        updateTimeMin(e.target.value, ['fpTime', 'bookTime']);
+    });
+    document.getElementById('fpTime').addEventListener('change', e => {
+        document.getElementById('bookTime').value = e.target.value;
+    });
+    document.getElementById('bookDate').addEventListener('change', e => {
+        document.getElementById('fpDate').value = e.target.value;
+        updateTimeMin(e.target.value, ['fpTime', 'bookTime']);
+    });
+    document.getElementById('bookTime').addEventListener('change', e => {
+        document.getElementById('fpTime').value = e.target.value;
+    });
 
     // Load restaurant info and floor plan
     loadRestaurant();
@@ -614,4 +656,93 @@ async function completeReservation(id) {
     } catch (err) {
         console.error('Failed to complete reservation', err);
     }
+}
+
+// ===== DOWNLOAD RECEIPT =====
+function downloadReceipt(format) {
+    const bookingId = document.getElementById('modalBookingId').textContent.replace('#', '');
+    const receiptBox = document.getElementById('receiptBox');
+    
+    const btnPdf = document.getElementById('downloadPdfBtn');
+    const btnImg = document.getElementById('downloadImageBtn');
+    
+    const origPdfHtml = btnPdf ? btnPdf.innerHTML : '';
+    const origImgHtml = btnImg ? btnImg.innerHTML : '';
+    
+    if (btnPdf) { btnPdf.disabled = true; btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; }
+    if (btnImg) { btnImg.disabled = true; btnImg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; }
+    
+    // Create an off-screen clone to avoid html2canvas issues with backdrop-filter and fixed positioning
+    const clone = receiptBox.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    clone.style.width = '350px'; // Set a fixed width
+    clone.style.background = '#1e1e1e'; // Ensure opaque background
+    clone.style.padding = '20px';
+    clone.style.margin = '0';
+    clone.style.borderRadius = '12px';
+    clone.style.border = '1px solid #333';
+    
+    // Add the ReserveHub Logo to the top of the receipt
+    const logoContainer = document.createElement('div');
+    logoContainer.style.textAlign = 'center';
+    logoContainer.style.marginBottom = '20px';
+    logoContainer.style.borderBottom = '1px dashed #444';
+    logoContainer.style.paddingBottom = '15px';
+    
+    const logoImg = document.createElement('img');
+    logoImg.src = '../pictures/reservehub-full-logo-dark-mode.png';
+    logoImg.style.width = '140px';
+    logoImg.style.display = 'inline-block';
+    
+    logoContainer.appendChild(logoImg);
+    clone.insertBefore(logoContainer, clone.firstChild);
+    
+    document.body.appendChild(clone);
+    
+    // Wait for the image to load before capturing to avoid blank image
+    logoImg.onload = () => {
+        html2canvas(clone, { 
+            backgroundColor: '#1e1e1e', 
+            scale: 2,
+            useCORS: true,
+            logging: false 
+        }).then(canvas => {
+            document.body.removeChild(clone);
+            
+            if (format === 'image') {
+                const link = document.createElement('a');
+                link.download = `ReserveHub_Receipt_${bookingId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } else if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                
+                const pdf = new jsPDF({
+                    orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save(`ReserveHub_Receipt_${bookingId}.pdf`);
+            }
+            
+            if (btnPdf) { btnPdf.disabled = false; btnPdf.innerHTML = origPdfHtml; }
+            if (btnImg) { btnImg.disabled = false; btnImg.innerHTML = origImgHtml; }
+        }).catch(err => {
+            if (document.body.contains(clone)) document.body.removeChild(clone);
+            console.error("Error generating receipt:", err);
+            showToast('error', 'Download Failed', 'Could not generate receipt file. Check console for details.');
+            if (btnPdf) { btnPdf.disabled = false; btnPdf.innerHTML = origPdfHtml; }
+            if (btnImg) { btnImg.disabled = false; btnImg.innerHTML = origImgHtml; }
+        });
+    };
+    
+    // Fallback if image fails to load
+    logoImg.onerror = () => {
+        logoImg.onload(); // just run it anyway without the image
+    };
 }

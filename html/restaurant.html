@@ -236,7 +236,7 @@
             <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;">Your table has been successfully
                 booked.</p>
 
-            <div
+            <div id="receiptBox"
                 style="background: var(--dark-surface); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left; border: 1px solid var(--glass-border);">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                     <span style="color: var(--text-muted); font-size: 14px;">Booking ID</span>
@@ -263,11 +263,23 @@
             <button onclick="window.location.href='profile.html'"
                 style="width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">View
                 My Reservations</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="downloadReceipt('pdf')" id="downloadPdfBtn"
+                    style="flex: 1; padding: 14px; background: transparent; color: var(--orange); border: 1px solid var(--orange); border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">
+                    <i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i> PDF
+                </button>
+                <button onclick="downloadReceipt('image')" id="downloadImageBtn"
+                    style="flex: 1; padding: 14px; background: transparent; color: var(--orange); border: 1px solid var(--orange); border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">
+                    <i class="fa-solid fa-image" style="margin-right: 8px;"></i> Image
+                </button>
+            </div>
             <button onclick="document.getElementById('successModal').style.display='none'"
                 style="width: 100%; padding: 14px; background: transparent; color: var(--text-muted); border: none; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 5px;">Close</button>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../js/theme.js"></script>
     <script src="../js/session.js"></script>
     <script src="../js/restaurant.js?v=2"></script>

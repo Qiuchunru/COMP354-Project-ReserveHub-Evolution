@@ -3,15 +3,28 @@
 header('Content-Type: application/json');
 require_once 'db.php';
 
-if (!isset($_SESSION['user_id'])) {
+// Auto-migration for saved_restaurants
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `saved_restaurants` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `user_id` INT NOT NULL,
+        `restaurant_id` INT NOT NULL,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY `unique_save` (`user_id`, `restaurant_id`)
+    )");
+} catch (Exception $e) {
+    // Ignore
+}
+
+$data = json_decode(file_get_contents('php://input'), true) ?? [];
+$user_id = $_SESSION['user_id'] ?? $data['user_id'] ?? null;
+$restaurant_id = $data['restaurant_id'] ?? null;
+
+if (!$user_id) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
-
-$data = json_decode(file_get_contents('php://input'), true);
-$user_id = $_SESSION['user_id'];
-$restaurant_id = $data['restaurant_id'] ?? null;
 
 if (!$restaurant_id) {
     echo json_encode(['success' => false, 'message' => 'Restaurant ID is required']);

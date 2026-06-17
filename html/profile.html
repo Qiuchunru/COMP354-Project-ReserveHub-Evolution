@@ -82,8 +82,9 @@
 
             <div class="profile-content">
                 <div class="dashboard-card">
-                    <div class="card-header">
-                        <h2><i class="fa-regular fa-calendar-check"></i> My Reservations</h2>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h2 style="margin: 0;"><i class="fa-regular fa-calendar-check"></i> My Reservations</h2>
+                        <input type="text" id="searchMyReservations" placeholder="Search reservations..." style="width:200px; background: #2a2a2a; color: white; border: 1px solid #333; padding: 8px 12px; border-radius: 8px; font-family: 'Alexandria', sans-serif; font-size: 0.9rem;" onkeyup="filterMyReservations()">
                     </div>
                     <div class="card-body">
                         <div id="reservationsList">
@@ -97,8 +98,9 @@
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="card-header">
-                        <h2><i class="fa-regular fa-heart"></i> Saved Restaurants</h2>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h2 style="margin: 0;"><i class="fa-regular fa-heart"></i> Saved Restaurants</h2>
+                        <input type="text" id="searchSavedRestaurants" placeholder="Search restaurants..." style="width:200px; background: #2a2a2a; color: white; border: 1px solid #333; padding: 8px 12px; border-radius: 8px; font-family: 'Alexandria', sans-serif; font-size: 0.9rem;" onkeyup="filterSavedRestaurants()">
                     </div>
                     <div class="card-body">
                         <div id="savedRestaurantsList" class="restaurants-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
@@ -204,58 +206,106 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    const list = document.getElementById('reservationsList');
                     if(data.success && data.data.length > 0) {
-                        list.innerHTML = '';
-                        data.data.forEach(res => {
-                            const resCard = document.createElement('div');
-                            resCard.className = 'reservation-item';
-                            resCard.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
-                            
-                            const isPast = new Date(res.date + ' ' + res.time) < new Date();
-                            
-                            resCard.innerHTML = `
-                                <img src="${res.image_url}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;">
-                                <div style="flex: 1;">
-                                    <h4 style="margin: 0; font-size: 1rem;">${res.restaurant_name}</h4>
-                                    <p style="margin: 4px 0; font-size: 0.85rem; color: #888;">
-                                        <i class="fa-regular fa-calendar"></i> ${res.date} | <i class="fa-regular fa-clock"></i> ${res.time.slice(0,5)}
-                                    </p>
-                                    <p style="margin: 0; font-size: 0.8rem; color: var(--orange);">Table ${res.table_number} | ${res.guests} Guests</p>
-                                </div>
-                                <div>
-                                    ${isPast ? `<button class="review-btn" onclick="openReviewModal(${res.id}, ${res.restaurant_id})" style="background: transparent; border: 1px solid var(--orange); color: var(--orange); padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Review</button>` : `<span style="color: #27ae60; font-size: 0.8rem;">Upcoming</span>`}
-                                </div>
-                            `;
-                            list.appendChild(resCard);
-                        });
+                        window.myReservations = data.data;
+                        renderMyReservations(window.myReservations);
                     }
                 });
+            }
+
+            window.renderMyReservations = function(data) {
+                const list = document.getElementById('reservationsList');
+                list.innerHTML = '';
+                if(data.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <p style="color: #888;">No matching reservations found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                data.forEach(res => {
+                    const resCard = document.createElement('div');
+                    resCard.className = 'reservation-item';
+                    resCard.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
+                    
+                    const isPast = new Date(res.date + ' ' + res.time) < new Date();
+                    
+                    resCard.innerHTML = `
+                        <img src="${res.image_url}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: 1rem;">${res.restaurant_name}</h4>
+                            <p style="margin: 4px 0; font-size: 0.85rem; color: #888;">
+                                <i class="fa-regular fa-calendar"></i> ${res.date} | <i class="fa-regular fa-clock"></i> ${res.time.slice(0,5)}
+                            </p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--orange);">Table ${res.table_number} | ${res.guests} Guests</p>
+                        </div>
+                        <div>
+                            ${isPast ? `<button class="review-btn" onclick="openReviewModal(${res.id}, ${res.restaurant_id})" style="background: transparent; border: 1px solid var(--orange); color: var(--orange); padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Review</button>` : `<span style="color: #27ae60; font-size: 0.8rem;">Upcoming</span>`}
+                        </div>
+                    `;
+                    list.appendChild(resCard);
+                });
+            }
+
+            window.filterMyReservations = function() {
+                const q = document.getElementById('searchMyReservations').value.toLowerCase();
+                if (!window.myReservations) return;
+                const filtered = window.myReservations.filter(res => 
+                    (res.restaurant_name && res.restaurant_name.toLowerCase().includes(q)) ||
+                    (res.date && res.date.toLowerCase().includes(q)) ||
+                    (res.table_number && res.table_number.toString().includes(q))
+                );
+                renderMyReservations(filtered);
             }
 
             function fetchSavedRestaurants(userId) {
                 fetch(`../api/get_saved.php?user_id=${userId}`)
                 .then(res => res.json())
                 .then(data => {
-                    const list = document.getElementById('savedRestaurantsList');
                     if(data.success && data.data.length > 0) {
-                        list.innerHTML = '';
-                        data.data.forEach(rest => {
-                            const card = document.createElement('div');
-                            card.className = 'saved-item';
-                            card.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
-                            card.innerHTML = `
-                                <img src="${rest.image_url}" style="width: 70px; height: 50px; object-fit: cover; border-radius: 6px;">
-                                <div style="flex: 1;">
-                                    <h4 style="margin: 0; font-size: 0.95rem;">${rest.name}</h4>
-                                    <p style="margin: 4px 0; font-size: 0.8rem; color: #888;">${rest.cuisine} · ${rest.location}</p>
-                                </div>
-                                <button onclick="window.location.href='restaurant.html?id=${rest.id}'" style="background: var(--orange); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">Book</button>
-                            `;
-                            list.appendChild(card);
-                        });
+                        window.mySavedRestaurants = data.data;
+                        renderSavedRestaurants(window.mySavedRestaurants);
                     }
                 });
+            }
+
+            window.renderSavedRestaurants = function(data) {
+                const list = document.getElementById('savedRestaurantsList');
+                list.innerHTML = '';
+                if(data.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <p style="color: #888;">No matching restaurants found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                data.forEach(rest => {
+                    const card = document.createElement('div');
+                    card.className = 'saved-item';
+                    card.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
+                    card.innerHTML = `
+                        <img src="${rest.image_url}" style="width: 70px; height: 50px; object-fit: cover; border-radius: 6px;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: 0.95rem;">${rest.name}</h4>
+                            <p style="margin: 4px 0; font-size: 0.8rem; color: #888;">${rest.cuisine} · ${rest.location}</p>
+                        </div>
+                        <button onclick="window.location.href='restaurant.html?id=${rest.id}'" style="background: var(--orange); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">Book</button>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+
+            window.filterSavedRestaurants = function() {
+                const q = document.getElementById('searchSavedRestaurants').value.toLowerCase();
+                if (!window.mySavedRestaurants) return;
+                const filtered = window.mySavedRestaurants.filter(rest => 
+                    (rest.name && rest.name.toLowerCase().includes(q)) ||
+                    (rest.cuisine && rest.cuisine.toLowerCase().includes(q)) ||
+                    (rest.location && rest.location.toLowerCase().includes(q))
+                );
+                renderSavedRestaurants(filtered);
             }
         });
 

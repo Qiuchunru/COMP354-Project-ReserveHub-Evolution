@@ -142,7 +142,7 @@ document.addEventListener('click', e => {
     fetch('../api/toggle_save.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ restaurant_id: restId })
+        body: JSON.stringify({ restaurant_id: restId, user_id: user.id })
     })
     .then(res => res.json())
     .then(data => {

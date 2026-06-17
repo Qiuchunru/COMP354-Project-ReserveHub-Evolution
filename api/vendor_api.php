@@ -182,6 +182,24 @@ try {
             }
             break;
 
+        case 'toggle_open':
+            if ($method === 'POST') {
+                $restId = $data['id'] ?? $_POST['id'] ?? 0;
+                $isOpen = $data['is_open'] ?? $_POST['is_open'] ?? 1;
+
+                $checkStmt = $pdo->prepare("SELECT id FROM restaurants WHERE id = ? AND vendor_id = ?");
+                $checkStmt->execute([$restId, $userId]);
+                if (!$checkStmt->fetch()) {
+                    echo json_encode(['success' => false, 'message' => 'Access denied: You do not own this restaurant.']);
+                    exit;
+                }
+
+                $stmt = $pdo->prepare("UPDATE restaurants SET is_open = ? WHERE id = ? AND vendor_id = ?");
+                $stmt->execute([$isOpen, $restId, $userId]);
+                echo json_encode(['success' => true, 'message' => 'Restaurant status updated.']);
+            }
+            break;
+
         default:
             echo json_encode(['success' => false, 'message' => 'Invalid endpoint.']);
     }
