@@ -176,24 +176,6 @@ try {
                     ORDER BY res.date DESC, res.time DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $res]);
-            } elseif ($method === 'PUT') {
-                $id = $data['id'] ?? $_GET['id'] ?? null;
-                $status = $data['status'] ?? null;
-                
-                if (!$id || !in_array($status, ['confirmed', 'cancelled', 'pending'])) {
-                    echo json_encode(['success' => false, 'message' => 'Invalid parameters.']);
-                    exit;
-                }
-                
-                $manager_id = $_SESSION['user_id'];
-                $stmt = $pdo->prepare("UPDATE reservations SET status = ?, managed_by = ? WHERE id = ?");
-                $stmt->execute([$status, $manager_id, $id]);
-                echo json_encode(['success' => true, 'message' => 'Reservation status updated.']);
-            } elseif ($method === 'DELETE') {
-                $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("DELETE FROM reservations WHERE id = ?");
-                $stmt->execute([$id]);
-                echo json_encode(['success' => true]);
             }
             break;
 

@@ -40,7 +40,7 @@ function loadSection(section) {
     if (section === 'dashboard') loadDashboard();
     if (section === 'restaurants') loadRestaurants();
     if (section === 'tables') loadFloorPlan();
-    if (section === 'reservations') loadReservations();
+
     if (section === 'users') loadUsers();
     if (section === 'approvals') loadApprovals();
     if (section === 'inbox') loadInbox();
@@ -673,106 +673,6 @@ async function saveFloorPlan() {
 function openTableModal() { addTableToFloor('round', 4); }
 function loadTables() { loadFloorPlan(); }
 
-// ===== RESERVATIONS =====
-let allReservations = [];
-
-async function loadReservations() {
-    const json = await apiFetch('reservations');
-    if (json.success) {
-        allReservations = json.data;
-        renderReservations(allReservations);
-    }
-}
-
-function renderReservations(data) {
-    const list = document.getElementById('resList');
-    list.innerHTML = '';
-    if (data.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-muted);">No reservations found.</p>';
-        return;
-    }
-    data.forEach(r => {
-        let statusColor, statusText;
-        if (r.status === 'pending') {
-            statusColor = '#f1c40f';
-            statusText = 'Pending Approval';
-        } else if (r.status === 'cancelled') {
-            statusColor = '#e74c3c';
-            statusText = 'Cancelled';
-        } else {
-            statusColor = isPast ? '#888' : '#27ae60';
-            statusText = isPast ? 'Past' : 'Confirmed';
-        }
-
-        list.innerHTML += `
-            <div style="display: flex; gap: 20px; padding: 20px; background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); align-items: center; transition: var(--transition);">
-                <img src="${r.image_url}" style="width: 100px; height: 75px; object-fit: cover; border-radius: 8px;" onerror="this.src='../pictures/eating-bg.jpg'">
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 1.1rem; color: var(--text);">${r.restaurant_name}</h4>
-                        <span style="color: ${statusColor}; font-size: 0.85rem; font-weight: 600; padding: 4px 8px; background: rgba(128,128,128,0.1); border-radius: 4px;">${statusText}</span>
-                    </div>
-                    <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: var(--text-muted);">
-                        <i class="fa-solid fa-user" style="color: var(--orange); width: 16px;"></i> ${r.user_name}
-                        ${r.user_phone ? `&nbsp;|&nbsp; <i class="fa-solid fa-phone" style="width: 16px;"></i> ${r.user_phone}` : ''}
-                    </p>
-                    <p style="margin: 0 0 6px 0; font-size: 0.85rem; color: #888;">
-                        <i class="fa-regular fa-calendar" style="width: 16px;"></i> ${r.date} &nbsp;|&nbsp; 
-                        <i class="fa-regular fa-clock" style="width: 16px;"></i> ${r.time.slice(0,5)}
-                    </p>
-                    <p style="margin: 0; font-size: 0.85rem; color: var(--orange); font-weight: 600;">
-                        Table ${r.table_number} &nbsp;|&nbsp; ${r.guests} Guests
-                    </p>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
-                    <span style="font-size: 0.75rem; color: #666;">ID: #${r.id}</span>
-                    ${r.status === 'pending' ? `
-                        <div style="display: flex; gap: 8px;">
-                            <button class="action-btn edit" onclick="updateResStatus(${r.id}, 'confirmed')" title="Approve" style="margin:0; background: #2ecc71; color: #fff; padding: 6px 12px; border-radius: 6px;">
-                                <i class="fa-solid fa-check"></i>
-                            </button>
-                            <button class="action-btn delete" onclick="updateResStatus(${r.id}, 'cancelled')" title="Reject" style="margin:0; background: #e74c3c; color: #fff; padding: 6px 12px; border-radius: 6px;">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                    ` : `
-                        <button class="action-btn delete" onclick="deleteRes(${r.id})" title="Delete Reservation" style="margin:0; font-size: 16px;">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    `}
-                </div>
-            </div>
-        `;
-    });
-}
-
-function filterReservations() {
-    const q = document.getElementById('searchReservations').value.toLowerCase();
-    const filtered = allReservations.filter(r => 
-        (r.restaurant_name && r.restaurant_name.toLowerCase().includes(q)) || 
-        (r.user_name && r.user_name.toLowerCase().includes(q)) ||
-        (r.user_phone && r.user_phone.toLowerCase().includes(q)) ||
-        (r.id && r.id.toString().includes(q)) ||
-        (r.date && r.date.toLowerCase().includes(q))
-    );
-    renderReservations(filtered);
-}
-
-async function updateResStatus(id, status) {
-    const json = await apiFetch('reservations', 'PUT', { id, status });
-    if (json.success) {
-        loadReservations();
-    } else {
-        showToast(json.message || 'Failed to update reservation.', 'error');
-    }
-}
-
-async function deleteRes(id) {
-    if (confirm('Delete this reservation?')) {
-        await apiFetch(`reservations&id=${id}`, 'DELETE');
-        loadReservations();
-    }
-}
 
 // ===== RESERVATION HISTORY =====
 let allHistory = [];
