@@ -49,7 +49,7 @@ try {
     }
 
     // Hash password
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $hashed_password = $password;
     
     // Generate new alphanumeric user_id
     $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(user_id, 2) AS UNSIGNED)), 0) + 1 FROM users");

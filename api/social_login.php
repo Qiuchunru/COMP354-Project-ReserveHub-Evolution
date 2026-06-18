@@ -96,7 +96,7 @@ try {
         }
         
         // Generate a random password (social users don't need it, but DB might require it)
-        $password = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
+        $password = bin2hex(random_bytes(16));
         
         try {
             // Generate new alphanumeric user_id
