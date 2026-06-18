@@ -38,7 +38,7 @@ try {
 
     if ($user) {
         // Hash the new password
-        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $hashedPassword = $newPassword;
 
         // Update password and clear token
         $updateStmt = $pdo->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE user_id = ?");
