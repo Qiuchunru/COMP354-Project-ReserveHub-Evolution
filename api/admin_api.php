@@ -115,10 +115,10 @@ try {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 // Generate new alphanumeric ID
-                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(id, 2) AS UNSIGNED)), 0) + 1 FROM users");
+                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(user_id, 2) AS UNSIGNED)), 0) + 1 FROM users");
                 $new_id = 'c' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
 
-                $stmt = $pdo->prepare("INSERT INTO users (id, username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO users (user_id, username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$new_id, $username_val, $name, $email, $phone, $hashed_password, $role]);
 
                 echo json_encode(['success' => true, 'message' => 'Account created successfully!']);
