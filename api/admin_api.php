@@ -26,7 +26,7 @@ try {
 
 // Auto-migration: Ensure managed_by column exists
 try {
-    $pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS managed_by INT DEFAULT NULL");
+    $pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS managed_by VARCHAR(20) DEFAULT NULL");
 } catch (Exception $e) {
     // Ignore
 }
@@ -292,7 +292,7 @@ try {
                     // Compute live availability: a table is 'occupied' if it has an active
                     // reservation within 60 minutes of the current time today
                     $stmt = $pdo->prepare("
-                        SELECT t.*, t.table_id as id,
+                        SELECT t.*, t.table_id as id, t.canvas_x_coordinate AS x_pos, t.canvas_y_coordinate AS y_pos,
                                CASE WHEN r.booking_id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
                         FROM `tables` t
                         LEFT JOIN reservations r
