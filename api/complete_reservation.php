@@ -20,7 +20,7 @@ try {
     $stmt = $pdo->prepare("
         UPDATE reservations 
         SET status = 'completed'
-        WHERE id = ? AND user_id = ? AND status IN ('pending', 'confirmed')
+        WHERE booking_id = ? AND customer_id = ? AND status IN ('pending', 'confirmed')
     ");
     $stmt->execute([$reservation_id, $user_id]);
 

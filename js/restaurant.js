@@ -6,6 +6,32 @@ const restaurantId = urlParams.get('id');
 let selectedTable = null;
 let restaurantData = null;
 
+// ===== OPERATING HOURS HELPER =====
+// Converts "HH:MM" or "HH:MM:SS" → total minutes since midnight.
+function timeToMinutes(t) {
+    const parts = t.split(':');
+    return parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
+}
+
+// Returns true if requestedTime ("HH:MM") is within open–close window.
+// Handles overnight spans (e.g. close < open means next-day close).
+function isWithinOperatingHours(requestedTime, openTime, closeTime) {
+    const req   = timeToMinutes(requestedTime);
+    const open  = timeToMinutes(openTime);
+    const close = timeToMinutes(closeTime);
+
+    // 24-hour restaurant (00:00 – 23:59)
+    if (open === 0 && close >= 1439) return true;
+
+    if (close > open) {
+        // Normal same-day span: e.g. 11:00 – 22:00
+        return req >= open && req < close;
+    } else {
+        // Overnight span: e.g. 18:00 – 03:00
+        return req >= open || req < close;
+    }
+}
+
 function getUser() {
     return JSON.parse(localStorage.getItem('reservehub_user') || sessionStorage.getItem('reservehub_user') || 'null');
 }
@@ -168,17 +194,127 @@ async function loadFloorPlan() {
     selectedTable = null;
     updateBookingPanel(null);
 
+    // ── Layer A: Pre-flight client-side check (instant UX, no round-trip) ──
+    if (restaurantData && restaurantData.opening_time && restaurantData.closing_time && time) {
+        if (!isWithinOperatingHours(time, restaurantData.opening_time, restaurantData.closing_time)) {
+            loadingText.style.display = 'none';
+            renderClosedState(restaurantData.opening_time, restaurantData.closing_time);
+            return;
+        }
+    }
+
     try {
         const res = await fetch(`../api/tables.php?restaurant_id=${restaurantId}&date=${date}&time=${time}&guests=${guests}`);
         const json = await res.json();
+
+        // ── Layer B: Server-authoritative closed check ──
+        if (!json.success && json.closed) {
+            loadingText.style.display = 'none';
+            renderClosedState(
+                json.opening_time || restaurantData?.opening_time,
+                json.closing_time || restaurantData?.closing_time
+            );
+            return;
+        }
+
         if (!json.success) throw new Error(json.message);
 
         loadingText.style.display = 'none';
+        clearClosedState();
         renderFloorPlan(json.data);
     } catch(err) {
         loadingText.textContent = 'Failed to load floor plan.';
         console.error(err);
     }
+}
+
+// ===== CLOSED STATE OVERLAY =====
+function renderClosedState(openTime, closeTime) {
+    const group = document.getElementById('tablesGroup');
+    const svg   = document.getElementById('floorPlanSvg');
+    if (!group || !svg) return;
+
+    // Disable reserve button and clear selection
+    selectedTable = null;
+    updateBookingPanel(null);
+
+    // Format times for display
+    const fmt = t => (t || '').slice(0, 5);
+    const open  = fmt(openTime);
+    const close = fmt(closeTime);
+
+    // Expand SVG canvas to give overlay room
+    const vbParts = (svg.getAttribute('viewBox') || '0 0 600 400').split(' ');
+    const svgW = parseFloat(vbParts[2]) || 600;
+    const svgH = parseFloat(vbParts[3]) || 400;
+
+    // Remove any previous closed overlay
+    group.querySelector('#closedStateOverlay')?.remove();
+
+    // foreignObject lets us use full HTML/CSS inside the SVG
+    const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    fo.setAttribute('id', 'closedStateOverlay');
+    fo.setAttribute('x', '0');
+    fo.setAttribute('y', '0');
+    fo.setAttribute('width', svgW);
+    fo.setAttribute('height', svgH);
+
+    fo.innerHTML = `
+        <div xmlns="http://www.w3.org/1999/xhtml" style="
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(10, 10, 18, 0.82);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+        ">
+            <div style="
+                text-align: center;
+                padding: 36px 44px;
+                background: linear-gradient(135deg, rgba(30,30,46,0.95), rgba(20,20,36,0.98));
+                border: 1px solid rgba(255, 107, 43, 0.35);
+                border-radius: 20px;
+                box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+                max-width: 340px;
+            ">
+                <div style="font-size: 52px; margin-bottom: 16px; filter: grayscale(0.2);">🏪</div>
+                <h3 style="
+                    color: #fff;
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin: 0 0 10px;
+                    letter-spacing: -0.3px;
+                ">The shop is closed at this time.</h3>
+                <p style="
+                    color: rgba(160,160,190,0.85);
+                    font-size: 13.5px;
+                    margin: 0 0 18px;
+                    line-height: 1.6;
+                ">Please select a time within the restaurant's operating hours.</p>
+                <div style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: rgba(255, 107, 43, 0.12);
+                    border: 1px solid rgba(255, 107, 43, 0.3);
+                    border-radius: 30px;
+                    padding: 8px 18px;
+                    font-size: 13px;
+                    color: #ff6b2b;
+                    font-weight: 600;
+                ">
+                    <span>🕐</span>
+                    <span>${open} &ndash; ${close}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    group.appendChild(fo);
+}
+
+// Remove the closed overlay so normal tables can be rendered.
+function clearClosedState() {
+    document.getElementById('closedStateOverlay')?.remove();
 }
 
 // ===== RENDER FLOOR PLAN SVG =====
@@ -545,7 +681,7 @@ async function loadReviews() {
     }
 }
 
-function renderReviewItem(name, rating, text, time, source, role = 'user') {
+function renderReviewItem(name, rating, text, time, source, role = 'customer') {
     let stars = '';
     for (let i = 0; i < 5; i++) {
         stars += `<i class="fa-solid fa-star" style="color:${i < rating ? '#f1c40f' : 'var(--glass-border)'}; font-size: 11px;"></i>`;

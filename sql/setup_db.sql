@@ -13,10 +13,9 @@ CREATE TABLE IF NOT EXISTS restaurants (
     image_gradient VARCHAR(100),
     icon VARCHAR(50),
     image_url VARCHAR(255) DEFAULT NULL,
-    image VARCHAR(255) DEFAULT NULL,
     is_halal TINYINT(1) NOT NULL DEFAULT 1,
     status VARCHAR(50) DEFAULT 'approved',
-    FOREIGN KEY (vendor_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (vendor_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 -- Clear existing to avoid duplicates if run multiple times

@@ -753,7 +753,7 @@ function renderUsers(data) {
                 <td><strong>${u.name}</strong></td>
                 <td>${u.email}</td>
                 <td>${u.phone || '-'}</td>
-                <td><span style="padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${roleColor}; color: #fff;">${u.role || 'user'}</span></td>
+                <td><span style="padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${roleColor}; color: #fff;">${u.role || 'customer'}</span></td>
                 <td>${new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
                     <div style="display: flex; gap: 8px;">

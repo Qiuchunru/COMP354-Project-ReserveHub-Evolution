@@ -24,7 +24,7 @@ if (!$user_id || !$restaurant_id || !$rating) {
 try {
     // Check if review already exists for this reservation to prevent duplicates
     if ($reservation_id) {
-        $checkStmt = $pdo->prepare("SELECT id FROM reviews WHERE reservation_id = ?");
+        $checkStmt = $pdo->prepare("SELECT review_id FROM reviews WHERE reservation_id = ?");
         $checkStmt->execute([$reservation_id]);
         if ($checkStmt->fetch()) {
             echo json_encode(['success' => false, 'message' => 'You have already reviewed this visit.']);
@@ -32,10 +32,14 @@ try {
         }
     }
 
-    $sql = "INSERT INTO reviews (user_id, restaurant_id, reservation_id, rating, comment) 
-            VALUES (?, ?, ?, ?, ?)";
+    // Generate new alphanumeric review_id (rv001, rv002, …)
+    $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(review_id, 3) AS UNSIGNED)), 0) + 1 FROM reviews");
+    $new_review_id = 'rv' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+    $sql = "INSERT INTO reviews (review_id, customer_id, restaurant_id, reservation_id, rating, comment) 
+            VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$user_id, $restaurant_id, $reservation_id, $rating, $comment]);
+    $stmt->execute([$new_review_id, $user_id, $restaurant_id, $reservation_id, $rating, $comment]);
 
     // No need to sync restaurants.rating — it is computed live from this table
     // via COALESCE(AVG(reviews.rating), seed_rating) in all read queries.

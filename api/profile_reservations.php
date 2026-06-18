@@ -14,10 +14,10 @@ if (!$user_id) {
 try {
     $sql = "SELECT r.*, res.name as restaurant_name, res.image_url, t.table_number 
             FROM reservations r
-            JOIN restaurants res ON r.restaurant_id = res.id
-            JOIN `tables` t ON r.table_id = t.id
-            WHERE r.user_id = ?
-            ORDER BY r.date DESC, r.time DESC";
+            JOIN restaurants res ON r.restaurant_id = res.restaurant_id
+            JOIN `tables` t ON r.table_id = t.table_id
+            WHERE r.customer_id = ?
+            ORDER BY r.date DESC, r.reservation_time DESC";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$user_id]);

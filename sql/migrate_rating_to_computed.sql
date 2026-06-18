@@ -19,7 +19,7 @@ ALTER TABLE `restaurants`
 --  - UI-only columns (image_gradient, icon) are excluded
 CREATE OR REPLACE VIEW `restaurant_display` AS
 SELECT
-    r.id,
+    r.restaurant_id,
     r.name,
     r.description,
     r.cuisine,
@@ -32,5 +32,5 @@ SELECT
     r.image_url,
     r.is_halal
 FROM restaurants r
-LEFT JOIN reviews rev ON rev.restaurant_id = r.id
-GROUP BY r.id;
+LEFT JOIN reviews rev ON rev.restaurant_id = r.restaurant_id
+GROUP BY r.restaurant_id;

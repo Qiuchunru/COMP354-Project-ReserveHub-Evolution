@@ -50,12 +50,12 @@ $uploadPath = $uploadDir . $fileName;
 if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
     try {
         // Get old picture to delete it later
-        $stmt = $pdo->prepare("SELECT profile_picture FROM users WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT profile_picture FROM users WHERE user_id = ?");
         $stmt->execute([$user_id]);
         $oldPic = $stmt->fetchColumn();
 
         // Update Database
-        $stmt = $pdo->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE users SET profile_picture = ? WHERE user_id = ?");
         $stmt->execute([$fileName, $user_id]);
 
         // Delete old picture if it exists and is not the same

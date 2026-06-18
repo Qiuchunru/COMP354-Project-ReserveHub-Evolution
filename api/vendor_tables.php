@@ -25,11 +25,11 @@ try {
         // GET: list tables for a restaurant owned by this vendor
         if (!$restId) { echo json_encode(['success' => false, 'message' => 'restaurant_id required']); exit; }
 
-        $check = $pdo->prepare("SELECT id FROM restaurants WHERE id = ? AND vendor_id = ?");
+        $check = $pdo->prepare("SELECT restaurant_id FROM restaurants WHERE restaurant_id = ? AND vendor_id = ?");
         $check->execute([$restId, $userId]);
         if (!$check->fetch()) { echo json_encode(['success' => false, 'message' => 'Not your restaurant']); exit; }
 
-        $stmt = $pdo->prepare("SELECT *, 'available' AS status FROM `tables` WHERE restaurant_id = ? ORDER BY table_number");
+        $stmt = $pdo->prepare("SELECT *, 'available' AS status, table_id as id FROM `tables` WHERE restaurant_id = ? ORDER BY table_number");
         $stmt->execute([$restId]);
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
 
@@ -39,7 +39,7 @@ try {
 
         if (!$restId) { echo json_encode(['success' => false, 'message' => 'restaurant_id required']); exit; }
 
-        $check = $pdo->prepare("SELECT id FROM restaurants WHERE id = ? AND vendor_id = ?");
+        $check = $pdo->prepare("SELECT restaurant_id FROM restaurants WHERE restaurant_id = ? AND vendor_id = ?");
         $check->execute([$restId, $userId]);
         if (!$check->fetch()) { echo json_encode(['success' => false, 'message' => 'Not your restaurant']); exit; }
 
@@ -49,9 +49,12 @@ try {
         $xPos     = (int)($data['x_pos'] ?? 100);
         $yPos     = (int)($data['y_pos'] ?? 100);
 
-        $stmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$restId, $tableNum, $capacity, $shape, $xPos, $yPos]);
-        echo json_encode(['success' => true, 'id' => (int)$pdo->lastInsertId(), 'message' => 'Table created.']);
+        $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(table_id, 2) AS UNSIGNED)), 0) + 1 FROM `tables`");
+        $new_table_id = 't' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+        $stmt = $pdo->prepare("INSERT INTO `tables` (table_id, restaurant_id, table_number, capacity, shape, canvas_x_coordinate, canvas_y_coordinate) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$new_table_id, $restId, $tableNum, $capacity, $shape, $xPos, $yPos]);
+        echo json_encode(['success' => true, 'id' => $new_table_id, 'message' => 'Table created.']);
 
     } elseif ($method === 'PUT') {
         if (!$tableId) { echo json_encode(['success' => false, 'message' => 'id required']); exit; }
@@ -59,7 +62,7 @@ try {
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
         // Verify ownership via restaurant
-        $check = $pdo->prepare("SELECT t.id FROM `tables` t JOIN restaurants r ON t.restaurant_id = r.id WHERE t.id = ? AND r.vendor_id = ?");
+        $check = $pdo->prepare("SELECT t.table_id FROM `tables` t JOIN restaurants r ON t.restaurant_id = r.restaurant_id WHERE t.table_id = ? AND r.vendor_id = ?");
         $check->execute([$tableId, $userId]);
         if (!$check->fetch()) { echo json_encode(['success' => false, 'message' => 'Not your table']); exit; }
 
@@ -69,18 +72,18 @@ try {
         $xPos     = isset($data['x_pos']) ? (int)$data['x_pos'] : null;
         $yPos     = isset($data['y_pos']) ? (int)$data['y_pos'] : null;
 
-        $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, x_pos=?, y_pos=? WHERE id=?");
+        $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, canvas_x_coordinate=?, canvas_y_coordinate=? WHERE table_id=?");
         $stmt->execute([$tableNum, $capacity, $shape, $xPos, $yPos, $tableId]);
         echo json_encode(['success' => true, 'message' => 'Table updated.']);
 
     } elseif ($method === 'DELETE') {
         if (!$tableId) { echo json_encode(['success' => false, 'message' => 'id required']); exit; }
 
-        $check = $pdo->prepare("SELECT t.id FROM `tables` t JOIN restaurants r ON t.restaurant_id = r.id WHERE t.id = ? AND r.vendor_id = ?");
+        $check = $pdo->prepare("SELECT t.table_id FROM `tables` t JOIN restaurants r ON t.restaurant_id = r.restaurant_id WHERE t.table_id = ? AND r.vendor_id = ?");
         $check->execute([$tableId, $userId]);
         if (!$check->fetch()) { echo json_encode(['success' => false, 'message' => 'Not your table']); exit; }
 
-        $stmt = $pdo->prepare("DELETE FROM `tables` WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM `tables` WHERE table_id = ?");
         $stmt->execute([$tableId]);
         echo json_encode(['success' => true, 'message' => 'Table deleted.']);
     }

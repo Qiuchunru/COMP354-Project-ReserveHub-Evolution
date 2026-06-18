@@ -68,7 +68,7 @@ if ($provider === 'google') {
 
 try {
     // 1. Check if user exists by email
-    $stmt = $pdo->prepare("SELECT id, username, name, email, role, phone, profile_picture FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT user_id AS id, username, name, email, role, phone, profile_picture FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -99,9 +99,12 @@ try {
         $password = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
         
         try {
-            $insertStmt = $pdo->prepare("INSERT INTO users (username, name, email, password) VALUES (?, ?, ?, ?)");
-            $insertStmt->execute([$username, $name, $email, $password]);
-            $newUserId = $pdo->lastInsertId();
+            // Generate new alphanumeric user_id
+            $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(user_id, 2) AS UNSIGNED)), 0) + 1 FROM users");
+            $newUserId = 'c' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+            $insertStmt = $pdo->prepare("INSERT INTO users (user_id, username, name, email, password) VALUES (?, ?, ?, ?, ?)");
+            $insertStmt->execute([$newUserId, $username, $name, $email, $password]);
         } catch (PDOException $e) {
             error_log("Social Login Insert Error: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Failed to create account: ' . $e->getMessage()]);

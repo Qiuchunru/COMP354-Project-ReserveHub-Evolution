@@ -32,7 +32,7 @@ try {
     // Check if token exists and is valid (not expired)
     // Compare using PHP's current time to avoid timezone mismatch with MySQL NOW()
     $currentTime = date('Y-m-d H:i:s');
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_token_expiry > ?");
+    $stmt = $pdo->prepare("SELECT user_id AS id FROM users WHERE reset_token = ? AND reset_token_expiry > ?");
     $stmt->execute([$token, $currentTime]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -41,7 +41,7 @@ try {
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Update password and clear token
-        $updateStmt = $pdo->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?");
+        $updateStmt = $pdo->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE user_id = ?");
         $updateStmt->execute([$hashedPassword, $user['id']]);
 
         echo json_encode(['success' => true, 'message' => 'Your password has been successfully updated.']);

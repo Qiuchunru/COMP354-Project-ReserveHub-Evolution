@@ -32,7 +32,7 @@ $email = trim($data->email);
 
 try {
     // Check if user exists
-    $stmt = $pdo->prepare("SELECT id, name FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT user_id AS id, name FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -44,7 +44,7 @@ try {
         $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
         // Save token to database
-        $updateStmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE id = ?");
+        $updateStmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE user_id = ?");
         $updateStmt->execute([$token, $expiry, $user['id']]);
 
         // Create the reset link

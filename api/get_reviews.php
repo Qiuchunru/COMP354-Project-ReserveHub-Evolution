@@ -13,7 +13,7 @@ if (!$restaurant_id) {
 try {
     $sql = "SELECT r.*, u.name as user_name, u.role as user_role 
             FROM reviews r
-            JOIN users u ON r.user_id = u.id
+            JOIN users u ON r.customer_id = u.user_id
             WHERE r.restaurant_id = ?
             ORDER BY r.created_at DESC";
     

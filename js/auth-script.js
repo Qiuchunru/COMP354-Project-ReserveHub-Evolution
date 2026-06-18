@@ -287,7 +287,7 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
             email: email,
             phone: phone,
             password: password,
-            role: registerAsVendor ? 'vendor' : 'user'
+            role: registerAsVendor ? 'vendor' : 'customer'
         };
 
         const submitBtn = this.querySelector('.submit-btn');

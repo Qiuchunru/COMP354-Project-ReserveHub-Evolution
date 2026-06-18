@@ -6,12 +6,13 @@ require_once 'db.php';
 // Auto-migration for saved_restaurants
 try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS `saved_restaurants` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
-        `user_id` INT NOT NULL,
-        `restaurant_id` INT NOT NULL,
+        `saved_id` VARCHAR(20) NOT NULL,
+        `customer_id` VARCHAR(20) NOT NULL,
+        `restaurant_id` VARCHAR(20) NOT NULL,
         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY `unique_save` (`user_id`, `restaurant_id`)
-    )");
+        PRIMARY KEY (`saved_id`),
+        UNIQUE KEY `unique_save` (`customer_id`, `restaurant_id`)
+    )");;
 } catch (Exception $e) {
     // Ignore
 }
@@ -33,19 +34,21 @@ if (!$restaurant_id) {
 
 try {
     // Check if already saved
-    $checkStmt = $pdo->prepare("SELECT id FROM saved_restaurants WHERE user_id = ? AND restaurant_id = ?");
+    $checkStmt = $pdo->prepare("SELECT saved_id FROM saved_restaurants WHERE customer_id = ? AND restaurant_id = ?");
     $checkStmt->execute([$user_id, $restaurant_id]);
     $saved = $checkStmt->fetch();
 
     if ($saved) {
         // Unsave
-        $stmt = $pdo->prepare("DELETE FROM saved_restaurants WHERE user_id = ? AND restaurant_id = ?");
+        $stmt = $pdo->prepare("DELETE FROM saved_restaurants WHERE customer_id = ? AND restaurant_id = ?");
         $stmt->execute([$user_id, $restaurant_id]);
         echo json_encode(['success' => true, 'saved' => false, 'message' => 'Restaurant removed from wishlist']);
     } else {
-        // Save
-        $stmt = $pdo->prepare("INSERT INTO saved_restaurants (user_id, restaurant_id) VALUES (?, ?)");
-        $stmt->execute([$user_id, $restaurant_id]);
+        // Save — generate new alphanumeric saved_id (s001, s002, …)
+        $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(saved_id, 2) AS UNSIGNED)), 0) + 1 FROM saved_restaurants");
+        $new_saved_id = 's' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+        $stmt = $pdo->prepare("INSERT INTO saved_restaurants (saved_id, customer_id, restaurant_id) VALUES (?, ?, ?)");
+        $stmt->execute([$new_saved_id, $user_id, $restaurant_id]);
         echo json_encode(['success' => true, 'saved' => true, 'message' => 'Restaurant added to wishlist']);
     }
 } catch (PDOException $e) {

@@ -6,7 +6,7 @@ require_once 'db.php';
 
 $id = $_GET['id'] ?? null;
 
-if (!$id || !is_numeric($id)) {
+if (!$id) {
     echo json_encode(['success' => false, 'message' => 'Invalid restaurant ID']);
     exit;
 }
@@ -17,9 +17,9 @@ try {
         SELECT r.*,
                ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
         FROM restaurants r
-        LEFT JOIN reviews rev ON rev.restaurant_id = r.id
-        WHERE r.id = ?
-        GROUP BY r.id
+        LEFT JOIN reviews rev ON rev.restaurant_id = r.restaurant_id
+        WHERE r.restaurant_id = ?
+        GROUP BY r.restaurant_id
     ");
     $stmt->execute([$id]);
     $restaurant = $stmt->fetch(PDO::FETCH_ASSOC);
