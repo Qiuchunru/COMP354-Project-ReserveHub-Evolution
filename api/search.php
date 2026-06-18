@@ -12,7 +12,7 @@ $params   = [];
 // Build the WHERE clause filters
 // Rating is computed live from reviews (falls back to seed_rating)
 $sql = "
-    SELECT r.*,
+    SELECT r.*, r.restaurant_id AS id,
            ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
     FROM restaurants r
     LEFT JOIN reviews rev ON rev.restaurant_id = r.restaurant_id
