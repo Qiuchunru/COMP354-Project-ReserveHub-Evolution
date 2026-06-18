@@ -156,7 +156,7 @@ try {
                 $stmt = $pdo->prepare("
                     SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status
                     FROM reservations res
-                    JOIN users u ON res.customer_id = u.id
+                    JOIN users u ON res.customer_id = u.user_id
                     JOIN restaurants r ON res.restaurant_id = r.restaurant_id
                     JOIN `tables` t ON res.table_id = t.table_id
                     WHERE r.vendor_id = ? AND (res.status = 'pending' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.reservation_time) >= NOW()))
@@ -171,12 +171,12 @@ try {
         case 'reservation_history':
             if ($method === 'GET') {
                 $stmt = $pdo->prepare("
-                    SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status, m.name as manager_name, m.id as manager_id
+                    SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status, m.name as manager_name, m.user_id as manager_id
                     FROM reservations res
-                    JOIN users u ON res.customer_id = u.id
+                    JOIN users u ON res.customer_id = u.user_id
                     JOIN restaurants r ON res.restaurant_id = r.restaurant_id
                     JOIN `tables` t ON res.table_id = t.table_id
-                    LEFT JOIN users m ON res.managed_by = m.id
+                    LEFT JOIN users m ON res.managed_by = m.user_id
                     WHERE r.vendor_id = ? AND (res.status = 'cancelled' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.reservation_time) < NOW()))
                     ORDER BY res.date DESC, res.reservation_time DESC
                 ");

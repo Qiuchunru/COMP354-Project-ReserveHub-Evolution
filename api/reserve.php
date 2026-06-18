@@ -123,6 +123,11 @@ try {
         'reservation_id' => $new_booking_id
     ]);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    // Gracefully handle foreign key constraint violations (e.g. invalid restaurant_id)
+    if ($e->getCode() == 23000) {
+        echo json_encode(['success' => false, 'message' => 'Invalid restaurant or table selection.']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    }
 }
 ?>
