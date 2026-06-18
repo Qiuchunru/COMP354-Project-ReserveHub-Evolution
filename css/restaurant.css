@@ -191,6 +191,7 @@ input::-webkit-calendar-picker-indicator {
     outline: none; transition: border-color 0.2s; cursor: pointer;
 }
 .floor-plan-date-bar input:focus, .floor-plan-date-bar select:focus { border-color: var(--orange); }
+.floor-plan-date-bar option { background-color: var(--surface); color: var(--text); }
 .refresh-btn { 
     background: var(--orange); 
     color: #fff; 
@@ -275,6 +276,7 @@ input::-webkit-calendar-picker-indicator {
     font-family: inherit; outline: none; transition: border-color 0.2s;
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--orange); }
+.form-group select option { background-color: var(--surface); color: var(--text); }
 .form-group textarea { resize: vertical; min-height: 100px; }
 
 .btn-reserve {

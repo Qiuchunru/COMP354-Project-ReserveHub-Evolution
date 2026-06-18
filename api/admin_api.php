@@ -26,7 +26,7 @@ try {
 
 // Auto-migration: Ensure managed_by column exists
 try {
-    $pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS managed_by INT DEFAULT NULL");
+    $pdo->exec("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS managed_by VARCHAR(20) DEFAULT NULL");
 } catch (Exception $e) {
     // Ignore
 }
@@ -115,10 +115,10 @@ try {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 // Generate new alphanumeric ID
-                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(id, 2) AS UNSIGNED)), 0) + 1 FROM users");
+                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(user_id, 2) AS UNSIGNED)), 0) + 1 FROM users");
                 $new_id = 'c' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
 
-                $stmt = $pdo->prepare("INSERT INTO users (id, username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO users (user_id, username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$new_id, $username_val, $name, $email, $phone, $hashed_password, $role]);
 
                 echo json_encode(['success' => true, 'message' => 'Account created successfully!']);
@@ -176,7 +176,7 @@ try {
                 $res = $pdo->query("
                     SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status
                     FROM reservations res
-                    JOIN users u ON res.customer_id = u.id
+                    JOIN users u ON res.customer_id = u.user_id
                     JOIN restaurants r ON res.restaurant_id = r.restaurant_id
                     JOIN `tables` t ON res.table_id = t.table_id
                     ORDER BY res.date DESC, res.reservation_time DESC
@@ -189,12 +189,12 @@ try {
             if ($method === 'GET') {
                 $res = $pdo->query("
                     SELECT res.booking_id as id, u.name as user_name, r.name as restaurant_name, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests,
-                           m.name as manager_name, m.id as manager_id
+                           m.name as manager_name, m.user_id as manager_id
                     FROM reservations res
-                    JOIN users u ON res.customer_id = u.id
+                    JOIN users u ON res.customer_id = u.user_id
                     JOIN restaurants r ON res.restaurant_id = r.restaurant_id
                     JOIN `tables` t ON res.table_id = t.table_id
-                    LEFT JOIN users m ON res.managed_by = m.id
+                    LEFT JOIN users m ON res.managed_by = m.user_id
                     WHERE res.status = 'confirmed' AND CONCAT(res.date, ' ', res.reservation_time) < NOW()
                     ORDER BY res.date DESC, res.reservation_time DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
@@ -292,7 +292,7 @@ try {
                     // Compute live availability: a table is 'occupied' if it has an active
                     // reservation within 60 minutes of the current time today
                     $stmt = $pdo->prepare("
-                        SELECT t.*, t.table_id as id,
+                        SELECT t.*, t.table_id as id, t.canvas_x_coordinate AS x_pos, t.canvas_y_coordinate AS y_pos,
                                CASE WHEN r.booking_id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
                         FROM `tables` t
                         LEFT JOIN reservations r
@@ -340,7 +340,7 @@ try {
                 $approvals = $pdo->query("
                     SELECT r.*, r.restaurant_id as id, u.name as vendor_name, u.email as vendor_email 
                     FROM restaurants r 
-                    JOIN users u ON r.vendor_id = u.id 
+                    JOIN users u ON r.vendor_id = u.user_id 
                     ORDER BY CASE WHEN r.status = 'pending' THEN 0 ELSE 1 END, r.restaurant_id DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $approvals]);

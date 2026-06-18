@@ -29,7 +29,7 @@ try {
         $check->execute([$restId, $userId]);
         if (!$check->fetch()) { echo json_encode(['success' => false, 'message' => 'Not your restaurant']); exit; }
 
-        $stmt = $pdo->prepare("SELECT *, 'available' AS status, table_id as id FROM `tables` WHERE restaurant_id = ? ORDER BY table_number");
+        $stmt = $pdo->prepare("SELECT *, table_id AS id, canvas_x_coordinate AS x_pos, canvas_y_coordinate AS y_pos, 'available' AS status FROM `tables` WHERE restaurant_id = ? ORDER BY table_number");
         $stmt->execute([$restId]);
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
 

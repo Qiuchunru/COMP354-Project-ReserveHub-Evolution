@@ -25,5 +25,6 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `status` ENUM('pending','confirmed','cancelled') DEFAULT 'confirmed',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`customer_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`table_id`) REFERENCES `tables`(`table_id`) ON DELETE CASCADE
+  FOREIGN KEY (`table_id`) REFERENCES `tables`(`table_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants`(`restaurant_id`) ON DELETE CASCADE
 );

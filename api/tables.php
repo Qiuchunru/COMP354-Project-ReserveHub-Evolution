@@ -70,7 +70,7 @@ try {
         // Compute per-table availability for a specific date/time window (±60 min)
         // Also check capacity against requested guests
         $stmt = $pdo->prepare("
-            SELECT t.*,
+            SELECT t.*, t.table_id AS id, t.canvas_x_coordinate AS x_pos, t.canvas_y_coordinate AS y_pos,
                    CASE 
                        WHEN t.capacity < ? THEN 'unavailable'
                        WHEN r.booking_id IS NOT NULL THEN 'occupied' 
@@ -89,7 +89,7 @@ try {
     } else {
         // Just return all tables for this restaurant if no date/time/guests
         $stmt = $pdo->prepare("
-            SELECT t.*, 'available' as status 
+            SELECT t.*, t.table_id AS id, t.canvas_x_coordinate AS x_pos, t.canvas_y_coordinate AS y_pos, 'available' as status 
             FROM `tables` t 
             WHERE t.restaurant_id = ? 
             ORDER BY t.table_number ASC

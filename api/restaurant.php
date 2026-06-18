@@ -14,7 +14,7 @@ if (!$id) {
 try {
     // Compute rating live from reviews; fall back to seed_rating when no reviews exist yet
     $stmt = $pdo->prepare("
-        SELECT r.*,
+        SELECT r.*, r.restaurant_id AS id,
                ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
         FROM restaurants r
         LEFT JOIN reviews rev ON rev.restaurant_id = r.restaurant_id
