@@ -22,7 +22,7 @@ try {
 } catch (Exception $e) {}
 
 try {
-    $sql = "SELECT r.* FROM restaurants r
+    $sql = "SELECT r.*, r.restaurant_id AS id FROM restaurants r
             JOIN saved_restaurants s ON r.restaurant_id = s.restaurant_id
             WHERE s.customer_id = ?
             ORDER BY s.created_at DESC";
