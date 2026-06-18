@@ -28,7 +28,7 @@ VALUES
  '$',
  4.5,
  '07:00:00', '23:00:00', '7:00 AM – 11:00 PM',
- 'https://i.imgur.com/GGGXfvf.jpeg',
+ '../pictures/restaurants/zus_coffee.png',
  'approved', 1, 1),
 
 -- R2: McDonald's Malaysia (Fast Food / Grid style)
@@ -40,7 +40,7 @@ VALUES
  '$$',
  4.2,
  '08:00:00', '00:00:00', '8:00 AM – 12:00 AM',
- 'https://i.imgur.com/Y2sRHhL.jpeg',
+ '../pictures/restaurants/mcdonalds_malaysia.png',
  'approved', 1, 1),
 
 -- R3: Nasi Kandar Pelita (Family Dining / Spacious style)
@@ -52,7 +52,7 @@ VALUES
  '$$',
  4.3,
  '10:00:00', '22:00:00', '10:00 AM – 10:00 PM',
- 'https://i.imgur.com/K59g8hL.jpeg',
+ '../pictures/restaurants/nasi_kandar_pelita.png',
  'approved', 1, 1),
 
 -- R4: Texas Chicken Malaysia (Counter Service / Mixed Rows style)
@@ -64,7 +64,7 @@ VALUES
  '$',
  4.1,
  '09:00:00', '23:00:00', '9:00 AM – 11:00 PM',
- 'https://i.imgur.com/9kZ8fGL.jpeg',
+ '../pictures/restaurants/texas_chicken.png',
  'approved', 1, 1),
 
 -- R5: Marrybrown (Local Fast Food / Booth style)
@@ -76,7 +76,7 @@ VALUES
  '$',
  4.0,
  '08:00:00', '22:00:00', '8:00 AM – 10:00 PM',
- 'https://i.imgur.com/cB5TbZz.jpeg',
+ '../pictures/restaurants/marrybrown.png',
  'approved', 1, 1);
 
 
