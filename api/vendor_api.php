@@ -88,8 +88,7 @@ try {
                     $params = [$name, $description, $cuisine, $location, $priceRange, $openingTime, $closingTime, $openingHours];
 
                     if (!empty($imageUrl)) {
-                        $updateSql .= ", image_url=?, image=?";
-                        $params[] = $imageUrl;
+                        $updateSql .= ", image_url=?";
                         $params[] = $imageUrl;
                     }
                     $updateSql .= " WHERE restaurant_id=? AND vendor_id=?";
