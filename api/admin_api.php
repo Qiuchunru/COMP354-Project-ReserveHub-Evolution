@@ -12,12 +12,13 @@ try {
 // Auto-migration: Ensure contact_messages table exists
 try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS `contact_messages` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `message_id` VARCHAR(20) NOT NULL,
         `name` VARCHAR(100) NOT NULL,
         `email` VARCHAR(100) NOT NULL,
         `subject` VARCHAR(255) NOT NULL,
         `message` TEXT NOT NULL,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`message_id`)
     )");
 } catch (Exception $e) {
     // Ignore
@@ -51,10 +52,10 @@ try {
                 $totalRests = $pdo->query("SELECT COUNT(*) FROM restaurants")->fetchColumn();
                 
                 $popRes = $pdo->query("
-                    SELECT r.name, COUNT(res.id) as res_count 
+                    SELECT r.name, COUNT(res.booking_id) as res_count 
                     FROM restaurants r
-                    LEFT JOIN reservations res ON r.id = res.restaurant_id
-                    GROUP BY r.id
+                    LEFT JOIN reservations res ON r.restaurant_id = res.restaurant_id
+                    GROUP BY r.restaurant_id
                     ORDER BY res_count DESC
                     LIMIT 5
                 ")->fetchAll(PDO::FETCH_ASSOC);
@@ -73,7 +74,7 @@ try {
 
         case 'users':
             if ($method === 'GET') {
-                $users = $pdo->query("SELECT id, username, name, email, phone, role, created_at FROM users ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+                $users = $pdo->query("SELECT user_id AS id, username, name, email, phone, role, created_at FROM users ORDER BY user_id DESC")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $users]);
             } elseif ($method === 'POST') {
                 $input = !empty($_POST) ? $_POST : $data;
@@ -84,7 +85,7 @@ try {
                 $password = trim($input['password'] ?? '');
                 $role = trim($input['role'] ?? 'vendor');
 
-                if (!in_array($role, ['user', 'vendor', 'admin'])) {
+                if (!in_array($role, ['customer', 'vendor', 'admin'])) {
                     $role = 'vendor';
                 }
 
@@ -104,7 +105,7 @@ try {
                 }
 
                 // Check if username or email already exists
-                $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+                $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ? OR username = ?");
                 $stmt->execute([$email, $username_val]);
                 if ($stmt->rowCount() > 0) {
                     echo json_encode(['success' => false, 'message' => 'Email or Username is already registered.']);
@@ -112,8 +113,13 @@ try {
                 }
 
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$username_val, $name, $email, $phone, $hashed_password, $role]);
+                
+                // Generate new alphanumeric ID
+                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(id, 2) AS UNSIGNED)), 0) + 1 FROM users");
+                $new_id = 'c' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+                $stmt = $pdo->prepare("INSERT INTO users (id, username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$new_id, $username_val, $name, $email, $phone, $hashed_password, $role]);
 
                 echo json_encode(['success' => true, 'message' => 'Account created successfully!']);
             } elseif ($method === 'PUT') {
@@ -130,7 +136,7 @@ try {
                 $email = trim($input['email'] ?? '');
                 $phone = trim($input['phone'] ?? '');
 
-                if (empty($role) || !in_array($role, ['user', 'vendor', 'admin'])) {
+                if (empty($role) || !in_array($role, ['customer', 'vendor', 'admin'])) {
                     echo json_encode(['success' => false, 'message' => 'Invalid or missing role.']);
                     exit;
                 }
@@ -141,14 +147,14 @@ try {
                 }
 
                 // Check if email already registered to someone else
-                $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+                $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
                 $stmt->execute([$email, $id]);
                 if ($stmt->rowCount() > 0) {
                     echo json_encode(['success' => false, 'message' => 'Email is already in use by another account.']);
                     exit;
                 }
 
-                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, phone = ?, role = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, phone = ?, role = ? WHERE user_id = ?");
                 $stmt->execute([$name, $email, $phone, $role, $id]);
 
                 echo json_encode(['success' => true, 'message' => 'User updated successfully.']);
@@ -159,7 +165,7 @@ try {
                     exit;
                 }
 
-                $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+                $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
                 $stmt->execute([$id]);
                 echo json_encode(['success' => true, 'message' => 'User deleted successfully.']);
             }
@@ -168,12 +174,12 @@ try {
         case 'reservations':
             if ($method === 'GET') {
                 $res = $pdo->query("
-                    SELECT res.id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.time, res.guests, res.status
+                    SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status
                     FROM reservations res
-                    JOIN users u ON res.user_id = u.id
-                    JOIN restaurants r ON res.restaurant_id = r.id
-                    JOIN `tables` t ON res.table_id = t.id
-                    ORDER BY res.date DESC, res.time DESC
+                    JOIN users u ON res.customer_id = u.id
+                    JOIN restaurants r ON res.restaurant_id = r.restaurant_id
+                    JOIN `tables` t ON res.table_id = t.table_id
+                    ORDER BY res.date DESC, res.reservation_time DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $res]);
             }
@@ -182,15 +188,15 @@ try {
         case 'reservation_history':
             if ($method === 'GET') {
                 $res = $pdo->query("
-                    SELECT res.id, u.name as user_name, r.name as restaurant_name, t.table_number, res.date, res.time, res.guests,
+                    SELECT res.booking_id as id, u.name as user_name, r.name as restaurant_name, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests,
                            m.name as manager_name, m.id as manager_id
                     FROM reservations res
-                    JOIN users u ON res.user_id = u.id
-                    JOIN restaurants r ON res.restaurant_id = r.id
-                    JOIN `tables` t ON res.table_id = t.id
+                    JOIN users u ON res.customer_id = u.id
+                    JOIN restaurants r ON res.restaurant_id = r.restaurant_id
+                    JOIN `tables` t ON res.table_id = t.table_id
                     LEFT JOIN users m ON res.managed_by = m.id
-                    WHERE res.status = 'confirmed' AND CONCAT(res.date, ' ', res.time) < NOW()
-                    ORDER BY res.date DESC, res.time DESC
+                    WHERE res.status = 'confirmed' AND CONCAT(res.date, ' ', res.reservation_time) < NOW()
+                    ORDER BY res.date DESC, res.reservation_time DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $res]);
             }
@@ -200,12 +206,12 @@ try {
             if ($method === 'GET') {
                 // Compute live rating from reviews; fall back to seed_rating for restaurants with none
                 $rests = $pdo->query("
-                    SELECT r.*,
+                    SELECT r.*, r.restaurant_id as id,
                            ROUND(COALESCE(AVG(rev.rating), r.seed_rating), 1) AS rating
                     FROM restaurants r
-                    LEFT JOIN reviews rev ON rev.restaurant_id = r.id
-                    GROUP BY r.id
-                    ORDER BY r.id DESC
+                    LEFT JOIN reviews rev ON rev.restaurant_id = r.restaurant_id
+                    GROUP BY r.restaurant_id
+                    ORDER BY r.restaurant_id DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $rests]);
             } elseif ($method === 'POST') {
@@ -232,12 +238,12 @@ try {
                     }
                 }
 
-                $vendor_id = isset($input['vendor_id']) && is_numeric($input['vendor_id']) ? (int)$input['vendor_id'] : null;
+                $vendor_id = !empty($input['vendor_id']) ? $input['vendor_id'] : null;
                 $seed_rating = (isset($input['seed_rating']) && $input['seed_rating'] !== '') ? (float)$input['seed_rating'] : ((isset($input['rating']) && $input['rating'] !== '') ? (float)$input['rating'] : null);
 
                 if ($id) {
                     // Update — write to seed_rating (computed rating is derived at query time)
-                    $stmt = $pdo->prepare("UPDATE restaurants SET vendor_id=COALESCE(?, vendor_id), name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE id=?");
+                    $stmt = $pdo->prepare("UPDATE restaurants SET vendor_id=COALESCE(?, vendor_id), name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=?, icon=?, image_gradient=? WHERE restaurant_id=?");
                     $stmt->execute([
                         $vendor_id,
                         $input['name'], $input['description'], $input['cuisine'], $input['location'],
@@ -247,9 +253,12 @@ try {
                     ]);
                 } else {
                     // Create
-                    $stmt = $pdo->prepare("INSERT INTO restaurants (vendor_id, name, description, cuisine, location, price_range, seed_rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(restaurant_id, 2) AS UNSIGNED)), 0) + 1 FROM restaurants");
+                    $new_rest_id = 'r' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+                    $stmt = $pdo->prepare("INSERT INTO restaurants (restaurant_id, vendor_id, name, description, cuisine, location, price_range, seed_rating, opening_time, closing_time, image_url, icon, image_gradient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([
-                        $vendor_id,
+                        $new_rest_id, $vendor_id,
                         $input['name'], $input['description'], $input['cuisine'], $input['location'],
                         $input['price_range'], $seed_rating,
                         $input['opening_time'], $input['closing_time'],
@@ -260,7 +269,7 @@ try {
             } elseif ($method === 'PUT') {
                 // Backward-compatible PUT (no file upload)
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=? WHERE id=?");
+                $stmt = $pdo->prepare("UPDATE restaurants SET name=?, description=?, cuisine=?, location=?, price_range=?, seed_rating=?, opening_time=?, closing_time=?, image_url=? WHERE restaurant_id=?");
                 $stmt->execute([
                     $data['name'], $data['description'], $data['cuisine'], $data['location'],
                     $data['price_range'], $data['seed_rating'] ?? $data['rating'] ?? null,
@@ -270,7 +279,7 @@ try {
                 echo json_encode(['success' => true]);
             } elseif ($method === 'DELETE') {
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("DELETE FROM restaurants WHERE id = ?");
+                $stmt = $pdo->prepare("DELETE FROM restaurants WHERE restaurant_id = ?");
                 $stmt->execute([$id]);
                 echo json_encode(['success' => true]);
             }
@@ -283,13 +292,13 @@ try {
                     // Compute live availability: a table is 'occupied' if it has an active
                     // reservation within 60 minutes of the current time today
                     $stmt = $pdo->prepare("
-                        SELECT t.*,
-                               CASE WHEN r.id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
+                        SELECT t.*, t.table_id as id,
+                               CASE WHEN r.booking_id IS NOT NULL THEN 'occupied' ELSE 'available' END AS status
                         FROM `tables` t
                         LEFT JOIN reservations r
-                            ON r.table_id = t.id
+                            ON r.table_id = t.table_id
                             AND r.date = CURDATE()
-                            AND ABS(TIMESTAMPDIFF(MINUTE, r.time, CURTIME())) < 60
+                            AND ABS(TIMESTAMPDIFF(MINUTE, r.reservation_time, CURTIME())) < 60
                             AND r.status IN ('pending', 'confirmed')
                         WHERE t.restaurant_id = ?
                         ORDER BY t.table_number ASC
@@ -302,15 +311,18 @@ try {
                 }
             } elseif ($method === 'POST') {
                 // status column has been removed — availability is computed at query time
-                $stmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES (?, ?, ?, ?, ?, ?)");
+                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(table_id, 2) AS UNSIGNED)), 0) + 1 FROM `tables`");
+                $new_table_id = 't' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+                $stmt = $pdo->prepare("INSERT INTO `tables` (table_id, restaurant_id, table_number, capacity, shape, canvas_x_coordinate, canvas_y_coordinate) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([
-                    $data['restaurant_id'], $data['table_number'], $data['capacity'],
+                    $new_table_id, $data['restaurant_id'], $data['table_number'], $data['capacity'],
                     $data['shape'], $data['x_pos'], $data['y_pos']
                 ]);
-                echo json_encode(['success' => true, 'id' => (int)$pdo->lastInsertId()]);
+                echo json_encode(['success' => true, 'id' => $new_table_id]);
             } elseif ($method === 'PUT') {
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, x_pos=?, y_pos=? WHERE id=?");
+                $stmt = $pdo->prepare("UPDATE `tables` SET table_number=?, capacity=?, shape=?, canvas_x_coordinate=?, canvas_y_coordinate=? WHERE table_id=?");
                 $stmt->execute([
                     $data['table_number'], $data['capacity'], $data['shape'],
                     $data['x_pos'], $data['y_pos'], $id
@@ -318,7 +330,7 @@ try {
                 echo json_encode(['success' => true]);
             } elseif ($method === 'DELETE') {
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("DELETE FROM `tables` WHERE id = ?");
+                $stmt = $pdo->prepare("DELETE FROM `tables` WHERE table_id = ?");
                 $stmt->execute([$id]);
                 echo json_encode(['success' => true]);
             }
@@ -326,10 +338,10 @@ try {
         case 'approvals':
             if ($method === 'GET') {
                 $approvals = $pdo->query("
-                    SELECT r.*, u.name as vendor_name, u.email as vendor_email 
+                    SELECT r.*, r.restaurant_id as id, u.name as vendor_name, u.email as vendor_email 
                     FROM restaurants r 
                     JOIN users u ON r.vendor_id = u.id 
-                    ORDER BY CASE WHEN r.status = 'pending' THEN 0 ELSE 1 END, r.id DESC
+                    ORDER BY CASE WHEN r.status = 'pending' THEN 0 ELSE 1 END, r.restaurant_id DESC
                 ")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $approvals]);
             } elseif ($method === 'POST') {
@@ -341,7 +353,7 @@ try {
                     exit;
                 }
 
-                $stmt = $pdo->prepare("UPDATE restaurants SET status = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE restaurants SET status = ? WHERE restaurant_id = ?");
                 $stmt->execute([$status, $id]);
                 echo json_encode(['success' => true, 'message' => 'Listing status updated successfully.']);
             }
@@ -349,7 +361,7 @@ try {
 
         case 'messages':
             if ($method === 'GET') {
-                $messages = $pdo->query("SELECT * FROM contact_messages ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+                $messages = $pdo->query("SELECT * FROM contact_messages ORDER BY message_id DESC")->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $messages]);
             } elseif ($method === 'POST') {
                 $input = !empty($_POST) ? $_POST : $data;
@@ -363,12 +375,15 @@ try {
                     exit;
                 }
 
-                $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$name, $email, $subject, $message]);
+                // Generate new alphanumeric message_id (m001, m002, …)
+                $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(message_id, 2) AS UNSIGNED)), 0) + 1 FROM contact_messages");
+                $new_msg_id = 'm' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+                $stmt = $pdo->prepare("INSERT INTO contact_messages (message_id, name, email, subject, message) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$new_msg_id, $name, $email, $subject, $message]);
                 echo json_encode(['success' => true, 'message' => 'Thank you for reaching out! We will get back to you shortly.']);
             } elseif ($method === 'DELETE') {
                 $id = $_GET['id'] ?? 0;
-                $stmt = $pdo->prepare("DELETE FROM contact_messages WHERE id = ?");
+                $stmt = $pdo->prepare("DELETE FROM contact_messages WHERE message_id = ?");
                 $stmt->execute([$id]);
                 echo json_encode(['success' => true]);
             }

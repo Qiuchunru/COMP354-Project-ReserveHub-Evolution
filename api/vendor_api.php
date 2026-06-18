@@ -32,7 +32,7 @@ try {
         case 'restaurants':
             if ($method === 'GET') {
                 // Get all restaurants for this vendor
-                $stmt = $pdo->prepare("SELECT * FROM restaurants WHERE vendor_id = ? ORDER BY id DESC");
+                $stmt = $pdo->prepare("SELECT *, restaurant_id as id FROM restaurants WHERE vendor_id = ? ORDER BY restaurant_id DESC");
                 $stmt->execute([$userId]);
                 $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $restaurants]);
@@ -77,7 +77,7 @@ try {
 
                 if ($id) {
                     // Update: Verify vendor ownership first
-                    $checkStmt = $pdo->prepare("SELECT id FROM restaurants WHERE id = ? AND vendor_id = ?");
+                    $checkStmt = $pdo->prepare("SELECT restaurant_id FROM restaurants WHERE restaurant_id = ? AND vendor_id = ?");
                     $checkStmt->execute([$id, $userId]);
                     if (!$checkStmt->fetch()) {
                         echo json_encode(['success' => false, 'message' => 'Access denied: You do not own this restaurant.']);
@@ -92,7 +92,7 @@ try {
                         $params[] = $imageUrl;
                         $params[] = $imageUrl;
                     }
-                    $updateSql .= " WHERE id=? AND vendor_id=?";
+                    $updateSql .= " WHERE restaurant_id=? AND vendor_id=?";
                     $params[] = $id;
                     $params[] = $userId;
 
@@ -101,35 +101,50 @@ try {
                     echo json_encode(['success' => true, 'message' => 'Restaurant updated successfully. Sent for admin re-approval.']);
                 } else {
                     // Create
-                    $stmt = $pdo->prepare("INSERT INTO restaurants (vendor_id, name, description, cuisine, location, price_range, opening_time, closing_time, opening_hours, image_url, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+                    $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(restaurant_id, 2) AS UNSIGNED)), 0) + 1 FROM restaurants");
+                    $newRestId = 'r' . str_pad($idStmt->fetchColumn(), 3, '0', STR_PAD_LEFT);
+
+                    $stmt = $pdo->prepare("INSERT INTO restaurants (restaurant_id, vendor_id, name, description, cuisine, location, price_range, opening_time, closing_time, opening_hours, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
                     $stmt->execute([
-                        $userId, $name, $description, $cuisine, $location, 
+                        $newRestId, $userId, $name, $description, $cuisine, $location, 
                         $priceRange, $openingTime, $closingTime, $openingHours, 
-                        $imageUrl, $imageUrl
+                        $imageUrl
                     ]);
-                    $newRestId = $pdo->lastInsertId();
 
                     // Automatically create default tables for the restaurant so users can reserve
-                    $tableStmt = $pdo->prepare("INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES 
-                        (?, 'T1', 2, 'round', 100, 100),
-                        (?, 'T2', 4, 'rect', 300, 100),
-                        (?, 'T3', 4, 'rect', 500, 100),
-                        (?, 'T4', 6, 'rect', 700, 100)");
-                    $tableStmt->execute([$newRestId, $newRestId, $newRestId, $newRestId]);
+                    $tidStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(table_id, 2) AS UNSIGNED)), 0) FROM `tables`");
+                    $startTid = (int)$tidStmt->fetchColumn();
+
+                    $t1 = 't' . str_pad($startTid + 1, 3, '0', STR_PAD_LEFT);
+                    $t2 = 't' . str_pad($startTid + 2, 3, '0', STR_PAD_LEFT);
+                    $t3 = 't' . str_pad($startTid + 3, 3, '0', STR_PAD_LEFT);
+                    $t4 = 't' . str_pad($startTid + 4, 3, '0', STR_PAD_LEFT);
+
+                    $tableStmt = $pdo->prepare("INSERT INTO `tables` (table_id, restaurant_id, table_number, capacity, shape, canvas_x_coordinate, canvas_y_coordinate) VALUES 
+                        (?, ?, 'T1', 2, 'round', 100, 100),
+                        (?, ?, 'T2', 4, 'rect', 300, 100),
+                        (?, ?, 'T3', 4, 'rect', 500, 100),
+                        (?, ?, 'T4', 6, 'rect', 700, 100)");
+                    $tableStmt->execute([
+                        $t1, $newRestId,
+                        $t2, $newRestId,
+                        $t3, $newRestId,
+                        $t4, $newRestId
+                    ]);
 
                     echo json_encode(['success' => true, 'message' => 'Restaurant listing submitted for approval!']);
                 }
             } elseif ($method === 'DELETE') {
                 $id = $_GET['id'] ?? 0;
                 // Delete: Verify vendor ownership first
-                $checkStmt = $pdo->prepare("SELECT id FROM restaurants WHERE id = ? AND vendor_id = ?");
+                $checkStmt = $pdo->prepare("SELECT restaurant_id FROM restaurants WHERE restaurant_id = ? AND vendor_id = ?");
                 $checkStmt->execute([$id, $userId]);
                 if (!$checkStmt->fetch()) {
                     echo json_encode(['success' => false, 'message' => 'Access denied: You do not own this restaurant.']);
                     exit;
                 }
 
-                $stmt = $pdo->prepare("DELETE FROM restaurants WHERE id = ? AND vendor_id = ?");
+                $stmt = $pdo->prepare("DELETE FROM restaurants WHERE restaurant_id = ? AND vendor_id = ?");
                 $stmt->execute([$id, $userId]);
                 echo json_encode(['success' => true, 'message' => 'Restaurant deleted successfully.']);
             }
@@ -139,13 +154,13 @@ try {
             if ($method === 'GET') {
                 // View all reservations made at their restaurants
                 $stmt = $pdo->prepare("
-                    SELECT res.id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.time, res.guests, res.status
+                    SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status
                     FROM reservations res
-                    JOIN users u ON res.user_id = u.id
-                    JOIN restaurants r ON res.restaurant_id = r.id
-                    JOIN `tables` t ON res.table_id = t.id
-                    WHERE r.vendor_id = ? AND (res.status = 'pending' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.time) >= NOW()))
-                    ORDER BY res.date ASC, res.time ASC
+                    JOIN users u ON res.customer_id = u.id
+                    JOIN restaurants r ON res.restaurant_id = r.restaurant_id
+                    JOIN `tables` t ON res.table_id = t.table_id
+                    WHERE r.vendor_id = ? AND (res.status = 'pending' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.reservation_time) >= NOW()))
+                    ORDER BY res.date ASC, res.reservation_time ASC
                 ");
                 $stmt->execute([$userId]);
                 $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -156,14 +171,14 @@ try {
         case 'reservation_history':
             if ($method === 'GET') {
                 $stmt = $pdo->prepare("
-                    SELECT res.id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.time, res.guests, res.status, m.name as manager_name, m.id as manager_id
+                    SELECT res.booking_id as id, u.name as user_name, u.phone as user_phone, r.name as restaurant_name, r.image_url, t.table_number, res.date, res.reservation_time as time, res.guest_count as guests, res.status, m.name as manager_name, m.id as manager_id
                     FROM reservations res
-                    JOIN users u ON res.user_id = u.id
-                    JOIN restaurants r ON res.restaurant_id = r.id
-                    JOIN `tables` t ON res.table_id = t.id
+                    JOIN users u ON res.customer_id = u.id
+                    JOIN restaurants r ON res.restaurant_id = r.restaurant_id
+                    JOIN `tables` t ON res.table_id = t.table_id
                     LEFT JOIN users m ON res.managed_by = m.id
-                    WHERE r.vendor_id = ? AND (res.status = 'cancelled' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.time) < NOW()))
-                    ORDER BY res.date DESC, res.time DESC
+                    WHERE r.vendor_id = ? AND (res.status = 'cancelled' OR (res.status = 'confirmed' AND CONCAT(res.date, ' ', res.reservation_time) < NOW()))
+                    ORDER BY res.date DESC, res.reservation_time DESC
                 ");
                 $stmt->execute([$userId]);
                 $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -183,10 +198,10 @@ try {
 
                 // Verify the reservation is for a restaurant owned by this vendor
                 $stmt = $pdo->prepare("
-                    SELECT res.id 
+                    SELECT res.booking_id 
                     FROM reservations res
-                    JOIN restaurants r ON res.restaurant_id = r.id
-                    WHERE res.id = ? AND r.vendor_id = ?
+                    JOIN restaurants r ON res.restaurant_id = r.restaurant_id
+                    WHERE res.booking_id = ? AND r.vendor_id = ?
                 ");
                 $stmt->execute([$reservationId, $userId]);
                 if (!$stmt->fetch()) {
@@ -194,7 +209,7 @@ try {
                     exit;
                 }
 
-                $updateStmt = $pdo->prepare("UPDATE reservations SET status = ?, managed_by = ? WHERE id = ?");
+                $updateStmt = $pdo->prepare("UPDATE reservations SET status = ?, managed_by = ? WHERE booking_id = ?");
                 $updateStmt->execute([$status, $userId, $reservationId]);
                 echo json_encode(['success' => true, 'message' => 'Reservation status updated successfully.']);
             }
@@ -205,14 +220,14 @@ try {
                 $restId = $data['id'] ?? $_POST['id'] ?? 0;
                 $isOpen = $data['is_open'] ?? $_POST['is_open'] ?? 1;
 
-                $checkStmt = $pdo->prepare("SELECT id FROM restaurants WHERE id = ? AND vendor_id = ?");
+                $checkStmt = $pdo->prepare("SELECT restaurant_id FROM restaurants WHERE restaurant_id = ? AND vendor_id = ?");
                 $checkStmt->execute([$restId, $userId]);
                 if (!$checkStmt->fetch()) {
                     echo json_encode(['success' => false, 'message' => 'Access denied: You do not own this restaurant.']);
                     exit;
                 }
 
-                $stmt = $pdo->prepare("UPDATE restaurants SET is_open = ? WHERE id = ? AND vendor_id = ?");
+                $stmt = $pdo->prepare("UPDATE restaurants SET is_open = ? WHERE restaurant_id = ? AND vendor_id = ?");
                 $stmt->execute([$isOpen, $restId, $userId]);
                 echo json_encode(['success' => true, 'message' => 'Restaurant status updated.']);
             }

@@ -24,7 +24,7 @@ $phone = trim($data->phone ?? '');
 try {
     // 1. Check if username is already taken by another user
     if (!empty($username)) {
-        $checkStmt = $pdo->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
+        $checkStmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ? AND user_id != ?");
         $checkStmt->execute([$username, $user_id]);
         if ($checkStmt->fetch()) {
             echo json_encode(['success' => false, 'message' => 'Username is already taken.']);
@@ -33,12 +33,12 @@ try {
     }
 
     // 2. Update user info
-    $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, phone = ? WHERE id = ?");
+    $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, phone = ? WHERE user_id = ?");
     $result = $stmt->execute([$name, $username, $phone, $user_id]);
 
     if ($result) {
         // Fetch updated user data
-        $stmt = $pdo->prepare("SELECT id, username, name, email, role, phone, profile_picture FROM users WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT user_id AS id, username, name, email, role, phone, profile_picture FROM users WHERE user_id = ?");
         $stmt->execute([$user_id]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

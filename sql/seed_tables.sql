@@ -29,7 +29,7 @@ BEGIN
 
     IF pattern = 1 THEN
       -- Pattern A: Cozy bistro - 10 tables
-      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES
+      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, canvas_x_coordinate, canvas_y_coordinate) VALUES
         (i, 'T1', 2, 'round', 80, 80),
         (i, 'T2', 2, 'round', 200, 80),
         (i, 'T3', 4, 'rect', 340, 60),
@@ -42,7 +42,7 @@ BEGIN
         (i, 'T10', 6, 'rect', 380, 350);
     ELSEIF pattern = 2 THEN
       -- Pattern B: Medium restaurant - 14 tables
-      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES
+      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, canvas_x_coordinate, canvas_y_coordinate) VALUES
         (i, 'T1', 2, 'round', 70, 70),
         (i, 'T2', 2, 'round', 170, 70),
         (i, 'T3', 2, 'round', 270, 70),
@@ -59,7 +59,7 @@ BEGIN
         (i, 'T14', 2, 'round', 610, 340);
     ELSE
       -- Pattern C: Large restaurant - 18 tables
-      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, x_pos, y_pos) VALUES
+      INSERT INTO `tables` (restaurant_id, table_number, capacity, shape, canvas_x_coordinate, canvas_y_coordinate) VALUES
         (i, 'T1', 2, 'round', 60, 60),
         (i, 'T2', 2, 'round', 150, 60),
         (i, 'T3', 4, 'rect', 250, 45),

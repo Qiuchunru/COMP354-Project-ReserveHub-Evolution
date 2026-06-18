@@ -15,13 +15,13 @@ if (!$user_id || !$restaurant_id) {
 try {
     // Find a reservation for today that is currently active or upcoming today
     $stmt = $pdo->prepare("
-        SELECT id, date, time, table_id, guests, status
+        SELECT booking_id as id, date, reservation_time as time, table_id, guest_count as guests, status
         FROM reservations
-        WHERE user_id = ? 
+        WHERE customer_id = ? 
           AND restaurant_id = ? 
           AND date = CURDATE()
           AND status IN ('pending', 'confirmed')
-        ORDER BY time ASC
+        ORDER BY reservation_time ASC
         LIMIT 1
     ");
     $stmt->execute([$user_id, $restaurant_id]);

@@ -17,10 +17,10 @@ $name = trim($data->name ?? '');
 $email = trim($data->email ?? '');
 $phone = trim($data->phone ?? '');
 $password = trim($data->password ?? '');
-$role = trim($data->role ?? 'user');
+$role = trim($data->role ?? 'customer');
 
-if (!in_array($role, ['user', 'vendor'])) {
-    $role = 'user';
+if (!in_array($role, ['customer', 'vendor'])) {
+    $role = 'customer';
 }
 
 // Basic validation
@@ -41,18 +41,23 @@ if (strlen($password) < 6) {
 
 try {
     // Check if username or email already exists
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+    $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ? OR username = ?");
     $stmt->execute([$email, $username_val]);
     if ($stmt->rowCount() > 0) {
         echo json_encode(['success' => false, 'message' => 'Email or Username is already registered.']);
         exit;
     }
 
-    // Hash password and insert
+    // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    $stmt = $pdo->prepare("INSERT INTO users (username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)");
-    if ($stmt->execute([$username_val, $name, $email, $phone, $hashed_password, $role])) {
+    // Generate new alphanumeric user_id
+    $idStmt = $pdo->query("SELECT COALESCE(MAX(CAST(SUBSTRING(user_id, 2) AS UNSIGNED)), 0) + 1 FROM users");
+    $next_id = $idStmt->fetchColumn();
+    $new_id = 'c' . str_pad($next_id, 3, '0', STR_PAD_LEFT);
+    
+    $stmt = $pdo->prepare("INSERT INTO users (user_id, username, name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    if ($stmt->execute([$new_id, $username_val, $name, $email, $phone, $hashed_password, $role])) {
         echo json_encode([
             'success' => true,
             'message' => 'Registration successful!'
