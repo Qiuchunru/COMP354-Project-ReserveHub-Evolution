@@ -408,35 +408,33 @@ function socialLogin(provider) {
 }
 
 // Google Login Implementation
-function googleLogin() {
-    console.log('Attempting Google Login...');
+window.addEventListener('load', () => {
     if (typeof google !== 'undefined') {
-        // Initialize right before prompting to ensure client_id is never "missing"
         google.accounts.id.initialize({
             client_id: "883807509960-bg31ba8sicarhupujk7c9if3dg29ifro.apps.googleusercontent.com",
-            callback: handleGoogleResponse,
-            ux_mode: 'popup',
-            context: 'signin'
+            callback: handleGoogleResponse
         });
-
-        google.accounts.id.prompt((notification) => {
-            console.log('Google Prompt Status:', notification.getMomentType(), notification.getNotDisplayedReason());
-            if (notification.isNotDisplayed()) {
-                const reason = notification.getNotDisplayedReason();
-                console.warn('Google Prompt not displayed:', reason);
-
-                // Fallback: If One Tap is suppressed or skipped, try to use the manual picker
-                if (reason === 'suppressed_by_user' || reason === 'skipped_by_user') {
-                    showToast('Google login was dismissed. Try clearing your browser cookies or use a different browser.', 'error');
-                } else {
-                    showToast('Google login failed: ' + reason, 'error');
-                }
-            }
+        
+        // Replace custom buttons with official Google icon buttons to avoid One Tap cooldown blocks
+        document.querySelectorAll('.social-btn.google').forEach(btn => {
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'inline-block';
+            wrapper.style.verticalAlign = 'top';
+            btn.parentNode.replaceChild(wrapper, btn);
+            
+            google.accounts.id.renderButton(wrapper, {
+                type: 'icon',
+                shape: 'circle',
+                theme: 'outline',
+                size: 'large'
+            });
         });
-    } else {
-        console.error('Google SDK not loaded');
-        showToast('Google Login is currently unavailable. Please refresh the page.', 'error');
     }
+});
+
+function googleLogin() {
+    // Deprecated: Button is now rendered natively by Google
+    console.warn('Click intercepted by Google iframe. If you see this, native render failed.');
 }
 
 function handleGoogleResponse(response) {
