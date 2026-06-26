@@ -629,13 +629,9 @@ async function loadReviews() {
     list.innerHTML = '<p class="placeholder-text"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching latest reviews...</p>';
     
     try {
-        // Fetch local reviews
+        // Fetch local reviews only
         const localRes = await fetch(`../api/get_reviews.php?restaurant_id=${restaurantId}`);
         const localJson = await localRes.json();
-        
-        // Fetch Google reviews
-        const googleRes = await fetch(`../api/get_google_reviews.php?restaurant_id=${restaurantId}`);
-        const googleJson = await googleRes.json();
         
         let allReviewsHtml = '';
         const allRatings = [];
@@ -645,14 +641,6 @@ async function loadReviews() {
             localJson.data.forEach(rev => {
                 allRatings.push(parseFloat(rev.rating));
                 allReviewsHtml += renderReviewItem(rev.user_name, rev.rating, rev.comment, new Date(rev.created_at).toLocaleDateString(), 'ReserveHub', rev.user_role);
-            });
-        }
-        
-        // Render Google Reviews
-        if (googleJson.success && googleJson.data.length > 0) {
-            googleJson.data.forEach(rev => {
-                allRatings.push(parseFloat(rev.rating));
-                allReviewsHtml += renderReviewItem(rev.author, rev.rating, rev.text, rev.time, 'Google');
             });
         }
         

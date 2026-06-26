@@ -679,16 +679,18 @@ body {
 /* Social Login */
 .social-login {
     display: flex;
-    gap: 12px;
+    gap: 20px;
     margin-bottom: 28px;
+    justify-content: center;
+    align-items: center;
 }
 
 .social-btn {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid var(--border-color);
-    background: var(--input-bg);
-    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border-color);
+    background: var(--container-bg);
+    border-radius: 50%;
     cursor: pointer;
     transition: var(--transition);
     font-size: 20px;
@@ -701,8 +703,7 @@ body {
 .social-btn:hover {
     border-color: var(--primary-color);
     background: var(--container-bg);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    color: var(--primary-color);
 }
 
 .social-btn.google:hover {
