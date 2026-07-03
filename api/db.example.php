@@ -1,4 +1,5 @@
 <?php
+session_start();
 // api/db.example.php
 // Copy this file to db.php and update the credentials for your local environment.
 
