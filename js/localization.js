@@ -7,7 +7,6 @@ async function loadLanguage(json) {
     const translations = await response.json();
     document.querySelectorAll('[localization-key]').forEach(element => {
       const key = element.getAttribute('localization-key');
-      console.log(key, translations[key]);
       if (translations[key]) {
         element.textContent = translations[key];
       }

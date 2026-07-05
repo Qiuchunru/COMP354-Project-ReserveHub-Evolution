@@ -28,7 +28,7 @@
             <div id="auth-buttons" style="display: flex; gap: 4px;">
                 <a href="login-signup.html" localization-key="nav.login" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
             </div>
-            <select class="contact-language-localization">
+            <select class="contact-language-localization" onchange="updateSupportStatus(setLang())">
                <option value="en">English</option>
                <option value="fr">Français</option>
             </select>
@@ -52,7 +52,7 @@
         <div id="mob-auth-buttons">
             <a href="login-signup.html" localization-key="mobile.login" class="mob-link mob-cta">Sign Up / Log In</a>
         </div>
-        <select class="contact-language-localization">
+        <select class="contact-language-localization" onchange="updateSupportStatus(setLang())"></select>
             <option href="javascript:void(0)" value="en">English</option>
             <option href="javascript:void(0)" value="fr">Français</option>
         </select>
@@ -69,6 +69,7 @@
                 <span localization-key="hero.tag" class="section-tag">Get In Touch</span>
                 <h1 class="contact-hero-title">
                     <span localization-key="hero.title">Meet Our Team &</span>
+                    <br>
                     <span localization-key="hero.accent" class="accent">Contact Us</span>
                 </h1>
                 <p localization-key="hero.description" class="contact-hero-desc">Have a question or need assistance? Our core operations and support team is ready to help you ensure a seamless dining reservation experience.</p>
@@ -81,8 +82,8 @@
                 <div class="status-card">
                     <div class="status-info">
                         <div class="status-badge-container">
-                            <div localization-key="status.checking" id="status-indicator" class="status-indicator closed">
-                                <span class="status-dot"></span> Checking Status...
+                            <div id="status-indicator" class="status-indicator closed">
+                                <span class="status-dot"></span> <p localization-key="status.checking">Checking Status...</p>
                             </div>
                         </div>
                         <h2 localization-key="status.title" class="status-title">Operational Status</h2>
@@ -210,7 +211,7 @@
                             </div>
                             <div class="info-content">
                                 <h4 localization-key="helpCenter.title">Help Center</h4>
-                                <p localization-key="helpCenter.description">Find instant answers to common questions about reservations, tables, and accounts. <a localization-key="helpCenter.link" href="help-center.html">Visit Help Center</a></p>
+                                <p localization-key="helpCenter.description">Find instant answers to common questions about reservations, tables, and accounts.</p> <a localization-key="helpCenter.link" href="/help-center.html"><span>Visit Help Center</span></a>
                             </div>
                         </div>
 
@@ -289,15 +290,19 @@
     <script src="../js/localization.js"></script>
     
     <script>
-        function updateSupportStatus() {
 
-            const lang = false;
-            const contactElements = document.querySelectorAll(".contact-language-localization");
-            contactElements.forEach(element => {
+        function setLang() {
+            let lang = false;
+            let elements = document.querySelectorAll(".contact-language-localization");
+            elements.forEach(element => {
                 if (element.value == "fr") {
                     lang = true;
                 }
             });
+            return lang;
+        }
+
+        function updateSupportStatus(lang) {
 
             const statusIndicator = document.getElementById('status-indicator');
             const statusText = document.getElementById('status-text');
@@ -334,7 +339,7 @@
             } else {
                 rows[2].classList.add('today');
             }
-
+            console.log(lang);
             if (isOpen && !lang) {
                 statusIndicator.className = 'status-indicator open';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Open Now';
@@ -343,20 +348,22 @@
                 statusIndicator.className = 'status-indicator open';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Ouvert';
                 statusText.textContent = 'Notre équipe des opérations et du soutien est actuellement disponible. N\'hésitez pas à nous appeler ou à nous envoyer un courriel.';
+            } else if (!isOpen && !lang) {
+                statusIndicator.className = 'status-indicator closed';
+                statusIndicator.innerHTML = '<span class="status-dot"></span> Closed Now';
+                statusText.textContent = 'We are currently offline. Please send an email or submit the form below, and we will get back to you first thing on our next working shift.';
             } else if (!isOpen && lang) {
                 statusIndicator.className = 'status-indicator closed';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Fermé';
                 statusText.textContent = 'Nous sommes actuellement fermés. Veuillez nous envoyer un courriel ou remplir le formulaire ci-dessous. Nous vous répondrons dès le début de notre prochaine période de travail.';
-            } else {
-                statusIndicator.className = 'status-indicator closed';
-                statusIndicator.innerHTML = '<span class="status-dot"></span> Closed Now';
-                statusText.textContent = 'We are currently offline. Please send an email or submit the form below, and we will get back to you first thing on our next working shift.';
-            }
+            } 
         }
         
         document.addEventListener('DOMContentLoaded', () => {
-            updateSupportStatus();
-            setInterval(updateSupportStatus, 60000);
+            updateSupportStatus(false);
+            setInterval(() => {
+                updateSupportStatus(setLang());
+            }, 60000);
 
             // Handle contact form submission
             const contactForm = document.getElementById('contactForm');
