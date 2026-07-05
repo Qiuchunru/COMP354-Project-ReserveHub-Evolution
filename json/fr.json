@@ -1,0 +1,30 @@
+{
+  "nav.home": "ACCUEIL",
+  "nav.how": "COMMENT ÇA MARCHE",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "S'INSCRIRE / SE CONNECTER",
+
+  "mobile.home": "Accueil",
+  "mobile.how": "Comment ça marche",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "S'inscrire / Se connecter",
+  "mobile.theme": "Changer le thème",
+
+  "hero.badge": "Plateforme de réservation de restaurants nº1",
+  "hero.title": "Tous les restaurants,",
+  "hero.accent": "une seule réservation.",
+  "hero.tagline": "Tous les restaurants, une seule réservation",
+  "hero.subtitle": "Découvrez, explorez et réservez une table dans les meilleurs restaurants en quelques secondes.",
+  "hero.searchPlaceholder": "Rechercher un restaurant, une cuisine ou un lieu…",
+  "hero.searchButton": "Trouver une table",
+
+  "stats.restaurants": "Restaurants",
+  "stats.diners": "Clients satisfaits",
+  "stats.rating": "Note moyenne",
+
+  "how.tag": "Simple et rapide",
+  "how.title": "Comment ça marche",
+  "how.description": "Réservez votre table idéale en trois étapes simples."
+}

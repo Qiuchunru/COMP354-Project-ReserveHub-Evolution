@@ -1,0 +1,29 @@
+{
+  "nav.home": "HOME",
+  "nav.how": "HOW IT WORKS",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "SIGN UP / LOG IN",
+
+  "mobile.home": "Home",
+  "mobile.how": "How It Works",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "Sign Up / Log In",
+  "mobile.theme": "Switch Theme",
+
+  "hero.badge": "#1 Restaurant Booking Platform",
+  "hero.title": "All Restaurants,",
+  "hero.accent": "One Booking.",
+  "hero.tagline": "All Restaurants, One Booking",
+  "hero.subtitle": "Discover, explore, and reserve tables at the finest restaurants — all in seconds.",
+  "hero.searchButton": "Find a Table",
+
+  "stats.restaurants": "Restaurants",
+  "stats.diners": "Happy Diners",
+  "stats.rating": "Average Rating",
+
+  "how.tag": "Simple & Fast",
+  "how.title": "How It Works",
+  "how.description": "Reserve your perfect table in three easy steps."
+}
