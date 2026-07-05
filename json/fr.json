@@ -6,25 +6,73 @@
   "nav.login": "S'INSCRIRE / SE CONNECTER",
 
   "mobile.home": "Accueil",
-  "mobile.how": "Comment ça marche",
+  "mobile.how": "Comment ça Marche",
   "mobile.restaurants": "Restaurants",
   "mobile.contact": "Contact",
-  "mobile.login": "S'inscrire / Se connecter",
-  "mobile.theme": "Changer le thème",
+  "mobile.login": "S'Inscrire / Se Connecter",
+  "mobile.theme": "Changer le Thème",
 
-  "hero.badge": "Plateforme de réservation de restaurants nº1",
-  "hero.title": "Tous les restaurants,",
-  "hero.accent": "une seule réservation.",
-  "hero.tagline": "Tous les restaurants, une seule réservation",
+  "hero.badge": "Plateforme de Réservation de Restaurants nº1",
+  "hero.title": "Tous les Restaurants,",
+  "hero.accent": "Une Seule Réservation.",
+  "hero.tagline": "Tous les Restaurants, Une Seule Réservation",
   "hero.subtitle": "Découvrez, explorez et réservez une table dans les meilleurs restaurants en quelques secondes.",
-  "hero.searchPlaceholder": "Rechercher un restaurant, une cuisine ou un lieu…",
-  "hero.searchButton": "Trouver une table",
+  "hero.searchButton": "Trouver une Table",
 
   "stats.restaurants": "Restaurants",
-  "stats.diners": "Clients satisfaits",
-  "stats.rating": "Note moyenne",
+  "stats.diners": "Clients Satisfaits",
+  "stats.rating": "Note Moyenne",
 
-  "how.tag": "Simple et rapide",
-  "how.title": "Comment ça marche",
-  "how.description": "Réservez votre table idéale en trois étapes simples."
+  "how.tag": "Simple et Rapide",
+  "how.title": "Comment ça Marche",
+  "how.description": "Réservez votre table idéale en trois étapes simples.",
+
+  "steps.search.title": "Rechercher",
+  "steps.search.description": "Parcourez des centaines de restaurants selon la cuisine, l'emplacement, le prix ou l'occasion.",
+
+  "steps.book.title": "Réserver",
+  "steps.book.description": "Choisissez la date, l'heure et le nombre de personnes. Réservez instantanément, sans attente ni appel.",
+
+  "steps.dine.title": "Déguster",
+  "steps.dine.description": "Présentez-vous et profitez de votre repas. Votre table vous attendra.",
+
+  "featured.tag": "Sélectionnés Pour Vous",
+  "featured.title": "Restaurants en Vedette",
+  "featured.description": "Des bistros chaleureux aux restaurants gastronomiques, trouvez votre prochaine adresse préférée.",
+
+  "filters.all": "Tous",
+  "filters.italian": "Italien",
+  "filters.asian": "Asiatique",
+  "filters.seafood": "Fruits de Mer",
+  "filters.steakhouse": "Grilladerie",
+
+  "featured.loading": "Chargement des Restaurants en Vedette...",
+  "featured.viewAll": "Voir tous les Restaurants",
+
+  "testimonials.tag": "Ce Que Disent Nos Clients",
+  "testimonials.title": "Approuvé Par les Amateurs de Bonne Cuisine",
+
+  "testimonial1.quote": "ReserveHub a rendu notre dîner d'anniversaire incroyablement simple. Nous avons trouvé un restaurant sur un toit en deux minutes et réservé instantanément. Incroyable !",
+  "testimonial1.role": "Blogueuse Culinaire",
+
+  "testimonial2.quote": "Je passais auparavant 20 minutes à appeler les restaurants. Maintenant, je réserve en quelques secondes. ReserveHub est l'application dont j'avais besoin sans le savoir.",
+  "testimonial2.role": "Voyageur d'Affaires",
+
+  "testimonial3.quote": "Le filtre par occasion change tout. J'ai trouvé l'endroit parfait pour l'anniversaire de mes parents en quelques clics !",
+  "testimonial3.role": "Chef Amateur",
+
+  "cta.title": "Prêt à Réserver Votre Prochaine Table ?",
+  "cta.description": "Rejoignez plus de 50 000 clients satisfaits qui réservent avec ReserveHub chaque mois.",
+  "cta.button": "Commencer — C'est gratuit",
+
+  "footer.tagline": "Tous les Restaurants, Une Seule Réservation",
+  "footer.company": "Entreprise",
+  "footer.about": "À Propos",
+  "footer.support": "Assistance",
+  "footer.help": "Centre d'Aide",
+  "footer.contact": "Nous Contacter",
+  "footer.privacy": "Politique de Confidentialité",
+  "footer.terms": "Conditions d'Utilisation",
+  "footer.admin": "Tableau de Bord Administrateur",
+  "footer.copyright": "© 2026 ReserveHub. Tous droits réservés."
 }
