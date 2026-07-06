@@ -16,21 +16,25 @@
             <img src="../pictures/reservehub-full-logo-light-mode.png" alt="ReserveHub Logo" style="width: 100%; max-width: 180px; height: auto;">
         </a>
         <nav class="admin-nav">
-            <a href="#" data-target="dashboard" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-            <a href="#" data-target="restaurants"><i class="fa-solid fa-utensils"></i> Restaurants</a>
-            <a href="#" data-target="tables"><i class="fa-solid fa-chair"></i> Tables</a>
-            <a href="#" data-target="users"><i class="fa-solid fa-users"></i> Users</a>
-            <a href="#" data-target="approvals"><i class="fa-solid fa-clipboard-check"></i> Vendor Approvals</a>
-            <a href="#" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i> Reservation History</a>
-            <a href="#" data-target="inbox"><i class="fa-solid fa-inbox"></i> Inbox</a>
+            <a href="#" data-target="dashboard" class="active"><i class="fa-solid fa-chart-pie"></i><span localization-key="admin.nav.dashboard"> Dashboard</span></a>
+            <a href="#" data-target="restaurants"><i class="fa-solid fa-utensils"></i><span localization-key="admin.nav.restaurants"> Restaurants</span></a>
+            <a href="#" data-target="tables"><i class="fa-solid fa-chair"></i><span localization-key="admin.nav.tables"> Tables</span></a>
+            <a href="#" data-target="users"><i class="fa-solid fa-users"></i><span localization-key="admin.nav.users"> Users</span></a>
+            <a href="#" data-target="approvals"><i class="fa-solid fa-clipboard-check"></i><span localization-key="admin.nav.approvals"> Vendor Approvals</span></a>
+            <a href="#" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span localization-key="admin.nav.history"> Reservation History</span></a>
+            <a href="#" data-target="inbox"><i class="fa-solid fa-inbox"></i><span localization-key="admin.nav.inbox"> Inbox</span></a>
+            <select class="language-localization theme-toggle">
+               <option value="en">English</option>
+               <option value="fr">Français</option>
+            </select>
             <div style="margin-top: auto; padding: 20px 0;">
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                     <i class="fa-solid fa-moon" style="margin-right: 8px;"></i>
                     <i class="fa-solid fa-sun" style="margin-right: 8px;"></i>
-                    <span class="theme-text">Switch Theme</span>
+                    <span class="theme-text" localization-key="admin.nav.theme">Switch Theme</span>
                 </button>
             </div>
-            <a href="index.html" style="color: #e74c3c;"><i class="fa-solid fa-arrow-left"></i> Exit Admin</a>
+            <a href="index.html" style="color: #e74c3c;"><i class="fa-solid fa-arrow-left"></i><span localization-key="admin.nav.exit"> Exit Admin</span></a>
         </nav>
     </aside>
 
@@ -38,42 +42,42 @@
         <!-- Dashboard Section -->
         <section id="dashboard" class="admin-section active">
             <div class="admin-header">
-                <h1>Dashboard Overview</h1>
-                <button class="btn btn-primary" onclick="downloadAnalyticsPDF()" id="exportPdfBtn"><i class="fa-solid fa-file-pdf"></i> Export Report to PDF</button>
+                <h1 localization-key="admin.dashboard.title">Dashboard Overview</h1>
+                <button class="btn btn-primary" onclick="downloadAnalyticsPDF()" id="exportPdfBtn"><i class="fa-solid fa-file-pdf"></i><span localization-key="admin.dashboard.exportPDF"> Export Report to PDF</span></button>
             </div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                     <div class="stat-info">
-                        <h3>Total Users</h3>
+                        <h3 localization-key="admin.dashboard.totalUsers">Total Users</h3>
                         <div class="stat-val" id="statUsers">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-utensils"></i></div>
                     <div class="stat-info">
-                        <h3>Restaurants</h3>
+                        <h3 localization-key="admin.dashboard.restaurants">Restaurants</h3>
                         <div class="stat-val" id="statRests">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
                     <div class="stat-info">
-                        <h3>Reservations</h3>
+                        <h3 localization-key="admin.dashboard.reservations">Reservations</h3>
                         <div class="stat-val" id="statRes">0</div>
                     </div>
                 </div>
             </div>
             
             <div class="admin-header">
-                <h2>Popular Restaurants</h2>
+                <h2 localization-key="admin.dashboard.popularRestaurants">Popular Restaurants</h2>
             </div>
             <div class="admin-table-container" style="padding: 24px;">
                 <canvas id="popularityChart" width="100%" height="30"></canvas>
             </div>
             
             <div class="admin-header" style="margin-top: 40px;">
-                <h2>Users By Role</h2>
+                <h2 localization-key="admin.dashboard.usersByRole">Users By Role</h2>
             </div>
             <div class="admin-table-container" style="padding: 24px; display: flex; justify-content: center;">
                 <div style="width: 300px; height: 300px;">
@@ -85,7 +89,7 @@
         <!-- Restaurants Section -->
         <section id="restaurants" class="admin-section">
             <div class="admin-header">
-                <h1>Restaurants</h1>
+                <h1 localization-key="admin.restaurants.title">Restaurants</h1>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="searchRestaurants" class="form-control" placeholder="Search restaurants..." style="width:250px;" onkeyup="filterRestaurants()">
                 </div>
@@ -98,15 +102,26 @@
         <!-- Users Section -->
         <section id="users" class="admin-section">
             <div class="admin-header">
-                <h1>Users</h1>
+                <h1 localization-key="admin.users.title">Users</h1>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="searchUsers" class="form-control" placeholder="Search users..." style="width:300px;" onkeyup="filterUsers()">
-                    <button class="btn btn-primary" onclick="openUserModal()">+ Add Vendor/User</button>
+                    <button class="btn btn-primary" onclick="openUserModal()" localization-key="admin.users.addButton">+ Add Vendor/User</button>
                 </div>
             </div>
             <div class="admin-table-container">
                 <table class="admin-table">
-                    <thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+                    <thead><tr>
+                        <tr>
+                            <th localization-key="admin.users.table.id">ID</th>
+                            <th localization-key="admin.users.table.username">Username</th>
+                            <th localization-key="admin.users.table.name">Name</th>
+                            <th localization-key="admin.users.table.email">Email</th>
+                            <th localization-key="admin.users.table.phone">Phone</th>
+                            <th localization-key="admin.users.table.role">Role</th>
+                            <th localization-key="admin.users.table.joined">Joined</th>
+                            <th localization-key="admin.users.table.actions">Actions</th>
+                        </tr>
+                    </thead>
                     <tbody id="usersTbody"></tbody>
                 </table>
             </div>
@@ -115,7 +130,7 @@
         <!-- Approvals Section -->
         <section id="approvals" class="admin-section">
             <div class="admin-header">
-                <h1>Vendor Approvals</h1>
+               <h1 localization-key="admin.approvals.title">Vendor Approvals</h1>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="searchApprovals" class="form-control" placeholder="Search approvals..." style="width:250px;" onkeyup="filterApprovals()">
                 </div>
@@ -130,14 +145,21 @@
         <!-- Reservation History Section -->
         <section id="history" class="admin-section">
             <div class="admin-header">
-                <h1>Reservation History</h1>
+                <h1 localization-key="admin.history.title">Reservation History</h1>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="searchHistory" class="form-control" placeholder="Search history..." style="width:250px;" onkeyup="filterHistory()">
                 </div>
             </div>
             <div class="admin-table-container">
                 <table class="admin-table">
-                    <thead><tr><th>Res ID</th><th>Customer Name</th><th>Date & Time</th><th>Table #</th><th>Guests</th><th>Managed By</th></tr></thead>
+                    <thead><tr>
+                            <th localization-key="admin.history.table.reservationId">Res ID</th>
+                            <th localization-key="admin.history.table.customerName">Customer Name</th>
+                            <th localization-key="admin.history.table.dateTime">Date &amp; Time</th>
+                            <th localization-key="admin.history.table.table">Table #</th>
+                            <th localization-key="admin.history.table.guests">Guests</th>
+                            <th localization-key="admin.history.table.managedBy">Managed By</th>
+                        </tr></thead>
                     <tbody id="historyTbody"></tbody>
                 </table>
             </div>
@@ -146,7 +168,7 @@
         <!-- Inbox Section -->
         <section id="inbox" class="admin-section">
             <div class="admin-header">
-                <h1>Inbox Messages</h1>
+                <h1 localization-key="admin.inbox.title">Inbox Messages</h1>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="searchMessages" class="form-control" placeholder="Search messages..." style="width:300px;" onkeyup="filterMessages()">
                 </div>
@@ -163,31 +185,34 @@
     <div class="modal" id="restModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="restModalTitle">Add Restaurant</h3>
+                <h3 class="modal-title" id="restModalTitle" localization-key="admin.restaurantModal.addTitle">Add Restaurant</h3>
                 <button class="modal-close" onclick="closeModal('restModal')"><i class="fa-solid fa-times"></i></button>
             </div>
             <form id="restForm">
                 <input type="hidden" id="restId">
-                <div class="form-group"><label>Name</label><input type="text" id="restName" class="form-control" required></div>
-                <div class="form-group"><label>Description</label><textarea id="restDesc" class="form-control" rows="3"></textarea></div>
+                <div class="form-group"><label localization-key="admin.restaurantModal.name">Name</label><input type="text" id="restName" class="form-control" required></div>
+                <div class="form-group"><label localization-key="admin.restaurantModal.description">Description</label><textarea id="restDesc" class="form-control" rows="3"></textarea></div>
                 <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Cuisine</label><input type="text" id="restCuisine" class="form-control" required></div>
-                    <div class="form-group" style="flex:1;"><label>Location</label><input type="text" id="restLocation" class="form-control" required></div>
+                    <div class="form-group" style="flex:1;"><label localization-key="admin.restaurantModal.cuisine">Cuisine</label><input type="text" id="restCuisine" class="form-control" required></div>
+                    <div class="form-group" style="flex:1;"><label localization-key="admin.restaurantModal.location">Location</label><input type="text" id="restLocation" class="form-control" required></div>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
-                    <div class="form-group" style="flex:1;"><label>Seed Rating <small style="color:var(--text-muted);font-weight:400;">(fallback)</small></label><input type="number" step="0.1" min="0" max="5" id="restRating" class="form-control" value="0.0" title="Used as the display rating until real reviews come in"></div>
+                    <div class="form-group" style="flex:1;"><label localization-key="admin.restaurantModal.priceRange">Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
+                    <div class="form-group" style="flex:1;">
+                        <label localization-key="admin.restaurantModal.seedRating">Seed Rating<small localization-key="admin.restaurantModal.seedRatingFallback" style="color:var(--text-muted);font-weight:400;">(fallback)</small></label>
+                        <input type="number" step="0.1" min="0" max="5" id="restRating" class="form-control" value="0.0" title="Used as the display rating until real reviews come in">
+                    </div>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <div class="form-group" style="flex:1;"><label>Open Time</label><input type="time" id="restOpen" class="form-control"></div>
-                    <div class="form-group" style="flex:1;"><label>Close Time</label><input type="time" id="restClose" class="form-control"></div>
+                    <div class="form-group" style="flex:1;"><label localization-key="admin.restaurantModal.openTime">Open Time</label><input type="time" id="restOpen" class="form-control"></div>
+                    <div class="form-group" style="flex:1;"><label localization-key="admin.restaurantModal.closeTime">Close Time</label><input type="time" id="restClose" class="form-control"></div>
                 </div>
                 <div class="form-group">
-                    <label>Restaurant Image</label>
+                    <label localization-key="admin.restaurantModal.image">Restaurant Image</label>
                     <div id="imagePreview" class="preview-box">
                         <div class="preview-placeholder">
                             <i class="fa-solid fa-image"></i>
-                            <p>No image selected</p>
+                            <p localization-key="admin.restaurantModal.noImage">No image selected</p>
                         </div>
                         <img src="" alt="Preview" style="display: none;">
                     </div>
@@ -195,11 +220,11 @@
                         <input type="file" id="restImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
                         <label for="restImage" class="file-upload-btn">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span id="fileLabelText">Choose Restaurant Image</span>
+                            <span id="fileLabelText" localization-key="admin.restaurantModal.chooseImage">Choose Restaurant Image</span>
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Save Restaurant</button>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;" localization-key="admin.restaurantModal.save">Save Restaurant</button>
             </form>
         </div>
     </div>
@@ -208,25 +233,25 @@
     <div class="modal" id="userModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="userModalTitle">Add New Vendor/User</h3>
+                <h3 class="modal-title" id="userModalTitle" localization-key="admin.userModal.addTitle">Add New Vendor/User</h3>
                 <button class="modal-close" onclick="closeModal('userModal')"><i class="fa-solid fa-times"></i></button>
             </div>
             <form id="userForm">
                 <input type="hidden" id="userId">
-                <div class="form-group"><label>Username</label><input type="text" id="userUsername" class="form-control" required></div>
-                <div class="form-group"><label>Full Name</label><input type="text" id="userName" class="form-control" required></div>
-                <div class="form-group"><label>Email Address</label><input type="email" id="userEmail" class="form-control" required></div>
-                <div class="form-group"><label>Phone Number</label><input type="tel" id="userPhone" class="form-control"></div>
-                <div class="form-group" id="passwordGroup"><label>Password</label><input type="password" id="userPassword" class="form-control"></div>
+                <div class="form-group"><label localization-key="admin.userModal.username">Username</label><input type="text" id="userUsername" class="form-control" required></div>
+                <div class="form-group"><label localization-key="admin.userModal.fullName">Full Name</label><input type="text" id="userName" class="form-control" required></div>
+                <div class="form-group"><label localization-key="admin.userModal.email">Email Address</label><input type="email" id="userEmail" class="form-control" required></div>
+                <div class="form-group"><label localization-key="admin.userModal.phone">Phone Number</label><input type="tel" id="userPhone" class="form-control"></div>
+                <div class="form-group" id="passwordGroup"><label localization-key="admin.userModal.password">Password</label><input type="password" id="userPassword" class="form-control"></div>
                 <div class="form-group">
-                    <label>Role</label>
+                    <label localization-key="admin.userModal.role">Role</label>
                     <select id="userRole" class="form-control">
-                        <option value="vendor" selected>Vendor (Restaurant Owner)</option>
-                        <option value="customer">User (Customer)</option>
-                        <option value="admin">Admin</option>
+                        <option value="vendor" selected localization-key="admin.userModal.role.vendor">Vendor (Restaurant Owner)</option>
+                        <option value="customer" localization-key="admin.userModal.role.customer">User (Customer)</option>
+                        <option value="admin" localization-key="admin.userModal.role.admin">Admin</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Save Account</button>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;" localization-key="admin.userModal.save">Save Account</button>
             </form>
         </div>
     </div>
@@ -237,5 +262,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../js/theme.js"></script>
     <script src="../js/admin.js?v=3"></script>
+    <script src="../js/localization.js"></script>
 </body>
 </html>
