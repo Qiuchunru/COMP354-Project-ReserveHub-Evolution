@@ -22,13 +22,13 @@
 
         <div class="top-btn-container" role="navigation" aria-label="Main navigation">
             <a href="index.html" localization-key="nav.home" class="top-btn active-nav">HOME</a>
-            <a href="#how-it-works" localization-key="nav.how" class="top-btn">HOW IT WORKS</a>
-            <a href="#featured" localization-key="nav.restaurants" class="top-btn">RESTAURANTS</a>
+            <a href="index.html#how-it-works" localization-key="nav.how" class="top-btn">HOW IT WORKS</a>
+            <a href="index.html#featured" localization-key="nav.restaurants" class="top-btn">RESTAURANTS</a>
             <a href="contact.html" localization-key="nav.contact" class="top-btn">CONTACT</a>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
                 <a href="login-signup.html" localization-key="nav.login" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
             </div>
-            <select class="language-localization" onchange="updateSupportStatus(getLang())">
+            <select class="language-localization top-btn" onchange="updateSupportStatus(getLang())">
                <option value="en">English</option>
                <option value="fr">Français</option>
             </select>
@@ -46,15 +46,15 @@
     <!-- Mobile Nav -->
     <div class="mobile-nav" id="mobileNav">
         <a href="index.html" localization-key="mobile.home" class="mob-link">Home</a>
-        <a href="#how-it-works" localization-key="mobile.how" class="mob-link">How It Works</a>
-        <a href="#featured" localization-key="mobile.restaurants" class="mob-link">Restaurants</a>
+        <a href="index.html#how-it-works" localization-key="mobile.how" class="mob-link">How It Works</a>
+        <a href="index.html#featured" localization-key="mobile.restaurants" class="mob-link">Restaurants</a>
         <a href="contact.html" localization-key="mobile.contact" class="mob-link">Contact</a>
         <div id="mob-auth-buttons">
             <a href="login-signup.html" localization-key="mobile.login" class="mob-link mob-cta">Sign Up / Log In</a>
         </div>
-        <select class="language-localization" onchange="updateSupportStatus(getLang())"></select>
-            <option href="javascript:void(0)" value="en">English</option>
-            <option href="javascript:void(0)" value="fr">Français</option>
+        <select class="language-localization" onchange="updateSupportStatus(getLang())">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
         </select>
         <a href="javascript:void(0)" localization-key="mobile.theme" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
             <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
@@ -132,7 +132,7 @@
                                 <i class="fa-solid fa-phone"></i> +60 19-832 7769
                             </a>
                             <a href="mailto:iman.reservehub@gmail.com" class="action-btn email-btn">
-                                <i class="fa-solid fa-envelope"></i> <p localization-key="contact.team.support">Email Support</p>
+                                <i class="fa-solid fa-envelope"></i> <span localization-key="contact.team.support">Email Support</span>
                             </a>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                                 <i class="fa-solid fa-phone"></i> +60 18-579 7780
                             </a>
                             <a href="mailto:mawi.reservehub@gmail.com" class="action-btn email-btn">
-                                <i class="fa-solid fa-envelope"></i> <p localization-key="contact.team.support">Email Support</p>
+                                <i class="fa-solid fa-envelope"></i> <span localization-key="contact.team.support">Email Support</span>
                             </a>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                                 <i class="fa-solid fa-phone"></i> +60 13-673 6020
                             </a>
                             <a href="mailto:haris.reservehub@gmail.com" class="action-btn email-btn">
-                                <i class="fa-solid fa-envelope"></i> <p localization-key="contact.team.support">Email Support</p>
+                                <i class="fa-solid fa-envelope"></i> <span localization-key="contact.team.support">Email Support</span>
                             </a>
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                                 <i class="fa-solid fa-phone"></i> +60 11-6330 1405
                             </a>
                             <a href="mailto:zabir.reservehub@gmail.com" class="action-btn email-btn">
-                                <i class="fa-solid fa-envelope"></i> <p localization-key="contact.team.support">Email Support</p>
+                                <i class="fa-solid fa-envelope"></i> <span localization-key="contact.team.support">Email Support</span>
                             </a>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
                             </div>
                             <div class="info-content">
                                 <h4 localization-key="contact.helpCenter.title">Help Center</h4>
-                                <p localization-key="contact.helpCenter.description">Find instant answers to common questions about reservations, tables, and accounts.</p> <a localization-key="contact.helpCenter.link" href="/help-center.html"><span>Visit Help Center</span></a>
+                                <p localization-key="contact.helpCenter.description">Find instant answers to common questions about reservations, tables, and accounts.</p> <a localization-key="contact.helpCenter.link" href="help-center.html"><span>Visit Help Center</span></a>
                             </div>
                         </div>
 
@@ -249,7 +249,7 @@
                                 <textarea id="message" class="form-input" placeholder="Write your message here..." required></textarea>
                             </div>
                             <button type="submit" class="submit-btn">
-                                <p localization-key="contact.form.submit">Send Message</p><i class="fa-solid fa-paper-plane"></i>
+                                <span localization-key="contact.form.submit">Send Message</span><i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </form>
                     </div>
