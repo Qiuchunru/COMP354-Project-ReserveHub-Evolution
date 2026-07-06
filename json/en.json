@@ -20,6 +20,9 @@
   "footer.terms": "Terms of Service",
   "footer.admin": "Admin Dashboard",
   "footer.copyright": "© 2026 ReserveHub. All rights reserved.",
+  "footer.helpCenter": "Help Center",
+  "footer.help": "Help Center",
+  "footer.contact": "Contact Us",
 
   "index.hero.badge": "#1 Restaurant Booking Platform",
   "index.hero.title": "All Restaurants,",
@@ -74,9 +77,6 @@
   "index.cta.description": "Join over 50,000 happy diners who book with ReserveHub every month.",
   "index.cta.button": "Get Started — It's Free",
 
-  "index.footer.help": "Help Center",
-  "index.footer.contact": "Contact Us",
-
   "contact.hero.tag": "Get In Touch",
   "contact.hero.title": "Meet Our Team &",
   "contact.hero.accent": "Contact Us",
@@ -120,8 +120,6 @@
   "contact.form.subject": "Subject",
   "contact.form.message": "Message",
   "contact.form.submit": "Send Message",
-
-  "contact.footer.helpCenter": "Help Center",
 
   "about.hero.tag": "Our Story",
   "about.hero.title1": "Connecting Diners with ",

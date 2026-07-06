@@ -20,6 +20,8 @@
   "footer.terms": "Conditions d'Utilisation",
   "footer.admin": "Tableau de Bord Administrateur",
   "footer.copyright": "© 2026 ReserveHub. Tous droits réservés.",
+  "footer.help": "Centre d'Aide",
+  "footer.contact": "Nous Contacter",
 
   "index.hero.badge": "Plateforme de Réservation de Restaurants nº1",
   "index.hero.title": "Tous les Restaurants,",
@@ -74,9 +76,6 @@
   "index.cta.description": "Rejoignez plus de 50 000 clients satisfaits qui réservent avec ReserveHub chaque mois.",
   "index.cta.button": "Commencer — C'est gratuit",
 
-  "index.footer.help": "Centre d'Aide",
-  "index.footer.contact": "Nous Contacter",
-
   "contact.hero.tag": "Contactez-Nous",
   "contact.hero.title": "Rencontrez Notre Équipe &",
   "contact.hero.accent": "Contactez-Nous",
@@ -121,8 +120,6 @@
   "contact.form.message": "Message",
   "contact.form.placeholder.name": "Votre nom",
   "contact.form.submit": "Envoyer le Message",
-
-  "contact.footer.helpCenter": "Centre d'Aide",
 
   "about.hero.tag": "Notre Histoire",
   "about.hero.title1": "Connecter les Gourmets à la",
