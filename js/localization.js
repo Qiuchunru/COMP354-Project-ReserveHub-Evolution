@@ -16,16 +16,10 @@ async function loadLanguage(json) {
   }
 }
 
-const indexElements = document.querySelectorAll(".index-language-localization");
-indexElements.forEach(element => {
+const elements = document.querySelectorAll(".language-localization");
+elements.forEach(element => {
     element.addEventListener("change", () => {
-        loadLanguage(`../json/index-${element.value}.json`);
-    })
-});
-
-const contactElements = document.querySelectorAll(".contact-language-localization");
-contactElements.forEach(element => {
-    element.addEventListener("change", () => {
-        loadLanguage(`../json/contact-${element.value}.json`);
+      let language = element.value;
+      loadLanguage(`../json/${language}.json`);
     })
 });

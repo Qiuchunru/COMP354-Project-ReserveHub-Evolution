@@ -79,13 +79,19 @@
         </a>
 
         <div class="top-btn-container" role="navigation" aria-label="Main navigation">
-            <a href="index.html" class="top-btn">HOME</a>
-            <a href="index.html#how-it-works" class="top-btn">HOW IT WORKS</a>
-            <a href="index.html#featured" class="top-btn">RESTAURANTS</a>
-            <a href="contact.html" class="top-btn">CONTACT</a>
+            <a href="index.html" class="top-btn" localization-key="nav.home">HOME</a>
+            <a href="index.html#how-it-works" class="top-btn" localization-key="nav.how">HOW IT WORKS</a>
+            <a href="index.html#featured" class="top-btn" localization-key="nav.restaurants">RESTAURANTS</a>
+            <a href="contact.html" class="top-btn" localization-key="nav.contact">CONTACT</a>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
-                <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
+                <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn" localization-key="nav.login">SIGN UP / LOG IN</a>
             </div>
+
+            <select class="language-localization">
+               <option value="en">English</option>
+               <option value="fr">Français</option>
+            </select>
+
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
                 <i class="fa-solid fa-sun"></i>
@@ -99,14 +105,18 @@
 
     <!-- Mobile Nav -->
     <div class="mobile-nav" id="mobileNav">
-        <a href="index.html" class="mob-link">Home</a>
-        <a href="index.html#how-it-works" class="mob-link">How It Works</a>
-        <a href="index.html#featured" class="mob-link">Restaurants</a>
-        <a href="contact.html" class="mob-link">Contact</a>
+        <a href="index.html" class="mob-link" localization-key="mobile.home">Home</a>
+        <a href="index.html#how-it-works" class="mob-link" localization-key="mobile.how">How It Works</a>
+        <a href="index.html#featured" class="mob-link" localization-key="mobile.restaurants">Restaurants</a>
+        <a href="contact.html" class="mob-link" localization-key="mobile.contact">Contact</a>
         <div id="mob-auth-buttons">
-            <a href="login-signup.html" class="mob-link mob-cta">Sign Up / Log In</a>
+            <a href="login-signup.html" class="mob-link mob-cta" localization-key="mobile.login">Sign Up / Log In</a>
         </div>
-        <a href="javascript:void(0)" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
+        <select class="language-localization">
+            <option href="javascript:void(0)" value="en">English</option>
+            <option href="javascript:void(0)" value="fr">Français</option>
+        </select>
+        <a href="javascript:void(0)" localization-key="mobile.theme" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
             <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
         </a>
     </div>
@@ -115,9 +125,12 @@
     <main>
         <section class="about-hero">
             <div class="container">
-                <span class="section-tag">Our Story</span>
-                <h1 class="about-title">Connecting Diners with <span class="accent">Culinary Magic</span></h1>
-                <p class="about-subtitle">ReserveHub was born from a simple idea: exploring great food should be effortless. We bridge the gap between passionate foodies and exceptional restaurants, making every reservation a seamless experience.</p>
+                <span class="section-tag" localization-key="about.hero.tag">Our Story</span>
+                <h1 class="about-title">
+                    <span localization-key="about.hero.title1">Connecting Diners with </span>
+                    <span class="accent" localization-key="about.hero.title2">Culinary Magic</span>
+                </h1>
+                <p class="about-subtitle" localization-key="about.hero.subtitle">ReserveHub was born from a simple idea: exploring great food should be effortless. We bridge the gap between passionate foodies and exceptional restaurants, making every reservation a seamless experience.</p>
                 
                 <div class="about-grid">
                     <div class="about-card">
@@ -186,5 +199,6 @@
     <script src="../js/theme.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/session.js"></script>
+    <script src="../js/localization.js"></script>
 </body>
 </html>
