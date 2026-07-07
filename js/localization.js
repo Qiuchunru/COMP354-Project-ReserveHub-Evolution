@@ -47,6 +47,15 @@
     if (document.querySelector('.vendor-language-localization')) {
       return `../json/vendor-${lang}.json`;
     }
+    if (document.querySelector('.profile-language-localization')) {
+      return `../json/profile-${lang}.json`;
+    }
+    if (document.querySelector('.reset-language-localization')) {
+      return `../json/reset-password-${lang}.json`;
+    }
+    if (document.querySelector('.restaurant-language-localization')) {
+      return `../json/restaurant-${lang}.json`;
+    }
     return null;
   }
 
@@ -67,7 +76,7 @@
     }
 
     document.documentElement.lang = normalized;
-    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization, .profile-language-localization, .reset-language-localization, .restaurant-language-localization').forEach(select => {
       select.value = normalized;
     });
 
@@ -118,7 +127,7 @@
   }
 
   function initializeLanguageSelectors() {
-    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization, .profile-language-localization, .reset-language-localization, .restaurant-language-localization').forEach(select => {
       select.addEventListener('change', () => {
         loadLanguage(select.value, { persist: true });
       });
