@@ -1,0 +1,78 @@
+{
+  "nav.home": "HOME",
+  "nav.how": "HOW IT WORKS",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "SIGN UP / LOG IN",
+
+  "mobile.home": "Home",
+  "mobile.how": "How It Works",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "Sign Up / Log In",
+  "mobile.theme": "Switch Theme",
+
+  "footer.tagline": "All Restaurants, One Booking",
+  "footer.company": "Company",
+  "footer.about": "About Us",
+  "footer.support": "Support",
+  "footer.privacy": "Privacy Policy",
+  "footer.terms": "Terms of Service",
+  "footer.admin": "Admin Dashboard",
+  "footer.copyright": "© 2026 ReserveHub. All rights reserved.",
+  "footer.help": "Help Center",
+  "footer.contact": "Contact Us",
+
+  "index.hero.badge": "#1 Restaurant Booking Platform",
+  "index.hero.title": "All Restaurants,",
+  "index.hero.accent": "One Booking.",
+  "index.hero.tagline": "All Restaurants, One Booking",
+  "index.hero.subtitle": "Discover, explore, and reserve tables at the finest restaurants — all in seconds.",
+  "index.hero.searchButton": "Find a Table",
+
+  "index.stats.restaurants": "Restaurants",
+  "index.stats.diners": "Happy Diners",
+  "index.stats.rating": "Average Rating",
+
+  "index.how.tag": "Simple & Fast",
+  "index.how.title": "How It Works",
+  "index.how.description": "Reserve your perfect table in three easy steps.",
+
+  "index.steps.search.title": "Search",
+  "index.steps.search.description": "Browse hundreds of restaurants by cuisine, location, price range, or occasion.",
+
+  "index.steps.book.title": "Book",
+  "index.steps.book.description": "Pick your date, time, and party size. Reserve instantly — no waiting, no calls.",
+
+  "index.steps.dine.title": "Dine",
+  "index.steps.dine.description": "Show up and enjoy. Your table will be ready and waiting just for you.",
+
+  "index.featured.tag": "Handpicked For You",
+  "index.featured.title": "Featured Restaurants",
+  "index.featured.description": "From cozy bistros to fine dining — find your next favourite spot.",
+
+  "index.filters.all": "All",
+  "index.filters.italian": "Italian",
+  "index.filters.asian": "Asian",
+  "index.filters.seafood": "Seafood",
+  "index.filters.steakhouse": "Steakhouse",
+
+  "index.featured.loading": "Loading Featured Restaurants...",
+  "index.featured.viewAll": "View All Restaurants",
+
+  "index.testimonials.tag": "What Diners Say",
+  "index.testimonials.title": "Loved by Food Enthusiasts",
+
+  "index.testimonial1.quote": "ReserveHub made our anniversary dinner absolutely seamless. Found a rooftop restaurant in 2 minutes and booked instantly. Incredible!",
+  "index.testimonial1.role": "Food Blogger",
+
+  "index.testimonial2.quote": "I used to spend 20 mins calling restaurants. Now I book in seconds. ReserveHub is the app I never knew I needed until now.",
+  "index.testimonial2.role": "Business Traveller",
+
+  "index.testimonial3.quote": "The filter by occasion feature is a game-changer. Found the perfect spot for my parents' birthday with just a few clicks!",
+  "index.testimonial3.role": "Home Chef",
+
+  "index.cta.title": "Ready to Reserve Your Next Table?",
+  "index.cta.description": "Join over 50,000 happy diners who book with ReserveHub every month.",
+  "index.cta.button": "Get Started — It's Free"
+}

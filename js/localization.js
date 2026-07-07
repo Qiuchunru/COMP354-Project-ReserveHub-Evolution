@@ -1,8 +1,7 @@
-async function loadLanguage(language) {
+async function languageChanged(select, page) {
   try {
-    
-    document.documentElement.lang = language;
-    const response = await fetch(`../json/${language}.json`);
+    const language = select.value;
+    const response = await fetch(`../json/${page}-${language}.json`);
 
     if (!response.ok) {
       throw new Error(`Status: ${response.status}`);
@@ -20,11 +19,3 @@ async function loadLanguage(language) {
     console.error("Failed to load translations!", error);
   }
 }
-
-const elements = document.querySelectorAll(".language-localization");
-elements.forEach(element => {
-  element.addEventListener("change", () => {
-    const language = element.value;
-    loadLanguage(language);
-  });
-});

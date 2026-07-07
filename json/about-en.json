@@ -1,0 +1,46 @@
+{
+  "nav.home": "HOME",
+  "nav.how": "HOW IT WORKS",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "SIGN UP / LOG IN",
+
+  "mobile.home": "Home",
+  "mobile.how": "How It Works",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "Sign Up / Log In",
+  "mobile.theme": "Switch Theme",
+
+  "footer.tagline": "All Restaurants, One Booking",
+  "footer.company": "Company",
+  "footer.about": "About Us",
+  "footer.support": "Support",
+  "footer.privacy": "Privacy Policy",
+  "footer.terms": "Terms of Service",
+  "footer.admin": "Admin Dashboard",
+  "footer.copyright": "© 2026 ReserveHub. All rights reserved.",
+  "footer.help": "Help Center",
+  "footer.contact": "Contact Us",
+
+  "about.hero.tag": "Our Story",
+  "about.hero.title1": "Connecting Diners with ",
+  "about.hero.title2": "Culinary Magic",
+  "about.hero.subtitle": "ReserveHub was born from a simple idea: exploring great food should be effortless. We bridge the gap between passionate foodies and exceptional restaurants, making every reservation a seamless experience.",
+
+  "about.card1.title": "Curated Selection",
+  "about.card1.description": "We handpick our restaurant partners, ensuring you always have access to the finest dining experiences in your city.",
+
+  "about.card2.title": "Instant Booking",
+  "about.card2.description": "Say goodbye to long wait times on the phone. With ReserveHub, your perfect table is just a few clicks away.",
+
+  "about.card3.title": "Verified Reviews",
+  "about.card3.description": "Real reviews from real diners. We believe in transparency so you can choose your next meal with confidence.",
+
+  "about.mission.title": "Our Mission",
+  "about.mission.description": "To elevate the dining ecosystem by providing an intuitive platform that empowers both diners to discover amazing food and restaurants to manage their spaces efficiently.",
+
+  "about.cta.title": "Join the Food Revolution",
+  "about.cta.description": "Start discovering and booking top restaurants today with ReserveHub.",
+  "about.cta.button": "Get Started — It's Free"
+}

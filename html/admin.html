@@ -23,7 +23,7 @@
             <a href="#" data-target="approvals"><i class="fa-solid fa-clipboard-check"></i><span localization-key="admin.nav.approvals"> Vendor Approvals</span></a>
             <a href="#" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span localization-key="admin.nav.history"> Reservation History</span></a>
             <a href="#" data-target="inbox"><i class="fa-solid fa-inbox"></i><span localization-key="admin.nav.inbox"> Inbox</span></a>
-            <select class="language-localization theme-toggle">
+            <select class="admin-language-localization theme-toggle" onchange="languageChanged(this, `admin`)">
                <option value="en">English</option>
                <option value="fr">Français</option>
             </select>

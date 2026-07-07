@@ -1,0 +1,69 @@
+{
+  "nav.home": "HOME",
+  "nav.how": "HOW IT WORKS",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "SIGN UP / LOG IN",
+
+  "mobile.home": "Home",
+  "mobile.how": "How It Works",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "Sign Up / Log In",
+  "mobile.theme": "Switch Theme",
+
+  "footer.tagline": "All Restaurants, One Booking",
+  "footer.company": "Company",
+  "footer.about": "About Us",
+  "footer.support": "Support",
+  "footer.privacy": "Privacy Policy",
+  "footer.terms": "Terms of Service",
+  "footer.admin": "Admin Dashboard",
+  "footer.copyright": "© 2026 ReserveHub. All rights reserved.",
+  "footer.help": "Help Center",
+  "footer.contact": "Contact Us",
+  
+  "contact.hero.tag": "Get In Touch",
+  "contact.hero.title": "Meet Our Team &",
+  "contact.hero.accent": "Contact Us",
+  "contact.hero.description": "Have a question or need assistance? Our core operations and support team is ready to help you ensure a seamless dining reservation experience.",
+
+  "contact.status.checking": "Checking Status...",
+  "contact.status.title": "Operational Status",
+  "contact.status.description": "We are checking our support availability. Standard operational hours are shown on the right.",
+  "contact.status.open": "Open Now",
+
+  "contact.hours.days": "Monday – Friday",
+  "contact.hours.saturday": "Saturday",
+  "contact.hours.sunday": "Sunday",
+  "contact.hours.closed": "Closed",
+
+  "contact.team.tag": "ReserveHub Team",
+  "contact.team.title": "Connect with Us Directly",
+  "contact.team.description": "Get in touch with our experts based on your specific requirements.",
+
+  "contact.team.iman.role": "Lead Developer",
+  "contact.team.mawi.role": "Operations Lead",
+  "contact.team.haris.role": "Customer Relations",
+  "contact.team.zabir.role": "System Administrator",
+  "contact.team.support": "Email Support",
+
+  "contact.support.tag": "Quick Support",
+  "contact.support.title": "Additional Help",
+  "contact.support.description": "You can also reach out to our general services or visit the help center for immediate assistance.",
+
+  "contact.helpCenter.title": "Help Center",
+  "contact.helpCenter.description": "Find instant answers to common questions about reservations, tables, and accounts.",
+  "contact.helpCenter.link": "Visit Help Center",
+
+  "contact.hq.title": "Corporate HQ",
+  "contact.hq.address": "ReserveHub Technologies Sdn Bhd\nLevel 15, Menara Shell, Kuala Lumpur, Malaysia",
+
+  "contact.form.title": "Send a Message",
+  "contact.form.description": "Fill out the form below and our operations desk will route your message to the correct team member.",
+  "contact.form.name": "Name",
+  "contact.form.email": "Email",
+  "contact.form.subject": "Subject",
+  "contact.form.message": "Message",
+  "contact.form.submit": "Send Message"
+}

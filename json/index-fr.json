@@ -1,0 +1,78 @@
+{
+  "nav.home": "ACCUEIL",
+  "nav.how": "COMMENT ÇA MARCHE",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "S'INSCRIRE / SE CONNECTER",
+
+  "mobile.home": "Accueil",
+  "mobile.how": "Comment ça Marche",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "S'Inscrire / Se Connecter",
+  "mobile.theme": "Changer le Thème",
+
+  "footer.tagline": "Tous les Restaurants, Une Seule Réservation",
+  "footer.company": "Entreprise",
+  "footer.about": "À Propos",
+  "footer.support": "Assistance",
+  "footer.privacy": "Politique de Confidentialité",
+  "footer.terms": "Conditions d'Utilisation",
+  "footer.admin": "Tableau de Bord Administrateur",
+  "footer.copyright": "© 2026 ReserveHub. Tous droits réservés.",
+  "footer.help": "Centre d'Aide",
+  "footer.contact": "Nous Contacter",
+
+  "index.hero.badge": "Plateforme de Réservation de Restaurants nº1",
+  "index.hero.title": "Tous les Restaurants,",
+  "index.hero.accent": "Une Seule Réservation.",
+  "index.hero.tagline": "Tous les Restaurants, Une Seule Réservation",
+  "index.hero.subtitle": "Découvrez, explorez et réservez une table dans les meilleurs restaurants en quelques secondes.",
+  "index.hero.searchButton": "Trouver une Table",
+
+  "index.stats.restaurants": "Restaurants",
+  "index.stats.diners": "Clients Satisfaits",
+  "index.stats.rating": "Note Moyenne",
+
+  "index.how.tag": "Simple et Rapide",
+  "index.how.title": "Comment ça Marche",
+  "index.how.description": "Réservez votre table idéale en trois étapes simples.",
+
+  "index.steps.search.title": "Rechercher",
+  "index.steps.search.description": "Parcourez des centaines de restaurants selon la cuisine, l'emplacement, le prix ou l'occasion.",
+
+  "index.steps.book.title": "Réserver",
+  "index.steps.book.description": "Choisissez la date, l'heure et le nombre de personnes. Réservez instantanément, sans attente ni appel.",
+
+  "index.steps.dine.title": "Déguster",
+  "index.steps.dine.description": "Présentez-vous et profitez de votre repas. Votre table vous attendra.",
+
+  "index.featured.tag": "Sélectionnés Pour Vous",
+  "index.featured.title": "Restaurants en Vedette",
+  "index.featured.description": "Des bistros chaleureux aux restaurants gastronomiques, trouvez votre prochaine adresse préférée.",
+
+  "index.filters.all": "Tous",
+  "index.filters.italian": "Italien",
+  "index.filters.asian": "Asiatique",
+  "index.filters.seafood": "Fruits de Mer",
+  "index.filters.steakhouse": "Grilladerie",
+
+  "index.featured.loading": "Chargement des Restaurants en Vedette...",
+  "index.featured.viewAll": "Voir tous les Restaurants",
+
+  "index.testimonials.tag": "Ce Que Disent Nos Clients",
+  "index.testimonials.title": "Approuvé Par les Amateurs de Bonne Cuisine",
+
+  "index.testimonial1.quote": "ReserveHub a rendu notre dîner d'anniversaire incroyablement simple. Nous avons trouvé un restaurant sur un toit en deux minutes et réservé instantanément. Incroyable !",
+  "index.testimonial1.role": "Blogueuse Culinaire",
+
+  "index.testimonial2.quote": "Je passais auparavant 20 minutes à appeler les restaurants. Maintenant, je réserve en quelques secondes. ReserveHub est l'application dont j'avais besoin sans le savoir.",
+  "index.testimonial2.role": "Voyageur d'Affaires",
+
+  "index.testimonial3.quote": "Le filtre par occasion change tout. J'ai trouvé l'endroit parfait pour l'anniversaire de mes parents en quelques clics !",
+  "index.testimonial3.role": "Chef Amateur",
+
+  "index.cta.title": "Prêt à Réserver Votre Prochaine Table ?",
+  "index.cta.description": "Rejoignez plus de 50 000 clients satisfaits qui réservent avec ReserveHub chaque mois.",
+  "index.cta.button": "Commencer — C'est gratuit"
+}

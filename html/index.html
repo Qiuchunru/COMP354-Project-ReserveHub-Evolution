@@ -28,7 +28,7 @@
             <a href="#how-it-works" localization-key="nav.how" class="top-btn">HOW IT WORKS</a>
             <a href="#featured" localization-key="nav.restaurants" class="top-btn">RESTAURANTS</a>
             <a href="contact.html" localization-key="nav.contact" class="top-btn">CONTACT</a>
-            <select class="language-localization top-btn">
+            <select class="index-language-localization top-btn" onchange="languageChanged(this, `index`)">
                <option value="en">English</option>
                <option value="fr">Français</option>
             </select>
@@ -55,7 +55,7 @@
         <div id="mob-auth-buttons">
             <a href="login-signup.html" localization-key="mobile.login" class="mob-link mob-cta">Sign Up / Log In</a>
         </div>
-        <select class="language-localization">
+        <select class="index-language-localization" onchange="languageChanged(this, `index`)">
             <option value="en">English</option>
             <option value="fr">Français</option>
         </select>
