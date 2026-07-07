@@ -38,6 +38,15 @@
     if (document.querySelector('.help-language-localization')) {
       return `../json/help-center-${lang}.json`;
     }
+    if (document.querySelector('.auth-language-localization')) {
+      return `../json/login-signup-${lang}.json`;
+    }
+    if (document.querySelector('.search-language-localization')) {
+      return `../json/search-${lang}.json`;
+    }
+    if (document.querySelector('.vendor-language-localization')) {
+      return `../json/vendor-${lang}.json`;
+    }
     return null;
   }
 
@@ -58,7 +67,7 @@
     }
 
     document.documentElement.lang = normalized;
-    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization').forEach(select => {
       select.value = normalized;
     });
 
@@ -109,7 +118,7 @@
   }
 
   function initializeLanguageSelectors() {
-    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization').forEach(select => {
       select.addEventListener('change', () => {
         loadLanguage(select.value, { persist: true });
       });

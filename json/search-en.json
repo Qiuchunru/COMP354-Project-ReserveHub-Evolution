@@ -1,0 +1,33 @@
+{
+  "search.meta.title": "Search Restaurants | ReserveHub",
+  "search.nav.home": "HOME",
+  "search.nav.login": "SIGN UP / LOG IN",
+
+  "search.filters.title": "Filters",
+  "search.filters.keyword.label": "Search Keyword",
+  "search.filters.keyword.placeholder": "e.g. Italian, Pizza...",
+  "search.filters.location.label": "Location",
+  "search.filters.location.placeholder": "Select or type address...",
+  "search.filters.diet.label": "Dietary Preferences",
+  "search.filters.diet.all": "All",
+  "search.filters.diet.halal": "Halal Certified",
+  "search.filters.diet.nonHalal": "Non-Halal",
+  "search.filters.time.label": "Availability (Time)",
+  "search.filters.apply": "Apply Filters",
+
+  "search.results.searching": "Searching...",
+  "search.results.foundSingle": "Found {count} Restaurant",
+  "search.results.foundPlural": "Found {count} Restaurants",
+  "search.results.none": "No restaurants found matching your criteria.",
+  "search.results.errorTitle": "Error loading results",
+  "search.results.networkTitle": "Network Error",
+  "search.results.networkBody": "Could not connect to the server.",
+
+  "search.card.noImage": "No Image Available",
+  "search.card.halal": "HALAL",
+  "search.card.nonHalal": "NON-HALAL",
+  "search.card.wishlist": "Add to wishlist",
+  "search.card.reserve": "Reserve a Table",
+
+  "search.footer.copyright": "© 2026 ReserveHub. All rights reserved."
+}

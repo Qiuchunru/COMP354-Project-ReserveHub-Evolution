@@ -1,0 +1,33 @@
+{
+  "search.meta.title": "Rechercher des Restaurants | ReserveHub",
+  "search.nav.home": "ACCUEIL",
+  "search.nav.login": "S'INSCRIRE / SE CONNECTER",
+
+  "search.filters.title": "Filtres",
+  "search.filters.keyword.label": "Mot-clé",
+  "search.filters.keyword.placeholder": "ex. : Italien, Pizza...",
+  "search.filters.location.label": "Emplacement",
+  "search.filters.location.placeholder": "Sélectionnez ou saisissez une adresse...",
+  "search.filters.diet.label": "Préférences Alimentaires",
+  "search.filters.diet.all": "Tous",
+  "search.filters.diet.halal": "Certifié Halal",
+  "search.filters.diet.nonHalal": "Non Halal",
+  "search.filters.time.label": "Disponibilité (Heure)",
+  "search.filters.apply": "Appliquer les Filtres",
+
+  "search.results.searching": "Recherche en cours...",
+  "search.results.foundSingle": "{count} restaurant trouvé",
+  "search.results.foundPlural": "{count} restaurants trouvés",
+  "search.results.none": "Aucun restaurant ne correspond à vos critères.",
+  "search.results.errorTitle": "Erreur de chargement",
+  "search.results.networkTitle": "Erreur Réseau",
+  "search.results.networkBody": "Impossible de se connecter au serveur.",
+
+  "search.card.noImage": "Aucune Image Disponible",
+  "search.card.halal": "HALAL",
+  "search.card.nonHalal": "NON-HALAL",
+  "search.card.wishlist": "Ajouter aux favoris",
+  "search.card.reserve": "Réserver une Table",
+
+  "search.footer.copyright": "© 2026 ReserveHub. Tous droits réservés."
+}
