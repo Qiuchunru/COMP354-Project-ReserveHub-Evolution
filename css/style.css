@@ -134,6 +134,51 @@ input::-webkit-calendar-picker-indicator {
 
 .top-btn-container { display: flex; align-items: center; gap: 4px; }
 
+.language-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: var(--transition);
+    margin-left: 6px;
+}
+
+.language-picker:hover {
+    border-color: var(--orange);
+    box-shadow: 0 10px 24px rgba(255, 107, 43, 0.16);
+    transform: translateY(-1px);
+}
+
+.language-picker i {
+    color: var(--orange);
+    font-size: 13px;
+}
+
+.language-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    padding-right: 2px;
+}
+
+.language-select option {
+    color: var(--text);
+    background: var(--surface);
+}
+
 .top-btn {
     display: inline-block;
     font-size: 13px;
