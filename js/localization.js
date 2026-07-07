@@ -35,6 +35,9 @@
     if (document.querySelector('.contact-language-localization')) {
       return `../json/contact-${lang}.json`;
     }
+    if (document.querySelector('.help-language-localization')) {
+      return `../json/help-center-${lang}.json`;
+    }
     return null;
   }
 
@@ -55,7 +58,7 @@
     }
 
     document.documentElement.lang = normalized;
-    document.querySelectorAll('.index-language-localization, .contact-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization').forEach(select => {
       select.value = normalized;
     });
 
@@ -68,10 +71,32 @@
       const translations = await response.json();
       document.querySelectorAll('[localization-key]').forEach(element => {
         const key = element.getAttribute('localization-key');
-        if (translations[key]) {
-          element.textContent = translations[key];
+        const value = translations[key];
+        if (!value) return;
+
+        const target = element.getAttribute('localization-target') || 'text';
+        if (target === 'placeholder') {
+          element.setAttribute('placeholder', value);
+          return;
         }
+        if (target === 'content') {
+          element.setAttribute('content', value);
+          return;
+        }
+        if (target === 'html') {
+          element.innerHTML = value;
+          return;
+        }
+
+        element.textContent = value;
       });
+
+      window.dispatchEvent(new CustomEvent('reservehub:languageChanged', {
+        detail: {
+          language: normalized,
+          translations
+        }
+      }));
     } catch (error) {
       console.error('Failed to load translations! ', error);
     }
@@ -84,7 +109,7 @@
   }
 
   function initializeLanguageSelectors() {
-    document.querySelectorAll('.index-language-localization, .contact-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .contact-language-localization, .help-language-localization').forEach(select => {
       select.addEventListener('change', () => {
         loadLanguage(select.value, { persist: true });
       });
