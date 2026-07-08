@@ -297,20 +297,8 @@
     
     <script>
 
-        // check selected language
-        function getLang() {
-            let lang = false;
-            let elements = document.querySelectorAll(".language-localization");
-            elements.forEach(element => {
-                if (element.value == "fr") {
-                    lang = true;
-                }
-            });
-            return lang;
-        }
-
-        function updateSupportStatus(lang) {
-
+        function updateSupportStatus() {
+            const language = window.getCurrentLanguage();
             const statusIndicator = document.getElementById('status-indicator');
             const statusText = document.getElementById('status-text');
             const now = new Date();
@@ -346,20 +334,20 @@
             } else {
                 rows[2].classList.add('today');
             }
-            console.log(lang);
-            if (isOpen && !lang) {
+            console.log(language);
+            if (isOpen && !language) {
                 statusIndicator.className = 'status-indicator open';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Open Now';
                 statusText.textContent = 'Our operations and support desk is currently active. Feel free to call or email us directly.';
-            } else if (isOpen && lang) {
+            } else if (isOpen && language) {
                 statusIndicator.className = 'status-indicator open';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Ouvert';
                 statusText.textContent = 'Notre équipe des opérations et du soutien est actuellement disponible. N\'hésitez pas à nous appeler ou à nous envoyer un courriel.';
-            } else if (!isOpen && !lang) {
+            } else if (!isOpen && !language) {
                 statusIndicator.className = 'status-indicator closed';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Closed Now';
                 statusText.textContent = 'We are currently offline. Please send an email or submit the form below, and we will get back to you first thing on our next working shift.';
-            } else if (!isOpen && lang) {
+            } else if (!isOpen && language) {
                 statusIndicator.className = 'status-indicator closed';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Fermé';
                 statusText.textContent = 'Nous sommes actuellement fermés. Veuillez nous envoyer un courriel ou remplir le formulaire ci-dessous. Nous vous répondrons dès le début de notre prochaine période de travail.';
@@ -367,9 +355,9 @@
         }
         
         document.addEventListener('DOMContentLoaded', () => {
-            updateSupportStatus(false);
+            updateSupportStatus();
             setInterval(() => {
-                updateSupportStatus(getLang());
+                updateSupportStatus();
             }, 60000);
 
             // Handle contact form submission

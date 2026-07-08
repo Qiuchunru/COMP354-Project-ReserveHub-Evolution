@@ -28,12 +28,15 @@
             <a href="index.html#how-it-works" class="top-btn" localization-key="nav.how">HOW IT WORKS</a>
             <a href="index.html#featured" class="top-btn" localization-key="nav.restaurants">RESTAURANTS</a>
             <a href="contact.html" class="top-btn" localization-key="nav.contact">CONTACT</a>
-            <select class="about-language-localization top-btn" onchange="languageChanged(this, `terms`)">
-               <option value="en">English</option>
-               <option value="fr">Français</option>
-            </select>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
                 <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn" localization-key="nav.login">SIGN UP / LOG IN</a>
+            </div>
+            <div class="language-picker">
+                <i class="fa-solid fa-globe"></i>
+                <select class="terms-language-localization language-select" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
             </div>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
@@ -54,6 +57,13 @@
         <a href="contact.html" class="mob-link" localization-key="mobile.contact">Contact</a>
         <div id="mob-auth-buttons">
             <a href="login-signup.html" class="mob-link mob-cta" localization-key="mobile.login">Sign Up / Log In</a>
+        </div>
+        <div class="language-picker">
+            <i class="fa-solid fa-globe"></i>
+            <select class="terms-language-localization language-select" aria-label="Select language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
         </div>
         <a href="javascript:void(0)" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;" localization-key="mobile.theme">
             <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
@@ -186,7 +196,7 @@
                 </section>
 
                 <section id="conduct" class="legal-section reveal">
-                    <div class="legal-section-icon"><i class="fa-solid fa-shield-check"></i></div>
+                    <div class="legal-section-icon"><i class="fa-solid fa-shield-halved"></i></div>
                     <h2 localization-key="terms.conduct.title">5. User Conduct</h2>
                     <p localization-key="terms.conduct.intro">You agree not to use the Service to:</p>
                     <ul class="legal-list">
