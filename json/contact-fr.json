@@ -67,5 +67,10 @@
   "contact.form.subject": "Sujet",
   "contact.form.message": "Message",
   "contact.form.placeholder.name": "Votre nom",
-  "contact.form.submit": "Envoyer le Message"
+  "contact.form.submit": "Envoyer le Message",
+
+  "contact.form.name.placeholder": "Votre nom",
+  "contact.form.email.placeholder": "Votre adresse e-mail",
+  "contact.form.subject.placeholder": "Quel est le sujet de votre demande ?",
+  "contact.form.message.placeholder": "Écrivez votre message ici..."
 }

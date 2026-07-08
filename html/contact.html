@@ -239,20 +239,20 @@
                             <div class="form-group-row">
                                 <div class="form-group">
                                     <label localization-key="contact.form.name" for="name">Name</label>
-                                    <input type="text" id="name" class="form-input" placeholder="Your name" required>
+                                    <input type="text" id="name" class="form-input" localization-key="contact.form.name.placeholder" localization-target="placeholder" placeholder="Your name" required>
                                 </div>
                                 <div class="form-group">
                                     <label localization-key="contact.form.email" for="email">Email</label>
-                                    <input type="email" id="email" class="form-input" placeholder="Your email address" required>
+                                    <input type="email" id="email" class="form-input" localization-key="contact.form.email.placeholder" localization-target="placeholder" placeholder="Your email address" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label localization-key="contact.form.subject" for="subject">Subject</label>
-                                <input type="text" id="subject" class="form-input" placeholder="What is this regarding?" required>
+                                <input type="text" id="subject" class="form-input" localization-key="contact.form.subject.placeholder" localization-target="placeholder" placeholder="What is this regarding?" required>
                             </div>
                             <div class="form-group">
                                 <label localization-key="contact.form.message" for="message">Message</label>
-                                <textarea id="message" class="form-input" placeholder="Write your message here..." required></textarea>
+                                <textarea id="message" class="form-input" localization-key="contact.form.message.placeholder" localization-target="placeholder" placeholder="Write your message here..." required></textarea>
                             </div>
                             <button type="submit" class="submit-btn">
                                 <span localization-key="contact.form.submit">Send Message</span><i class="fa-solid fa-paper-plane"></i>
@@ -335,19 +335,19 @@
                 rows[2].classList.add('today');
             }
             console.log(language);
-            if (isOpen && !language) {
+            if (isOpen && language === 'en') {
                 statusIndicator.className = 'status-indicator open';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Open Now';
                 statusText.textContent = 'Our operations and support desk is currently active. Feel free to call or email us directly.';
-            } else if (isOpen && language) {
+            } else if (isOpen && language === 'fr') {
                 statusIndicator.className = 'status-indicator open';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Ouvert';
                 statusText.textContent = 'Notre équipe des opérations et du soutien est actuellement disponible. N\'hésitez pas à nous appeler ou à nous envoyer un courriel.';
-            } else if (!isOpen && !language) {
+            } else if (!isOpen && language === 'en') {
                 statusIndicator.className = 'status-indicator closed';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Closed Now';
                 statusText.textContent = 'We are currently offline. Please send an email or submit the form below, and we will get back to you first thing on our next working shift.';
-            } else if (!isOpen && language) {
+            } else if (!isOpen && language === 'fr') {
                 statusIndicator.className = 'status-indicator closed';
                 statusIndicator.innerHTML = '<span class="status-dot"></span> Fermé';
                 statusText.textContent = 'Nous sommes actuellement fermés. Veuillez nous envoyer un courriel ou remplir le formulaire ci-dessous. Nous vous répondrons dès le début de notre prochaine période de travail.';

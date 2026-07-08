@@ -65,5 +65,10 @@
   "contact.form.email": "Email",
   "contact.form.subject": "Subject",
   "contact.form.message": "Message",
-  "contact.form.submit": "Send Message"
+  "contact.form.submit": "Send Message",
+
+  "contact.form.name.placeholder": "Your name",
+  "contact.form.email.placeholder": "Your email address",
+  "contact.form.subject.placeholder": "What is this regarding?",
+  "contact.form.message.placeholder": "Write your message here..."
 }

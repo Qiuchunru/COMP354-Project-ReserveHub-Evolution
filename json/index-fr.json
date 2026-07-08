@@ -28,6 +28,7 @@
   "index.hero.accent": "Une Seule Réservation.",
   "index.hero.tagline": "Tous les Restaurants, Une Seule Réservation",
   "index.hero.subtitle": "Découvrez, explorez et réservez une table dans les meilleurs restaurants en quelques secondes.",
+  "index.search.placeholder": "Recherchez des restaurants, des cuisines ou des lieux…",
   "index.hero.searchButton": "Trouver une Table",
 
   "index.stats.restaurants": "Restaurants",
@@ -74,5 +75,5 @@
 
   "index.cta.title": "Prêt à Réserver Votre Prochaine Table ?",
   "index.cta.description": "Rejoignez plus de 50 000 clients satisfaits qui réservent avec ReserveHub chaque mois.",
-  "index.cta.button": "Commencer — C'est gratuit"
+  "index.cta.button": "Commencer — C'est gratuit"  
 }

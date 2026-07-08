@@ -93,12 +93,14 @@
       }
 
       const translations = await response.json();
+      console.log(translations)
       document.querySelectorAll('[localization-key]').forEach(element => {
         const key = element.getAttribute('localization-key');
         const value = translations[key];
         if (!value) return;
 
         const target = element.getAttribute('localization-target') || 'text';
+
         if (target === 'placeholder') {
           element.setAttribute('placeholder', value);
           return;
