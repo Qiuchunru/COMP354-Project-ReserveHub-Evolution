@@ -1,3 +1,17 @@
+let authTranslations = {};
+
+function t(key, fallback, vars = {}) {
+    let text = authTranslations[key] || fallback;
+    Object.keys(vars).forEach(varKey => {
+        text = text.replace(`{${varKey}}`, vars[varKey]);
+    });
+    return text;
+}
+
+window.addEventListener('reservehub:languageChanged', event => {
+    authTranslations = event?.detail?.translations || {};
+});
+
 // Form Switching
 function switchForm(formType) {
     const loginForm = document.getElementById('loginForm');
@@ -111,16 +125,16 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
 
     // Validate identifier
     if (!identifier) {
-        showError('loginIdentifierError', 'Email or Username is required');
+        showError('loginIdentifierError', t('auth.validation.identifierRequired', 'Email or Username is required'));
         isValid = false;
     }
 
     // Validate password
     if (!password) {
-        showError('loginPasswordError', 'Password is required');
+        showError('loginPasswordError', t('auth.validation.passwordRequired', 'Password is required'));
         isValid = false;
     } else if (!validatePassword(password)) {
-        showError('loginPasswordError', 'Password must be at least 6 characters');
+        showError('loginPasswordError', t('auth.validation.passwordMin', 'Password must be at least 6 characters'));
         isValid = false;
     }
 
@@ -132,7 +146,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
 
         const submitBtn = this.querySelector('.submit-btn');
         const originalBtnText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Signing In...</span>';
+        submitBtn.innerHTML = `<span>${t('auth.login.loading', 'Signing In...')}</span>`;
         submitBtn.disabled = true;
 
         fetch('../api/login.php', {
@@ -172,7 +186,10 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
                         }));
                     }
 
-                    showSuccessModal('Login Successful!', `Welcome back, ${data.user.name}!`);
+                    showSuccessModal(
+                        t('auth.success.loginTitle', 'Login Successful!'),
+                        t('auth.success.loginMessage', 'Welcome back, {name}!').replace('{name}', data.user.name)
+                    );
                     this.reset();
                     setTimeout(() => {
                         if (data.user.role === 'admin') {
@@ -190,7 +207,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', function
             .catch(error => {
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
-                showError('loginPasswordError', 'Network error. Please try again later.');
+                showError('loginPasswordError', t('auth.validation.network', 'Network error. Please try again later.'));
                 console.error('Error:', error);
             });
     }
@@ -222,61 +239,61 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
 
     // Validate username
     if (!username) {
-        showError('signupUsernameError', 'Username is required');
+        showError('signupUsernameError', t('auth.validation.usernameRequired', 'Username is required'));
         isValid = false;
     } else if (username.length < 3) {
-        showError('signupUsernameError', 'Username must be at least 3 characters');
+        showError('signupUsernameError', t('auth.validation.usernameMin', 'Username must be at least 3 characters'));
         isValid = false;
     }
 
     // Validate name
     if (!name) {
-        showError('signupNameError', 'Name is required');
+        showError('signupNameError', t('auth.validation.nameRequired', 'Name is required'));
         isValid = false;
     } else if (name.length < 3) {
-        showError('signupNameError', 'Name must be at least 3 characters');
+        showError('signupNameError', t('auth.validation.nameMin', 'Name must be at least 3 characters'));
         isValid = false;
     }
 
     // Validate email
     if (!email) {
-        showError('signupEmailError', 'Email is required');
+        showError('signupEmailError', t('auth.validation.emailRequired', 'Email is required'));
         isValid = false;
     } else if (!validateEmail(email)) {
-        showError('signupEmailError', 'Please enter a valid email');
+        showError('signupEmailError', t('auth.validation.emailInvalid', 'Please enter a valid email'));
         isValid = false;
     }
 
     // Validate phone
     if (!phone) {
-        showError('signupPhoneError', 'Phone number is required');
+        showError('signupPhoneError', t('auth.validation.phoneRequired', 'Phone number is required'));
         isValid = false;
     } else if (phone.length < 8) {
-        showError('signupPhoneError', 'Please enter a valid phone number');
+        showError('signupPhoneError', t('auth.validation.phoneInvalid', 'Please enter a valid phone number'));
         isValid = false;
     }
 
     // Validate password
     if (!password) {
-        showError('signupPasswordError', 'Password is required');
+        showError('signupPasswordError', t('auth.validation.passwordRequired', 'Password is required'));
         isValid = false;
     } else if (!validatePassword(password)) {
-        showError('signupPasswordError', 'Password must be at least 6 characters');
+        showError('signupPasswordError', t('auth.validation.passwordMin', 'Password must be at least 6 characters'));
         isValid = false;
     }
 
     // Validate confirm password
     if (!confirmPassword) {
-        showError('confirmPasswordError', 'Please confirm your password');
+        showError('confirmPasswordError', t('auth.validation.confirmRequired', 'Please confirm your password'));
         isValid = false;
     } else if (password !== confirmPassword) {
-        showError('confirmPasswordError', 'Passwords do not match');
+        showError('confirmPasswordError', t('auth.validation.passwordMismatch', 'Passwords do not match'));
         isValid = false;
     }
 
     // Validate terms
     if (!agreeTerms) {
-        showError('agreeTermsError', 'You must agree to the terms and privacy policy');
+        showError('agreeTermsError', t('auth.validation.termsRequired', 'You must agree to the terms and privacy policy'));
         isValid = false;
     }
 
@@ -292,7 +309,7 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
 
         const submitBtn = this.querySelector('.submit-btn');
         const originalBtnText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Creating Account...</span>';
+        submitBtn.innerHTML = `<span>${t('auth.signup.loading', 'Creating Account...')}</span>`;
         submitBtn.disabled = true;
 
         fetch('../api/signup.php', {
@@ -308,7 +325,10 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
                 submitBtn.disabled = false;
 
                 if (data.success) {
-                    showSuccessModal('Account Created!', `Welcome ${name}! Your account has been created successfully.`);
+                    showSuccessModal(
+                        t('auth.success.signupTitle', 'Account Created!'),
+                        t('auth.success.signupMessage', 'Welcome {name}! Your account has been created successfully.').replace('{name}', name)
+                    );
                     this.reset();
                     setTimeout(() => {
                         switchForm('login');
@@ -320,7 +340,7 @@ document.getElementById('signupFormElement')?.addEventListener('submit', functio
             .catch(error => {
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
-                showError('signupPasswordError', 'Network error. Please try again later.');
+                showError('signupPasswordError', t('auth.validation.network', 'Network error. Please try again later.'));
                 console.error('Error:', error);
             });
     }
@@ -336,17 +356,17 @@ document.getElementById('forgotPasswordFormElement')?.addEventListener('submit',
     clearError('resetEmailError');
 
     if (!email) {
-        showError('resetEmailError', 'Email is required');
+        showError('resetEmailError', t('auth.validation.emailRequired', 'Email is required'));
         isValid = false;
     } else if (!validateEmail(email)) {
-        showError('resetEmailError', 'Please enter a valid email');
+        showError('resetEmailError', t('auth.validation.emailInvalid', 'Please enter a valid email'));
         isValid = false;
     }
 
     if (isValid) {
         const submitBtn = this.querySelector('.submit-btn');
         const originalBtnText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Sending Link...</span>';
+        submitBtn.innerHTML = `<span>${t('auth.reset.loading', 'Sending Link...')}</span>`;
         submitBtn.disabled = true;
 
         // Make API call to send reset link
@@ -363,23 +383,23 @@ document.getElementById('forgotPasswordFormElement')?.addEventListener('submit',
                 submitBtn.disabled = false;
 
                 if (data.success) {
-                    let successMessage = data.message || `We've sent a password reset link to ${email}`;
+                    let successMessage = data.message || t('auth.success.resetMessage', "We've sent a password reset link to {email}").replace('{email}', email);
                     if (data.debug_link) {
-                        successMessage += `<br><br><div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.9em; word-break: break-all; text-align: left;"><strong>[Dev Mode] Reset Link:</strong><br><a href="${data.debug_link}" style="color: #00b4db; text-decoration: underline;">${data.debug_link}</a></div>`;
+                        successMessage += `<br><br><div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.9em; word-break: break-all; text-align: left;"><strong>${t('auth.success.devModeLabel', '[Dev Mode] Reset Link:')}</strong><br><a href="${data.debug_link}" style="color: #00b4db; text-decoration: underline;">${data.debug_link}</a></div>`;
                     }
-                    showSuccessModal('Reset Link Sent!', successMessage);
+                    showSuccessModal(t('auth.success.resetTitle', 'Reset Link Sent!'), successMessage);
                     this.reset();
                     setTimeout(() => {
                         switchForm('login');
                     }, 3000);
                 } else {
-                    showError('resetEmailError', data.message || 'Failed to send reset link. Please try again.');
+                    showError('resetEmailError', data.message || t('auth.validation.resetFailed', 'Failed to send reset link. Please try again.'));
                 }
             })
             .catch(error => {
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
-                showError('resetEmailError', 'Network error. Please try again later.');
+                showError('resetEmailError', t('auth.validation.network', 'Network error. Please try again later.'));
                 console.error('Error:', error);
             });
     }
@@ -479,12 +499,12 @@ function processSocialLogin(data) {
 
     if (!data.email) {
         console.error('Social Login Error: No email provided by ' + data.provider);
-        showToast('Could not retrieve your email from ' + data.provider + '. Please make sure your email is verified and public.', 'error');
+        showToast(t('auth.social.noEmail', 'Could not retrieve your email from {provider}. Please make sure your email is verified and public.').replace('{provider}', data.provider), 'error');
         return;
     }
 
     if (submitBtn) {
-        submitBtn.innerHTML = '<span>Processing...</span>';
+        submitBtn.innerHTML = `<span>${t('auth.social.processing', 'Processing...')}</span>`;
         submitBtn.disabled = true;
     }
 
@@ -512,7 +532,10 @@ function processSocialLogin(data) {
                     timestamp: new Date().toISOString()
                 }));
 
-                showSuccessModal('Login Successful!', `Welcome, ${res.user.name}!`);
+                showSuccessModal(
+                    t('auth.success.loginTitle', 'Login Successful!'),
+                    t('auth.success.socialWelcome', 'Welcome, {name}!').replace('{name}', res.user.name)
+                );
                 setTimeout(() => {
                     if (res.user.role === 'admin') {
                         window.location.href = 'admin.html';
@@ -527,7 +550,7 @@ function processSocialLogin(data) {
                     submitBtn.innerHTML = originalBtnText;
                     submitBtn.disabled = false;
                 }
-                showToast(res.message || 'Social login failed. Please try again.', 'error');
+                showToast(res.message || t('auth.social.failed', 'Social login failed. Please try again.'), 'error');
             }
         })
         .catch(err => {

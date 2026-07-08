@@ -25,12 +25,15 @@
             <a href="index.html#how-it-works" localization-key="nav.how" class="top-btn">HOW IT WORKS</a>
             <a href="index.html#featured" localization-key="nav.restaurants" class="top-btn">RESTAURANTS</a>
             <a href="contact.html" localization-key="nav.contact" class="top-btn">CONTACT</a>
-            <select class="contact-language-localization top-btn" onchange="languageChanged(this, `contact`), updateSupportStatus(getLang())">
-               <option value="en">English</option>
-               <option value="fr">Français</option>
-            </select>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
                 <a href="login-signup.html" localization-key="nav.login" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
+            </div>
+            <div class="language-picker">
+                <i class="fa-solid fa-globe"></i>
+                <select class="contact-language-localization language-select" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
             </div>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
@@ -52,10 +55,13 @@
         <div id="mob-auth-buttons">
             <a href="login-signup.html" localization-key="mobile.login" class="mob-link mob-cta">Sign Up / Log In</a>
         </div>
-        <select class="contact-language-localization" onchange="languageChanged(this, `contact`), updateSupportStatus(getLang())">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-        </select>
+        <div class="language-picker">
+            <i class="fa-solid fa-globe"></i>
+            <select class="contact-language-localization language-select" aria-label="Select language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
         <a href="javascript:void(0)" localization-key="mobile.theme" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
             <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
         </a>

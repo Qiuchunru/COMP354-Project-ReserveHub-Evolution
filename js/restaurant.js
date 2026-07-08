@@ -5,6 +5,19 @@ const restaurantId = urlParams.get('id');
 
 let selectedTable = null;
 let restaurantData = null;
+let restaurantTranslations = {};
+
+function tr(key, fallback) {
+    return restaurantTranslations[key] || fallback;
+}
+
+window.addEventListener('reservehub:languageChanged', (event) => {
+    restaurantTranslations = event.detail?.translations || {};
+    if (restaurantData) {
+        loadFloorPlan();
+        loadReviews();
+    }
+});
 
 // ===== OPERATING HOURS HELPER =====
 // Converts "HH:MM" or "HH:MM:SS" → total minutes since midnight.
@@ -138,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loginMsg.style.fontSize = '0.85rem';
         loginMsg.style.marginTop = '8px';
         loginMsg.style.fontWeight = '500';
-        loginMsg.innerHTML = '<i class="fa-solid fa-circle-info"></i> Please log in to select a table and reserve.';
+        loginMsg.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${tr('restaurant.dynamic.loginPrompt', 'Please log in to select a table and reserve.')}`;
         bookingHeader.appendChild(loginMsg);
     }
 });
@@ -185,7 +198,7 @@ async function loadFloorPlan() {
     const loadingText = document.getElementById('svgLoadingText');
 
     if (!guests) {
-        showToast('error', 'Select Guests', 'Please select the number of guests first.');
+        showToast('error', tr('restaurant.dynamic.toast.selectGuests.title', 'Select Guests'), tr('restaurant.dynamic.toast.selectGuests.message', 'Please select the number of guests first.'));
         return;
     }
 
@@ -223,7 +236,7 @@ async function loadFloorPlan() {
         clearClosedState();
         renderFloorPlan(json.data);
     } catch(err) {
-        loadingText.textContent = 'Failed to load floor plan.';
+        loadingText.textContent = tr('restaurant.dynamic.floorPlan.failed', 'Failed to load floor plan.');
         console.error(err);
     }
 }
@@ -283,13 +296,13 @@ function renderClosedState(openTime, closeTime) {
                     font-weight: 700;
                     margin: 0 0 10px;
                     letter-spacing: -0.3px;
-                ">The shop is closed at this time.</h3>
+                ">${tr('restaurant.dynamic.closed.title', 'The shop is closed at this time.')}</h3>
                 <p style="
                     color: rgba(160,160,190,0.85);
                     font-size: 13.5px;
                     margin: 0 0 18px;
                     line-height: 1.6;
-                ">Please select a time within the restaurant's operating hours.</p>
+                ">${tr('restaurant.dynamic.closed.message', "Please select a time within the restaurant's operating hours.")}</p>
                 <div style="
                     display: inline-flex;
                     align-items: center;
@@ -407,7 +420,7 @@ function renderFloorPlan(tables) {
             capText.setAttribute('x', x);
             capText.setAttribute('y', y + 9);
             capText.setAttribute('class', 'table-cap');
-            capText.textContent = `${cap} seats`;
+            capText.textContent = `${cap} ${tr('restaurant.dynamic.seats', 'seats')}`;
             g.appendChild(capText);
         } else {
             // Rect table
@@ -435,7 +448,7 @@ function renderFloorPlan(tables) {
             capText.setAttribute('x', x);
             capText.setAttribute('y', y + 8);
             capText.setAttribute('class', 'table-cap');
-            capText.textContent = `${cap} seats`;
+            capText.textContent = `${cap} ${tr('restaurant.dynamic.seats', 'seats')}`;
             g.appendChild(capText);
         }
 
@@ -443,7 +456,7 @@ function renderFloorPlan(tables) {
         if (table.status === 'available') {
             g.addEventListener('click', () => {
                 if (!getUser()) {
-                    showToast('error', 'Login Required', 'You must be logged in to select a table.');
+                    showToast('error', tr('restaurant.dynamic.toast.loginRequired.title', 'Login Required'), tr('restaurant.dynamic.toast.loginRequired.message', 'You must be logged in to select a table.'));
                     return;
                 }
                 selectTable(table, g);
@@ -518,7 +531,7 @@ function updateBookingPanel(table) {
     if (!user) {
         display.classList.remove('has-selection');
         reserveBtn.disabled = false;
-        reserveBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login to Reserve';
+        reserveBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> ${tr('restaurant.dynamic.buttons.loginToReserve', 'Login to Reserve')}`;
         tableIdInput.value = '';
         return;
     }
@@ -526,7 +539,7 @@ function updateBookingPanel(table) {
     if (!table) {
         display.classList.remove('has-selection');
         reserveBtn.disabled = true;
-        reserveBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Select a Table First';
+        reserveBtn.innerHTML = `<i class="fa-solid fa-lock"></i> ${tr('restaurant.dynamic.buttons.selectFirst', 'Select a Table First')}`;
         tableIdInput.value = '';
         return;
     }
@@ -534,10 +547,10 @@ function updateBookingPanel(table) {
     display.classList.add('has-selection');
     document.getElementById('selectedTableNum').textContent = table.table_number;
     document.getElementById('selectedTableDetails').textContent =
-        `${table.shape === 'round' ? 'Round table' : 'Rectangular table'} · Up to ${table.capacity} guests`;
+        `${table.shape === 'round' ? tr('restaurant.dynamic.table.round', 'Round table') : tr('restaurant.dynamic.table.rectangular', 'Rectangular table')} · ${tr('restaurant.dynamic.table.upTo', 'Up to')} ${table.capacity} ${tr('restaurant.dynamic.table.guests', 'guests')}`;
     tableIdInput.value = table.id;
     reserveBtn.disabled = false;
-    reserveBtn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Confirm Reservation';
+    reserveBtn.innerHTML = `<i class="fa-solid fa-calendar-check"></i> ${tr('restaurant.dynamic.buttons.confirmReservation', 'Confirm Reservation')}`;
 }
 
 // ===== SUBMIT RESERVATION =====
@@ -551,13 +564,13 @@ async function submitReservation(e) {
     }
 
     if (!selectedTable) {
-        showToast('error', 'No Table Selected', 'Please click a table on the floor plan first.');
+        showToast('error', tr('restaurant.dynamic.toast.noTable.title', 'No Table Selected'), tr('restaurant.dynamic.toast.noTable.message', 'Please click a table on the floor plan first.'));
         return;
     }
 
     const btn = document.getElementById('reserveBtn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Confirming...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${tr('restaurant.dynamic.buttons.confirming', 'Confirming...')}`;
 
     const payload = {
         restaurant_id: restaurantId,
@@ -579,8 +592,8 @@ async function submitReservation(e) {
         if (json.success) {
             // Populate Modal
             document.getElementById('modalBookingId').textContent = `#${json.reservation_id}`;
-            document.getElementById('modalPhone').textContent = user.phone || 'Not Provided';
-            document.getElementById('modalDateTime').textContent = `${payload.date} at ${payload.time}`;
+            document.getElementById('modalPhone').textContent = user.phone || tr('restaurant.dynamic.notProvided', 'Not Provided');
+            document.getElementById('modalDateTime').textContent = `${payload.date} ${tr('restaurant.dynamic.at', 'at')} ${payload.time}`;
             document.getElementById('modalTableNum').textContent = selectedTable.table_number;
             document.getElementById('modalGuests').textContent = payload.guests;
             
@@ -595,16 +608,16 @@ async function submitReservation(e) {
             document.getElementById('bookingForm').reset();
             
             // Also show toast just in case
-            showToast('success', 'Reservation Confirmed! 🎉', 'Your table has been successfully booked.');
+            showToast('success', tr('restaurant.dynamic.toast.confirmed.title', 'Reservation Confirmed! 🎉'), tr('restaurant.dynamic.toast.confirmed.message', 'Your table has been successfully booked.'));
         } else {
-            showToast('error', 'Reservation Failed', json.message);
+            showToast('error', tr('restaurant.dynamic.toast.failed.title', 'Reservation Failed'), json.message);
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Confirm Reservation';
+            btn.innerHTML = `<i class="fa-solid fa-calendar-check"></i> ${tr('restaurant.dynamic.buttons.confirmReservation', 'Confirm Reservation')}`;
         }
     } catch (err) {
-        showToast('error', 'Network Error', 'Could not connect to the server.');
+        showToast('error', tr('restaurant.dynamic.toast.network.title', 'Network Error'), tr('restaurant.dynamic.toast.network.message', 'Could not connect to the server.'));
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Confirm Reservation';
+        btn.innerHTML = `<i class="fa-solid fa-calendar-check"></i> ${tr('restaurant.dynamic.buttons.confirmReservation', 'Confirm Reservation')}`;
     }
 }
 
@@ -626,7 +639,7 @@ function showToast(type, title, msg) {
 // ===== LOAD REVIEWS =====
 async function loadReviews() {
     const list = document.getElementById('reviewsList');
-    list.innerHTML = '<p class="placeholder-text"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching latest reviews...</p>';
+    list.innerHTML = `<p class="placeholder-text"><i class="fa-solid fa-circle-notch fa-spin"></i> ${tr('restaurant.dynamic.reviews.fetching', 'Fetching latest reviews...')}</p>`;
     
     try {
         // Fetch local reviews only
@@ -661,10 +674,10 @@ async function loadReviews() {
         if (allReviewsHtml) {
             list.innerHTML = allReviewsHtml;
         } else {
-            list.innerHTML = '<p class="placeholder-text">No reviews yet. Be the first to review!</p>';
+            list.innerHTML = `<p class="placeholder-text">${tr('restaurant.dynamic.reviews.empty', 'No reviews yet. Be the first to review!')}</p>`;
         }
     } catch (err) {
-        list.innerHTML = '<p class="placeholder-text" style="color:#ff4757;">Failed to load reviews.</p>';
+        list.innerHTML = `<p class="placeholder-text" style="color:#ff4757;">${tr('restaurant.dynamic.reviews.failed', 'Failed to load reviews.')}</p>`;
         console.error(err);
     }
 }
@@ -865,7 +878,7 @@ function downloadReceipt(format) {
         }).catch(err => {
             if (document.body.contains(clone)) document.body.removeChild(clone);
             console.error("Error generating receipt:", err);
-            showToast('error', 'Download Failed', 'Could not generate receipt file. Check console for details.');
+            showToast('error', tr('restaurant.dynamic.toast.downloadFailed.title', 'Download Failed'), tr('restaurant.dynamic.toast.downloadFailed.message', 'Could not generate receipt file. Check console for details.'));
             if (btnPdf) { btnPdf.disabled = false; btnPdf.innerHTML = origPdfHtml; }
             if (btnImg) { btnImg.disabled = false; btnImg.innerHTML = origImgHtml; }
         });
