@@ -262,20 +262,21 @@
                     return;
                 }
                 data.forEach(res => {
+                    console.log(res);
                     const resCard = document.createElement('div');
                     resCard.className = 'reservation-item';
                     resCard.style = 'display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;';
                     
-                    const isPast = new Date(res.date + ' ' + res.time) < new Date();
+                    const isPast = new Date(res.date + ' ' + res.reservation_time) < new Date();
                     
                     resCard.innerHTML = `
                         <img src="${res.image_url}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;">
                         <div style="flex: 1;">
                             <h4 style="margin: 0; font-size: 1rem;">${res.restaurant_name}</h4>
                             <p style="margin: 4px 0; font-size: 0.85rem; color: #888;">
-                                <i class="fa-regular fa-calendar"></i> ${res.date} | <i class="fa-regular fa-clock"></i> ${res.time.slice(0,5)}
+                                <i class="fa-regular fa-calendar"></i> ${res.date} | <i class="fa-regular fa-clock"></i> ${res.reservation_time.slice(0,5)}
                             </p>
-                            <p style="margin: 0; font-size: 0.8rem; color: var(--orange);">${pt('profile.dynamic.tableLabel', 'Table')} ${res.table_number} | ${res.guests} ${pt('profile.dynamic.guestsLabel', 'Guests')}</p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--orange);">${pt('profile.dynamic.tableLabel', 'Table')} ${res.table_number} | ${res.guest_count} ${pt('profile.dynamic.guestsLabel', 'Guests')}</p>
                         </div>
                         <div>
                             ${isPast ? `<button class="review-btn" onclick="openReviewModal(${res.id}, ${res.restaurant_id})" style="background: transparent; border: 1px solid var(--orange); color: var(--orange); padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">${pt('profile.dynamic.review', 'Review')}</button>` : `<span style="color: #27ae60; font-size: 0.8rem;">${pt('profile.dynamic.upcoming', 'Upcoming')}</span>`}
