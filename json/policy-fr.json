@@ -172,8 +172,9 @@
   "policy.section8.item7.title": "Retrait Du Consentement :",
   "policy.section8.item7.text": "Retirer votre consentement à tout moment lorsque le traitement est basé sur celui-ci.",
 
-  "policy.section8.contact": "Pour exercer ces droits, contactez-nous à privacy@reservehub.com. Nous répondrons dans un délai de 30 jours.",
-
+  "policy.section8.contact.item1": "Pour exercer ces droits, contactez-nous à ",
+  "policy.section8.contact.item2": "privacy@reservehub.com",
+  "policy.section8.contact.item3": ". Nous répondrons dans un délai de 30 jours.",
 
   "policy.section9.title": "9. Confidentialité Des Enfants",
   "policy.section9.paragraph": "ReserveHub ne s'adresse pas aux enfants de moins de 13 ans. Nous ne collectons pas sciemment d'informations personnelles auprès des enfants. Si vous pensez que nous avons collecté involontairement des données concernant un enfant, veuillez nous contacter immédiatement et nous les supprimerons rapidement.",

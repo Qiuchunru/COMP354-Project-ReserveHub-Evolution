@@ -172,7 +172,9 @@
   "policy.section8.item7.title": "Withdraw Consent:",
   "policy.section8.item7.text": "Withdraw consent at any time where processing is consent-based.",
 
-  "policy.section8.contact": "To exercise any of these rights, contact us at privacy@reservehub.com. We will respond within 30 days.",
+  "policy.section8.contact.item1": "To exercise any of these rights, contact us at privacy@reservehub.com. We will respond within 30 days.",
+  "policy.section8.contact.item2": "privacy@reservehub.com",
+  "policy.section8.contact.item3": ". We will respond within 30 days.",
 
 
   "policy.section9.title": "9. Children's Privacy",
