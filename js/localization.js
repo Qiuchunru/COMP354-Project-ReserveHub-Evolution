@@ -118,6 +118,10 @@
           element.innerHTML = value;
           return;
         }
+        if (target === 'title') {
+          element.innerHTML = value;
+          return;
+        }
 
         element.textContent = value;
       });

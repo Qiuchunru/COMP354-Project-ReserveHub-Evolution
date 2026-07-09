@@ -94,7 +94,7 @@
             <div class="admin-header">
                 <h1 localization-key="admin.restaurants.title">Restaurants</h1>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="searchRestaurants" class="form-control" placeholder="Search restaurants..." style="width:250px;" onkeyup="filterRestaurants()">
+                    <input type="text" id="searchRestaurants" class="form-control"  placeholder="Search restaurants..." localization-key="admin.placeholder.searchRestaurants" localization-target="placeholder" style="width:250px;" onkeyup="filterRestaurants()">
                 </div>
             </div>
             <div id="restGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
@@ -107,7 +107,7 @@
             <div class="admin-header">
                 <h1 localization-key="admin.users.title">Users</h1>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="searchUsers" class="form-control" placeholder="Search users..." style="width:300px;" onkeyup="filterUsers()">
+                    <input type="text" id="searchUsers" class="form-control" placeholder="Search users..." localization-key="admin.placeholder.searchUsers" localization-target="placeholder" style="width:300px;" onkeyup="filterUsers()">
                     <button class="btn btn-primary" onclick="openUserModal()" localization-key="admin.users.addButton">+ Add Vendor/User</button>
                 </div>
             </div>
@@ -135,7 +135,7 @@
             <div class="admin-header">
                <h1 localization-key="admin.approvals.title">Vendor Approvals</h1>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="searchApprovals" class="form-control" placeholder="Search approvals..." style="width:250px;" onkeyup="filterApprovals()">
+                    <input type="text" id="searchApprovals" class="form-control" placeholder="Search approvals..." localization-key="admin.placeholder.searchApprovals" localization-target="placeholder" style="width:250px;" onkeyup="filterApprovals()">
                 </div>
             </div>
             <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
@@ -150,7 +150,7 @@
             <div class="admin-header">
                 <h1 localization-key="admin.history.title">Reservation History</h1>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="searchHistory" class="form-control" placeholder="Search history..." style="width:250px;" onkeyup="filterHistory()">
+                    <input type="text" id="searchHistory" class="form-control" placeholder="Search history..." localization-key="admin.placeholder.searchHistory" localization-target="placeholder" style="width:250px;" onkeyup="filterHistory()">
                 </div>
             </div>
             <div class="admin-table-container">
@@ -173,7 +173,7 @@
             <div class="admin-header">
                 <h1 localization-key="admin.inbox.title">Inbox Messages</h1>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="searchMessages" class="form-control" placeholder="Search messages..." style="width:300px;" onkeyup="filterMessages()">
+                    <input type="text" id="searchMessages" class="form-control" placeholder="Search messages..." localization-key="admin.placeholder.searchMessages" localization-target="placeholder" style="width:300px;" onkeyup="filterMessages()">
                 </div>
             </div>
             <div class="admin-table-container" style="background: transparent; border: none; overflow: visible;">
@@ -203,7 +203,7 @@
                     <div class="form-group" style="flex:1;"><label localization-key="admin.restaurantModal.priceRange">Price Range</label><input type="text" id="restPrice" class="form-control" placeholder="$$"></div>
                     <div class="form-group" style="flex:1;">
                         <label localization-key="admin.restaurantModal.seedRating">Seed Rating<small localization-key="admin.restaurantModal.seedRatingFallback" style="color:var(--text-muted);font-weight:400;">(fallback)</small></label>
-                        <input type="number" step="0.1" min="0" max="5" id="restRating" class="form-control" value="0.0" title="Used as the display rating until real reviews come in">
+                        <input type="number" step="0.1" min="0" max="5" id="restRating" class="form-control" value="0.0" localization-key="admin.restaurantModal.ratingTitle" localization-target="title" title="Used as the display rating until real reviews come in">
                     </div>
                 </div>
                 <div style="display:flex; gap:10px;">

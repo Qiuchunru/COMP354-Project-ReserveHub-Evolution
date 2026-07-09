@@ -83,5 +83,13 @@
   "admin.userModal.role.vendor": "Vendor (Restaurant Owner)",
   "admin.userModal.role.customer": "User (Customer)",
   "admin.userModal.role.admin": "Admin",
-  "admin.userModal.save": "Save Account"
+  "admin.userModal.save": "Save Account",
+
+  "admin.restaurantModal.ratingTitle": "Used as the display rating until real reviews come in",
+
+  "admin.placeholder.searchRestaurants": "Search restaurants...",
+  "admin.placeholder.searchUsers": "Search users...",
+  "admin.placeholder.searchApprovals": "Search approvals...",
+  "admin.placeholder.searchHistory": "Search history...",
+  "admin.placeholder.searchMessages": "Search messages..."
 }
