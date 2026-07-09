@@ -376,6 +376,15 @@ input::-webkit-calendar-picker-indicator {
     animation: fadeDown 0.7s 0.15s ease both;
 }
 .hero-accent { color: var(--orange); }
+html[lang="fr"] .hero-title {
+    font-size: clamp(1.8rem, 5vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    animation: fadeDown 0.7s 0.15s ease both;
+}
 
 .hero-tagline,
 .hero-subtitle {
@@ -391,6 +400,9 @@ input::-webkit-calendar-picker-indicator {
 
 .hero-subtitle {
     margin-bottom: 40px;
+}
+html[lang="fr"] .hero-subtitle {
+    margin-bottom: 20px;
 }
 
 /* Hero Search */
