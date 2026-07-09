@@ -38,6 +38,9 @@
     if (document.querySelector('.terms-language-localization')) {
       return `../json/terms-${lang}.json`;
     }
+    if (document.querySelector('.policy-language-localization')) {
+      return `../json/policy-${lang}.json`;
+    }
     if (document.querySelector('.contact-language-localization')) {
       return `../json/contact-${lang}.json`;
     }
@@ -82,7 +85,7 @@
     }
 
     document.documentElement.lang = normalized;
-    document.querySelectorAll('.index-language-localization, .about-language-localization, .terms-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization, .profile-language-localization, .reset-language-localization, .restaurant-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .about-language-localization, .terms-language-localization, .policy-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization, .profile-language-localization, .reset-language-localization, .restaurant-language-localization').forEach(select => {
       select.value = normalized;
     });
 
@@ -135,7 +138,7 @@
   }
 
   function initializeLanguageSelectors() {
-    document.querySelectorAll('.index-language-localization, .about-language-localization, .terms-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization, .profile-language-localization, .reset-language-localization, .restaurant-language-localization').forEach(select => {
+    document.querySelectorAll('.index-language-localization, .about-language-localization, .terms-language-localization, .policy-language-localization, .contact-language-localization, .help-language-localization, .auth-language-localization, .search-language-localization, .vendor-language-localization, .profile-language-localization, .reset-language-localization, .restaurant-language-localization').forEach(select => {
       select.addEventListener('change', () => {
         loadLanguage(select.value, { persist: true });
       });

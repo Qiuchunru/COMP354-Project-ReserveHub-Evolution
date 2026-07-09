@@ -1,0 +1,209 @@
+{
+  "policy.nav.home": "ACCUEIL",
+  "policy.nav.how": "COMMENT ÇA FONCTIONNE",
+  "policy.nav.restaurants": "RESTAURANTS",
+  "policy.nav.contact": "CONTACT",
+  "policy.nav.login": "INSCRIPTION / CONNEXION",
+
+  "policy.mobile.home": "Accueil",
+  "policy.mobile.how": "Comment Ça Fonctionne",
+  "policy.mobile.restaurants": "Restaurants",
+  "policy.mobile.contact": "Contact",
+  "policy.mobile.login": "Inscription / Connexion",
+  "policy.mobile.theme": "Changer Le Thème",
+
+  "policy.hero.tag": "VOTRE VIE PRIVÉE EST IMPORTANTE",
+  "policy.hero.title": "POLITIQUE DE CONFIDENTIALITÉ",
+  "policy.hero.updated": "Dernière mise à jour : ",
+  "policy.hero.updated.date": "11 mai 2026",
+
+  "policy.toc.title": "CONTENU",
+  "policy.toc.item1": "1. Introduction",
+  "policy.toc.item2": "2. Informations Que Nous Collectons",
+  "policy.toc.item3": "3. Comment Nous Utilisons Vos Informations",
+  "policy.toc.item4": "4. Partage De Vos Informations",
+  "policy.toc.item5": "5. Cookies Et Suivi",
+  "policy.toc.item6": "6. Sécurité Des Données",
+  "policy.toc.item7": "7. Conservation Des Données",
+  "policy.toc.item8": "8. Vos Droits",
+  "policy.toc.item9": "9. Confidentialité Des Enfants",
+  "policy.toc.item10": "10. Modifications De Cette Politique",
+  "policy.toc.item11": "11. Nous Contacter",
+
+  "policy.section1.title": "1. Introduction",
+  "policy.section1.paragraph1.start": "Bienvenue sur ",
+  "policy.section1.paragraph1.brand": "ReserveHub",
+  "policy.section1.paragraph1.end": " (« nous », « notre » ou « nos »). Nous nous engageons à protéger vos informations personnelles et votre droit à la confidentialité. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous visitez notre site web et utilisez nos services.",
+  "policy.section1.paragraph2": "Veuillez lire attentivement cette politique. Si vous n'acceptez pas ses conditions, veuillez cesser d'utiliser notre plateforme.",
+  "policy.section1.callout": "En utilisant ReserveHub, vous acceptez les pratiques relatives aux données décrites dans cette politique.",
+
+  "policy.section2.title": "2. Informations Que Nous Collectons",
+  "policy.section2.intro": "Nous collectons des informations de différentes façons :",
+  "policy.section2.subsection1.title": "2.1 Informations Que Vous Fournissez",
+
+  "policy.section2.item1.title": "Informations Du Compte :",
+  "policy.section2.item1.text": "Nom, adresse e-mail, mot de passe (haché) et photo de profil lors de votre inscription.",
+
+  "policy.section2.item2.title": "Détails De Réservation :",
+  "policy.section2.item2.text": "Date, heure, nombre de personnes, demandes spéciales et restaurant réservé.",
+
+  "policy.section2.item3.title": "Informations De Paiement :",
+  "policy.section2.item3.text": "Nous ne stockons pas les informations complètes de votre carte ; les paiements sont traités par des fournisseurs tiers conformes à la norme PCI-DSS.",
+
+  "policy.section2.item4.title": "Communications :",
+  "policy.section2.item4.text": "Messages que vous nous envoyez via les formulaires de contact ou les canaux d'assistance.",
+
+  "policy.section2.subsection2.title": "2.2 Informations Collectées Automatiquement",
+
+  "policy.section2.item5.title": "Données De Journalisation :",
+  "policy.section2.item5.text": "Adresse IP, type de navigateur, pages visitées, date et heure des visites et URL de provenance.",
+
+  "policy.section2.item6.title": "Données De L'appareil :",
+  "policy.section2.item6.text": "Type d'appareil, système d'exploitation et identifiants uniques de l'appareil.",
+
+  "policy.section2.item7.title": "Données De Localisation :",
+  "policy.section2.item7.text": "Emplacement approximatif déduit de votre adresse IP afin de suggérer des restaurants à proximité.",
+
+  "policy.section2.item8.title": "Cookies :",
+  "policy.section2.item8.text": "Consultez la Section 5 pour plus de détails sur les cookies.",
+
+  "policy.section3.title": "3. Comment Nous Utilisons Vos Informations",
+  "policy.section3.intro": "Nous utilisons les informations collectées pour :",
+  "policy.section3.item1": "Créer et gérer votre compte ReserveHub.",
+  "policy.section3.item2": "Traiter et confirmer vos réservations de restaurants.",
+  "policy.section3.item3": "Envoyer des confirmations de réservation, des rappels et des mises à jour par e-mail ou SMS.",
+  "policy.section3.item4": "Personnaliser votre expérience et proposer des recommandations de restaurants pertinentes.",
+  "policy.section3.item5": "Améliorer, tester et développer de nouvelles fonctionnalités pour notre plateforme.",
+  "policy.section3.item6": "Détecter, prévenir et traiter les fraudes, abus ou incidents de sécurité.",
+  "policy.section3.item7": "Respecter les obligations légales et appliquer nos Conditions d'utilisation.",
+  "policy.section3.item8": "Envoyer des communications promotionnelles (avec votre consentement, que vous pouvez retirer à tout moment).",
+  "policy.section3.callout": "Nous ne vendons jamais vos données personnelles à des tiers à des fins de marketing.",
+
+  "policy.section4.title": "4. Partage De Vos Informations",
+  "policy.section4.intro": "Nous pouvons partager vos informations dans certaines circonstances limitées :",
+  "policy.section4.table.recipient": "Destinataire",
+  "policy.section4.table.purpose": "Objectif",
+  "policy.section4.table.safeguards": "Protections",
+
+  "policy.section4.row1.recipient": "Partenaires Restaurants",
+  "policy.section4.row1.purpose": "Honorer votre réservation (nom, nombre de personnes, date/heure)",
+  "policy.section4.row1.safeguard": "Accords De Traitement Des Données",
+
+  "policy.section4.row2.recipient": "Prestataires De Paiement",
+  "policy.section4.row2.purpose": "Gérer Les Transactions De Paiement Sécurisées",
+  "policy.section4.row2.safeguard": "Conformité PCI-DSS",
+
+  "policy.section4.row3.recipient": "Fournisseurs E-mail / SMS",
+  "policy.section4.row3.purpose": "Envoyer Des Messages Transactionnels Et Marketing",
+  "policy.section4.row3.safeguard": "Accords De Traitement Des Données",
+
+  "policy.section4.row4.recipient": "Fournisseurs D'analyse",
+  "policy.section4.row4.purpose": "Comprendre L'utilisation De La Plateforme (anonymisée)",
+  "policy.section4.row4.safeguard": "Anonymisation / Pseudonymisation Des Données",
+
+  "policy.section4.row5.recipient": "Forces De L'ordre",
+  "policy.section4.row5.purpose": "Respecter Les Obligations Légales Lorsque Requis",
+  "policy.section4.row5.safeguard": "Uniquement Lorsque La Loi L'exige",
+
+  "policy.section5.title": "5. Cookies Et Suivi",
+  "policy.section5.intro": "Nous utilisons des cookies et des technologies de suivi similaires pour améliorer votre expérience :",
+
+  "policy.section5.item1.title": "Cookies Essentiels :",
+  "policy.section5.item1.text": "Nécessaires au fonctionnement de la plateforme (ex. jetons de session d'authentification).",
+
+  "policy.section5.item2.title": "Cookies De Préférence :",
+  "policy.section5.item2.text": "Mémorisent vos paramètres comme la préférence du thème clair/sombre.",
+
+  "policy.section5.item3.title": "Cookies D'analyse :",
+  "policy.section5.item3.text": "Nous aident à comprendre comment les visiteurs utilisent notre site (ex. Google Analytics — données anonymisées).",
+
+  "policy.section5.item4.title": "Cookies Marketing :",
+  "policy.section5.item4.text": "Utilisés uniquement avec votre consentement explicite pour fournir des publicités pertinentes.",
+
+  "policy.section5.paragraph": "Vous pouvez contrôler ou supprimer les cookies via les paramètres de votre navigateur. La désactivation des cookies essentiels peut limiter certaines fonctionnalités.",
+
+
+  "policy.section6.title": "6. Sécurité Des Données",
+  "policy.section6.intro": "Nous mettons en œuvre des mesures techniques et organisationnelles conformes aux normes de l'industrie pour protéger vos données, notamment :",
+  "policy.section6.item1": "Chiffrement TLS/SSL pour toutes les données en transit.",
+  "policy.section6.item2": "Hachage Bcrypt pour les mots de passe stockés — nous ne conservons jamais les mots de passe en clair.",
+  "policy.section6.item3": "Audits de sécurité réguliers et évaluations des vulnérabilités.",
+  "policy.section6.item4": "Contrôles d'accès basés sur les rôles limitant l'accès interne aux données personnelles.",
+  "policy.section6.callout": "Aucune méthode de transmission sur Internet n'est sécurisée à 100 %. Bien que nous nous efforcions de protéger vos données, nous ne pouvons garantir une sécurité absolue.",
+
+
+  "policy.section7.title": "7. Conservation Des Données",
+  "policy.section7.intro": "Nous conservons vos données personnelles uniquement pendant la durée nécessaire :",
+
+  "policy.section7.item1.title": "Comptes actifs :",
+  "policy.section7.item1.text": "Les données sont conservées pendant toute la durée de vie de votre compte.",
+
+  "policy.section7.item2.title": "Comptes supprimés :",
+  "policy.section7.item2.text": "La plupart des données sont supprimées définitivement sous 30 jours. Certains documents peuvent être conservés jusqu'à 7 ans pour respecter les obligations légales et financières.",
+
+  "policy.section7.item3.title": "Historique Des Réservations :",
+  "policy.section7.item3.text": "Conservé pendant 3 ans pour la résolution des litiges et les analyses.",
+
+  "policy.section7.item4.title": "Données De Journalisation :",
+  "policy.section7.item4.text": "Supprimées automatiquement après 90 jours.",
+
+
+  "policy.section8.title": "8. Vos Droits",
+  "policy.section8.intro": "Selon votre juridiction, vous pouvez disposer des droits suivants concernant vos données personnelles :",
+
+  "policy.section8.item1.title": "Accès :",
+  "policy.section8.item1.text": "Demander une copie des données personnelles que nous détenons à votre sujet.",
+
+  "policy.section8.item2.title": "Rectification :",
+  "policy.section8.item2.text": "Demander la correction des données inexactes ou incomplètes.",
+
+  "policy.section8.item3.title": "Suppression :",
+  "policy.section8.item3.text": "Demander la suppression de vos données personnelles (« droit à l'oubli »).",
+
+  "policy.section8.item4.title": "Restriction :",
+  "policy.section8.item4.text": "Demander de limiter la manière dont nous traitons vos données.",
+
+  "policy.section8.item5.title": "Portabilité :",
+  "policy.section8.item5.text": "Recevoir vos données dans un format structuré et lisible par machine.",
+
+  "policy.section8.item6.title": "Opposition :",
+  "policy.section8.item6.text": "Vous opposer au traitement basé sur des intérêts légitimes ou le marketing direct.",
+
+  "policy.section8.item7.title": "Retrait Du Consentement :",
+  "policy.section8.item7.text": "Retirer votre consentement à tout moment lorsque le traitement est basé sur celui-ci.",
+
+  "policy.section8.contact": "Pour exercer ces droits, contactez-nous à privacy@reservehub.com. Nous répondrons dans un délai de 30 jours.",
+
+
+  "policy.section9.title": "9. Confidentialité Des Enfants",
+  "policy.section9.paragraph": "ReserveHub ne s'adresse pas aux enfants de moins de 13 ans. Nous ne collectons pas sciemment d'informations personnelles auprès des enfants. Si vous pensez que nous avons collecté involontairement des données concernant un enfant, veuillez nous contacter immédiatement et nous les supprimerons rapidement.",
+
+
+  "policy.section10.title": "10. Modifications De Cette Politique",
+  "policy.section10.paragraph1": "Nous pouvons mettre à jour cette Politique de Confidentialité de temps à autre. Lorsque nous apportons des modifications importantes, nous allons :",
+  "policy.section10.item1": "Mettre à jour la date de « Dernière mise à jour » en haut de cette page.",
+  "policy.section10.item2": "Informer les utilisateurs enregistrés par e-mail ou via une notification dans l'application.",
+  "policy.section10.paragraph2": "L'utilisation continue de ReserveHub après les modifications constitue votre acceptation de la politique mise à jour.",
+
+
+  "policy.section11.title": "11. Nous Contacter",
+  "policy.section11.paragraph": "Si vous avez des questions, préoccupations ou demandes concernant cette Politique de Confidentialité, veuillez nous contacter :",
+  "policy.section11.email": "privacy@reservehub.com",
+  "policy.section11.address": "Siège ReserveHub, 123 Avenue Dining, Food City, FC 12345",
+
+
+  "policy.bottom.terms": "Conditions D'utilisation",
+  "policy.bottom.home": "Retour À L'accueil",
+
+
+  "policy.footer.tagline": "\"Tous Les Restaurants, Une Seule Réservation\"",
+  "policy.footer.company": "Entreprise",
+  "policy.footer.about": "À Propos De Nous",
+  "policy.footer.support": "Assistance",
+  "policy.footer.help": "Centre D'aide",
+  "policy.footer.contact": "Nous Contacter",
+  "policy.footer.privacy": "Politique De Confidentialité",
+  "policy.footer.terms": "Conditions D'utilisation",
+  "policy.footer.admin": "Tableau De Bord Administrateur",
+  "policy.footer.copyright": "© 2026 ReserveHub. Tous droits réservés."
+}
