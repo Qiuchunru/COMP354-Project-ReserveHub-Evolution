@@ -31,7 +31,7 @@ This project is developed by a team of 10 members. To ensure efficient collabora
 *   **Report Sections**: System Design.
 
 ## 2. Backend Development Group
-*Lead: hunru Qiu, Daheng Wang, Zhouxiaojia Yu
+*Lead: Chunru Qiu, Daheng Wang, Zhouxiaojia Yu
 *   **Responsibilities**: Backend business logic implementation, database CRUD operations, and API interface development and testing.
 *   **Report Sections**: Actual work done (Backend section).
 
