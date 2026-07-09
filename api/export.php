@@ -11,7 +11,6 @@ require_once 'db.php';
 
 // --- Authorization: administrators only -----------------------------------
 // Note: db.php calls session_start(), so $_SESSION is available here.
-/*
 if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     // Respond as JSON so the failure is readable if hit via fetch/XHR.
     header('Content-Type: application/json');
@@ -19,25 +18,25 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized: admin access required.']);
     exit;
 }
-*/
+
 // --- Query reservation data -----------------------------------------------
 // No user input is interpolated into this query, but we use a prepared
 // statement per the security requirement. The JOINs mirror the existing
 // admin "reservations" endpoint so column semantics stay consistent.
 try {
-   $stmt = $pdo->prepare("
+    $stmt = $pdo->prepare("
         SELECT
-                res.id               AS reservation_id,
-                u.name               AS user_name,
-                r.name               AS restaurant_name,
-                res.date             AS reservation_date,
-                res.time             AS reservation_time,
-                res.guests           AS guests,
-                res.status           AS status
-            FROM reservations res
-            JOIN users u        ON res.user_id = u.id           
-            JOIN restaurants r  ON res.restaurant_id = r.id     
-            ORDER BY res.date DESC, res.time DESC
+            res.booking_id       AS reservation_id,
+            u.name               AS user_name,
+            r.name               AS restaurant_name,
+            res.date             AS reservation_date,
+            res.reservation_time AS reservation_time,
+            res.guest_count      AS guests,
+            res.status           AS status
+        FROM reservations res
+        JOIN users u        ON res.customer_id   = u.user_id
+        JOIN restaurants r  ON res.restaurant_id = r.restaurant_id
+        ORDER BY res.date DESC, res.reservation_time DESC
     ");
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
