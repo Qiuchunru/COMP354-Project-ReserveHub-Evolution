@@ -23,10 +23,13 @@
             <a href="#" data-target="approvals"><i class="fa-solid fa-clipboard-check"></i><span localization-key="admin.nav.approvals"> Vendor Approvals</span></a>
             <a href="#" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span localization-key="admin.nav.history"> Reservation History</span></a>
             <a href="#" data-target="inbox"><i class="fa-solid fa-inbox"></i><span localization-key="admin.nav.inbox"> Inbox</span></a>
-            <select class="admin-language-localization theme-toggle" onchange="languageChanged(this, `admin`)">
-               <option value="en">English</option>
-               <option value="fr">Français</option>
-            </select>
+            <div class="language-picker">
+                <i class="fa-solid fa-globe"></i>
+                <select class="admin-language-localization language-select" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
+            </div>
             <div style="margin-top: auto; padding: 20px 0;">
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                     <i class="fa-solid fa-moon" style="margin-right: 8px;"></i>
