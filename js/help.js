@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const categories = document.querySelectorAll('.faq-category');
     const faqGrid = document.getElementById('faqGrid');
     const suggestionTags = document.querySelectorAll('.suggestion-tag');
+
+    // Default UI text
     const uiText = {
         noResultsTitle: 'No results found',
         noResultsBody: `We couldn't find any matches for "{term}". Please try a different search term or contact us below.`
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Update UI messages when the selected language changes
     const updateUiText = (translations = {}) => {
         uiText.noResultsTitle = translations['help.search.noResults.title'] || 'No results found';
         uiText.noResultsBody = translations['help.search.noResults.body'] || `We couldn't find any matches for "{term}". Please try a different search term or contact us below.`;
@@ -139,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Listen for global language changes
     window.addEventListener('reservehub:languageChanged', event => {
         const translations = event?.detail?.translations || {};
         updateUiText(translations);

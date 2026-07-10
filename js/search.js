@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q') || '';
+    // Stores the current translations.
     let translations = {};
+    // Returns a translated string for a given key.
     const t = (key, fallback) => translations[key] || fallback;
     
     const keywordInput = document.getElementById('filterKeyword');
@@ -97,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
+    // Listen for global language changes
     window.addEventListener('reservehub:languageChanged', event => {
         translations = event?.detail?.translations || {};
         fetchResults();

@@ -1,4 +1,7 @@
+
 let lang = 'en';
+
+// Translation dictionary for text used in this file
 const translations = {
     en: {
         loading: "Loading Restaurants...",
@@ -190,6 +193,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// Listen for language changes
 window.addEventListener("reservehub:languageChanged", event => {
     lang = event.detail.language;
     // Reload cards so they use the new language

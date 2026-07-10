@@ -3,10 +3,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
 let resetTranslations = {};
 
+// Returns a translated string for a given key.
 function rt(key, fallback) {
     return resetTranslations[key] || fallback;
 }
 
+// Listen for global language changes
 window.addEventListener('reservehub:languageChanged', (event) => {
     resetTranslations = event.detail?.translations || {};
 });

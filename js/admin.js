@@ -1,3 +1,4 @@
+// Default UI text
 const uiText = {
     reservations: "Reservations",
     reportTitle: "ReserveHub Analytics Report",
@@ -88,7 +89,8 @@ const uiText = {
     totalReservations: "Total Reservations"
 };
 
- function getStatusLabel(status) {
+    // Change status lable
+    function getStatusLabel(status) {
         switch (status) {
             case "pending":
                 return uiText.pending;
@@ -101,6 +103,7 @@ const uiText = {
         }
     }
 
+    // Change role lable
     function getRoleLabel(role) {
         switch (role) {
             case "admin":
@@ -114,118 +117,120 @@ const uiText = {
         }
     }
 
-document.addEventListener('DOMContentLoaded', () => {
-    function updateUiText(translations = {}) {
-        uiText.reservations = translations["admin.dashboard.reservations"] || "Reservations";
-        uiText.totalReservations = translations["admin.dashboard.totalReservations"] || "Total Reservations";
-        uiText.generating = translations["admin.common.generating"] || "Generating...";
-        uiText.saveLayout = translations["admin.tables.saveLayout"] || "Save Layout";
-        uiText.saving = translations["admin.common.saving"] || "Saving...";
-        uiText.saved = translations["admin.common.saved"] || "Saved!";
-        uiText.noRestaurants = translations["admin.restaurants.noneFound"] || "No restaurants found.";
-        uiText.selectRestaurant = translations["admin.restaurants.select"] || "Select Restaurant...";
-        uiText.selectRestaurantFirst = translations["admin.tables.selectRestaurant"] || "Select a restaurant first.";
-        uiText.deleteRestaurantConfirm = translations["admin.restaurants.deleteConfirm"] || "Are you sure you want to delete this restaurant?";
-        uiText.deleteTableConfirm = translations["admin.tables.deleteConfirm"] || "Delete this table?";
-        uiText.deleteUserConfirm = translations["admin.users.deleteConfirm"] || "Are you sure you want to delete this user?";
-        uiText.deleteMessageConfirm = translations["admin.inbox.deleteConfirm"] || "Are you sure you want to delete this message?";
-        uiText.reportTitle = translations["admin.dashboard.reportTitle"] || "ReserveHub Analytics Report";
-        uiText.generatedOn = translations["admin.dashboard.generatedOn"] || "Generated on";
-        uiText.totalUsers = translations["admin.dashboard.totalUsers"] || "Total Users";
-        uiText.restaurants = translations["admin.dashboard.restaurants"] || "Restaurants";
-        uiText.platformOverview = translations["admin.dashboard.platformOverview"] || "Platform Overview";
-        uiText.platformOverviewBody = translations["admin.dashboard.platformOverviewText"] || "";
-        uiText.exportFailed = translations["admin.dashboard.exportFailed"] || "Export Failed";
-        uiText.exportFailedBody = translations["admin.dashboard.pdfFailed"] || "Could not generate PDF report.";
-        uiText.updateUserFailed = translations["admin.users.updateFailed"] || "Failed to update user.";
-        uiText.createUserFailed = translations["admin.users.createFailed"] || "Failed to create user/vendor.";
-        uiText.deleteUserFailed = translations["admin.users.deleteFailed"] || "Failed to delete user.";
-        uiText.moderateFailed = translations["admin.approvals.moderateFailed"] || "Failed to moderate listing.";
-        uiText.inboxEmpty = translations["admin.inbox.none"] || "Your inbox is empty.";
-        uiText.inboxLoadFailed = translations["admin.inbox.loadFailed"] || "Could not load messages.";
-        uiText.deleteMessageFailed = translations["admin.inbox.deleteFailed"] || "Failed to delete message.";
-        uiText.noReservationHistory = translations["admin.history.none"] || "No past reservations found.";
-        uiText.autoConfirmedSystem = translations["admin.history.autoConfirmed"] || "Auto-confirmed / System";
-        uiText.delete = translations["admin.common.delete"] || "Delete";
-        uiText.properties = translations["admin.common.properties"] || "Properties";
-        uiText.position = translations["admin.common.position"] || "Position";
-        uiText.capacity = translations["admin.common.capacity"] || "Capacity";
-        uiText.shape = translations["admin.common.shape"] || "Shape";
-        uiText.round = translations["admin.common.round"] || "Round";
-        uiText.rectangular = translations["admin.common.rectangular"] || "Rectangular";
-        uiText.tableNumber = translations["admin.tables.tableNumber"] || "Table Number";
-        uiText.deleteTable = translations["admin.tables.deleteTable"] || "Delete Table";
-        uiText.noUsers = translations["admin.users.noneFound"] || "No users found.";
-        uiText.addUser = translations["admin.userModal.addTitle"] || "Add User";
-        uiText.editAccount = translations["admin.users.editTitle"] || "Edit Account";
-        uiText.seats = translations["admin.common.seats"] || "seats";
-        uiText.addRestaurant = translations["admin.restaurantModal.addTitle"] || "Add Restaurant";
-        uiText.editRestaurant = translations["admin.restaurants.editTitle"] || "Edit Restaurant";
-        uiText.changeRestaurantImage = translations["admin.restaurants.changeImage"] || "Change Restaurant Image";
-        uiText.edit = translations["admin.common.edit"] || "Edit";
-        uiText.add = translations["admin.common.add"] || "Add";
-        uiText.cancel = translations["admin.common.cancel"] || "Cancel";
-        uiText.approve = translations["admin.common.approve"] || "Approve";
-        uiText.reject = translations["admin.common.reject"] || "Reject";
-        uiText.customer = translations["admin.role.customer"] || "Customer";
-        uiText.vendor = translations["admin.role.vendor"] || "Vendor";
-        uiText.admin = translations["admin.userModal.role.admin"] || "Administrator";
-        uiText.owner = translations["admin.common.owner"] || "Owner";
-        uiText.reviewed = translations["admin.approvals.reviewed"] || "Reviewed";
-        uiText.noDescription = translations["admin.approvals.noDescription"] || "No description";
-        uiText.from = translations["admin.common.from"] || "From";
-        uiText.deleteMessage = translations["admin.inbox.deleteMessage"] || "Delete Message";
-        uiText.searchRestaurants = translations["admin.restaurants.search"] || "Search restaurants...";
-        uiText.searchUsers = translations["admin.users.search"] || "Search users...";
-        uiText.searchApprovals = translations["admin.approvals.search"] || "Search approvals...";
-        uiText.searchHistory = translations["admin.history.search"] || "Search history...";
-        uiText.searchMessages = translations["admin.inbox.search"] || "Search messages...";
-        uiText.noApprovals = translations["admin.approvals.noneFound"] || "No vendor listings to review.";
-        uiText.popularRestaurants = translations["admin.dashboard.popularRestaurants"] || "Popular Restaurants";
-        uiText.usersByRole = translations["admin.dashboard.usersByRole"] || "Users By Role";
-        uiText.selectTableHint = translations["admin.tables.clickTable"] || "Click a table on the floor plan to select and edit it.";
-        uiText.saveRestaurant = translations["admin.restaurantModal.save"] || "Save Restaurant";
-        uiText.saveAccount = translations["admin.userModal.save"] || "Save Account";
-        uiText.status = translations["admin.common.status"] || "Status";
-        uiText.save = translations["admin.common.save"] || "Save";
-        uiText.image = translations["admin.restaurantModal.image"] || "Restaurant Image";
-        uiText.noImage = translations["admin.restaurantModal.noImage"] || "No image selected";
-        uiText.name = translations["admin.restaurantModal.name"] || "Name";
-        uiText.description = translations["admin.restaurantModal.description"] || "Description";
-        uiText.cuisine = translations["admin.restaurantModal.cuisine"] || "Cuisine";
-        uiText.location = translations["admin.restaurantModal.location"] || "Location";
-        uiText.priceRange = translations["admin.restaurantModal.priceRange"] || "Price Range";
-        uiText.openingTime = translations["admin.restaurantModal.openTime"] || "Opening Time";
-        uiText.closingTime = translations["admin.restaurantModal.closeTime"] || "Closing Time";
-        uiText.username = translations["admin.userModal.username"] || "Username";
-        uiText.fullName = translations["admin.userModal.fullName"] || "Full Name";
-        uiText.email = translations["admin.userModal.email"] || "Email Address";
-        uiText.phone = translations["admin.userModal.phone"] || "Phone Number";
-        uiText.password = translations["admin.userModal.password"] || "Password";
-        uiText.chooseRestaurantImage = translations["admin.restaurantModal.chooseImage"] || "Choose Restaurant Image";
+    // Update UI messages when the selected language changes
+    document.addEventListener('DOMContentLoaded', () => {
+        function updateUiText(translations = {}) {
+            uiText.reservations = translations["admin.dashboard.reservations"] || "Reservations";
+            uiText.totalReservations = translations["admin.dashboard.totalReservations"] || "Total Reservations";
+            uiText.generating = translations["admin.common.generating"] || "Generating...";
+            uiText.saveLayout = translations["admin.tables.saveLayout"] || "Save Layout";
+            uiText.saving = translations["admin.common.saving"] || "Saving...";
+            uiText.saved = translations["admin.common.saved"] || "Saved!";
+            uiText.noRestaurants = translations["admin.restaurants.noneFound"] || "No restaurants found.";
+            uiText.selectRestaurant = translations["admin.restaurants.select"] || "Select Restaurant...";
+            uiText.selectRestaurantFirst = translations["admin.tables.selectRestaurant"] || "Select a restaurant first.";
+            uiText.deleteRestaurantConfirm = translations["admin.restaurants.deleteConfirm"] || "Are you sure you want to delete this restaurant?";
+            uiText.deleteTableConfirm = translations["admin.tables.deleteConfirm"] || "Delete this table?";
+            uiText.deleteUserConfirm = translations["admin.users.deleteConfirm"] || "Are you sure you want to delete this user?";
+            uiText.deleteMessageConfirm = translations["admin.inbox.deleteConfirm"] || "Are you sure you want to delete this message?";
+            uiText.reportTitle = translations["admin.dashboard.reportTitle"] || "ReserveHub Analytics Report";
+            uiText.generatedOn = translations["admin.dashboard.generatedOn"] || "Generated on";
+            uiText.totalUsers = translations["admin.dashboard.totalUsers"] || "Total Users";
+            uiText.restaurants = translations["admin.dashboard.restaurants"] || "Restaurants";
+            uiText.platformOverview = translations["admin.dashboard.platformOverview"] || "Platform Overview";
+            uiText.platformOverviewBody = translations["admin.dashboard.platformOverviewText"] || "";
+            uiText.exportFailed = translations["admin.dashboard.exportFailed"] || "Export Failed";
+            uiText.exportFailedBody = translations["admin.dashboard.pdfFailed"] || "Could not generate PDF report.";
+            uiText.updateUserFailed = translations["admin.users.updateFailed"] || "Failed to update user.";
+            uiText.createUserFailed = translations["admin.users.createFailed"] || "Failed to create user/vendor.";
+            uiText.deleteUserFailed = translations["admin.users.deleteFailed"] || "Failed to delete user.";
+            uiText.moderateFailed = translations["admin.approvals.moderateFailed"] || "Failed to moderate listing.";
+            uiText.inboxEmpty = translations["admin.inbox.none"] || "Your inbox is empty.";
+            uiText.inboxLoadFailed = translations["admin.inbox.loadFailed"] || "Could not load messages.";
+            uiText.deleteMessageFailed = translations["admin.inbox.deleteFailed"] || "Failed to delete message.";
+            uiText.noReservationHistory = translations["admin.history.none"] || "No past reservations found.";
+            uiText.autoConfirmedSystem = translations["admin.history.autoConfirmed"] || "Auto-confirmed / System";
+            uiText.delete = translations["admin.common.delete"] || "Delete";
+            uiText.properties = translations["admin.common.properties"] || "Properties";
+            uiText.position = translations["admin.common.position"] || "Position";
+            uiText.capacity = translations["admin.common.capacity"] || "Capacity";
+            uiText.shape = translations["admin.common.shape"] || "Shape";
+            uiText.round = translations["admin.common.round"] || "Round";
+            uiText.rectangular = translations["admin.common.rectangular"] || "Rectangular";
+            uiText.tableNumber = translations["admin.tables.tableNumber"] || "Table Number";
+            uiText.deleteTable = translations["admin.tables.deleteTable"] || "Delete Table";
+            uiText.noUsers = translations["admin.users.noneFound"] || "No users found.";
+            uiText.addUser = translations["admin.userModal.addTitle"] || "Add User";
+            uiText.editAccount = translations["admin.users.editTitle"] || "Edit Account";
+            uiText.seats = translations["admin.common.seats"] || "seats";
+            uiText.addRestaurant = translations["admin.restaurantModal.addTitle"] || "Add Restaurant";
+            uiText.editRestaurant = translations["admin.restaurants.editTitle"] || "Edit Restaurant";
+            uiText.changeRestaurantImage = translations["admin.restaurants.changeImage"] || "Change Restaurant Image";
+            uiText.edit = translations["admin.common.edit"] || "Edit";
+            uiText.add = translations["admin.common.add"] || "Add";
+            uiText.cancel = translations["admin.common.cancel"] || "Cancel";
+            uiText.approve = translations["admin.common.approve"] || "Approve";
+            uiText.reject = translations["admin.common.reject"] || "Reject";
+            uiText.customer = translations["admin.role.customer"] || "Customer";
+            uiText.vendor = translations["admin.role.vendor"] || "Vendor";
+            uiText.admin = translations["admin.userModal.role.admin"] || "Administrator";
+            uiText.owner = translations["admin.common.owner"] || "Owner";
+            uiText.reviewed = translations["admin.approvals.reviewed"] || "Reviewed";
+            uiText.noDescription = translations["admin.approvals.noDescription"] || "No description";
+            uiText.from = translations["admin.common.from"] || "From";
+            uiText.deleteMessage = translations["admin.inbox.deleteMessage"] || "Delete Message";
+            uiText.searchRestaurants = translations["admin.restaurants.search"] || "Search restaurants...";
+            uiText.searchUsers = translations["admin.users.search"] || "Search users...";
+            uiText.searchApprovals = translations["admin.approvals.search"] || "Search approvals...";
+            uiText.searchHistory = translations["admin.history.search"] || "Search history...";
+            uiText.searchMessages = translations["admin.inbox.search"] || "Search messages...";
+            uiText.noApprovals = translations["admin.approvals.noneFound"] || "No vendor listings to review.";
+            uiText.popularRestaurants = translations["admin.dashboard.popularRestaurants"] || "Popular Restaurants";
+            uiText.usersByRole = translations["admin.dashboard.usersByRole"] || "Users By Role";
+            uiText.selectTableHint = translations["admin.tables.clickTable"] || "Click a table on the floor plan to select and edit it.";
+            uiText.saveRestaurant = translations["admin.restaurantModal.save"] || "Save Restaurant";
+            uiText.saveAccount = translations["admin.userModal.save"] || "Save Account";
+            uiText.status = translations["admin.common.status"] || "Status";
+            uiText.save = translations["admin.common.save"] || "Save";
+            uiText.image = translations["admin.restaurantModal.image"] || "Restaurant Image";
+            uiText.noImage = translations["admin.restaurantModal.noImage"] || "No image selected";
+            uiText.name = translations["admin.restaurantModal.name"] || "Name";
+            uiText.description = translations["admin.restaurantModal.description"] || "Description";
+            uiText.cuisine = translations["admin.restaurantModal.cuisine"] || "Cuisine";
+            uiText.location = translations["admin.restaurantModal.location"] || "Location";
+            uiText.priceRange = translations["admin.restaurantModal.priceRange"] || "Price Range";
+            uiText.openingTime = translations["admin.restaurantModal.openTime"] || "Opening Time";
+            uiText.closingTime = translations["admin.restaurantModal.closeTime"] || "Closing Time";
+            uiText.username = translations["admin.userModal.username"] || "Username";
+            uiText.fullName = translations["admin.userModal.fullName"] || "Full Name";
+            uiText.email = translations["admin.userModal.email"] || "Email Address";
+            uiText.phone = translations["admin.userModal.phone"] || "Phone Number";
+            uiText.password = translations["admin.userModal.password"] || "Password";
+            uiText.chooseRestaurantImage = translations["admin.restaurantModal.chooseImage"] || "Choose Restaurant Image";
 
-        uiText.pending = translations["admin.status.pending"] || "Pending";
-        uiText.approved = translations["admin.status.approved"] || "Approved";
-        uiText.rejected = translations["admin.status.rejected"] || "Rejected";
+            uiText.pending = translations["admin.status.pending"] || "Pending";
+            uiText.approved = translations["admin.status.approved"] || "Approved";
+            uiText.rejected = translations["admin.status.rejected"] || "Rejected";
 
-        uiText.customer = translations["admin.role.customer"] || "Customer";
-        uiText.vendor = translations["admin.role.vendor"] || "Vendor";
-        uiText.admin = translations["admin.role.admin"] || "Administrator";
-    }
-
-    updateUiText();
-
-    window.addEventListener("reservehub:languageChanged", event => {
-        updateUiText(event.detail?.translations || {});
-        renderRestaurants(allRestaurants);
-        renderUsers(allUsers);
-        renderHistory(allHistory);
-        renderApprovals(allApprovals);
-        renderMessages(allMessages);
-        if (document.getElementById("dashboard").classList.contains("active")) {
-            loadDashboard();
+            uiText.customer = translations["admin.role.customer"] || "Customer";
+            uiText.vendor = translations["admin.role.vendor"] || "Vendor";
+            uiText.admin = translations["admin.role.admin"] || "Administrator";
         }
-    });
+        
+        updateUiText(window.reservehubTranslations || {});
+
+        // Listen for global language changes
+        window.addEventListener("reservehub:languageChanged", event => {
+            updateUiText(event.detail?.translations || {});
+            renderRestaurants(allRestaurants);
+            renderUsers(allUsers);
+            renderHistory(allHistory);
+            renderApprovals(allApprovals);
+            renderMessages(allMessages);
+            if (document.getElementById("dashboard").classList.contains("active")) {
+                loadDashboard();
+            }
+        });
 
     // Navigation
     document.querySelectorAll('.admin-nav a[data-target]').forEach(link => {

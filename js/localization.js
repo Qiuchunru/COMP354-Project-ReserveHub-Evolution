@@ -99,6 +99,8 @@
       }
 
       const translations = await response.json();
+      window.reservehubTranslations = translations;
+      
       document.querySelectorAll('[localization-key]').forEach(element => {
         const key = element.getAttribute('localization-key');
         const value = translations[key];

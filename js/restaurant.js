@@ -7,10 +7,12 @@ let selectedTable = null;
 let restaurantData = null;
 let restaurantTranslations = {};
 
+// Returns a translated string for a given key.
 function tr(key, fallback) {
     return restaurantTranslations[key] || fallback;
 }
 
+// Listen for global language changes
 window.addEventListener('reservehub:languageChanged', (event) => {
     restaurantTranslations = event.detail?.translations || {};
     if (restaurantData) {

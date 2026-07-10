@@ -1,3 +1,4 @@
+// Stores the current translations.
 let authTranslations = {};
 
 function t(key, fallback, vars = {}) {
@@ -8,6 +9,7 @@ function t(key, fallback, vars = {}) {
     return text;
 }
 
+// Listen for global language changes
 window.addEventListener('reservehub:languageChanged', event => {
     authTranslations = event?.detail?.translations || {};
 });
