@@ -1,0 +1,104 @@
+{
+  "vendor.meta.title": "Tableau de Bord Vendeur | ReserveHub",
+
+  "vendor.nav.dashboard": "Tableau de Bord",
+  "vendor.nav.restaurants": "Mes Restaurants",
+  "vendor.nav.tables": "Tables",
+  "vendor.nav.reservations": "Réservations",
+  "vendor.nav.history": "Historique des Réservations",
+  "vendor.nav.exit": "Quitter le Tableau de Bord",
+  "vendor.theme.switch": "Changer le Thème",
+
+  "vendor.dashboard.welcome": "Aperçu Vendeur",
+  "vendor.dashboard.stats.restaurants": "Mes Restaurants",
+  "vendor.dashboard.stats.reservations": "Réservations Totales",
+  "vendor.dashboard.stats.pending": "Approbations en Attente",
+  "vendor.dashboard.chart.title": "Réservations par Restaurant",
+  "vendor.dashboard.notifications.title": "Notifications Récentes",
+  "vendor.dashboard.notifications.body": "Bienvenue dans l'espace propriétaire de restaurant ReserveHub ! Ici, vous pouvez ajouter des restaurants, gérer les tables et accepter ou refuser les réservations en temps réel.",
+
+  "vendor.restaurants.title": "Mes Restaurants",
+  "vendor.restaurants.search.placeholder": "Rechercher mes restaurants...",
+  "vendor.restaurants.add": "+ Ajouter un Restaurant",
+
+  "vendor.tables.title": "Éditeur de Plan de Salle",
+  "vendor.tables.addRound": "Ajouter une Table Ronde",
+  "vendor.tables.addRect": "Ajouter une Table Rectangulaire",
+  "vendor.tables.saveLayout": "Enregistrer le Plan",
+  "vendor.tables.hint": "Cliquez sur une table pour la modifier",
+
+  "vendor.reservations.title": "Gérer les Réservations",
+
+  "vendor.history.title": "Historique des Réservations",
+  "vendor.history.search.placeholder": "Rechercher des réservations passées...",
+  "vendor.history.table.resId": "ID Résa",
+  "vendor.history.table.customer": "Client",
+  "vendor.history.table.restaurant": "Restaurant",
+  "vendor.history.table.dateTime": "Date et Heure",
+  "vendor.history.table.table": "Table",
+  "vendor.history.table.guests": "Convives",
+  "vendor.history.table.managedBy": "Géré Par",
+  "vendor.history.table.status": "Statut",
+
+  "vendor.modal.title": "Ajouter un Restaurant",
+  "vendor.modal.name": "Nom",
+  "vendor.modal.description": "Description",
+  "vendor.modal.cuisine": "Cuisine",
+  "vendor.modal.location": "Emplacement",
+  "vendor.modal.priceRange": "Gamme de Prix",
+  "vendor.modal.openingTime": "Heure d'Ouverture",
+  "vendor.modal.closingTime": "Heure de Fermeture",
+  "vendor.modal.halal": "Halal",
+  "vendor.modal.halalOption.halal": "Halal",
+  "vendor.modal.halalOption.nonHalal": "Non Halal",
+  "vendor.modal.image": "Image du Restaurant",
+  "vendor.modal.noImage": "Aucune image sélectionnée",
+  "vendor.modal.chooseImage": "Choisir une Image",
+  "vendor.modal.save": "Enregistrer le Restaurant",
+
+  "vendor.dynamic.welcome": "Bon retour, {name} !",
+  "vendor.dynamic.loading": "Chargement...",
+
+  "vendor.dynamic.modal.addTitle": "Ajouter un Nouveau Restaurant",
+  "vendor.dynamic.modal.editTitle": "Modifier le Restaurant",
+  "vendor.dynamic.modal.chooseImage": "Choisir une Image",
+  "vendor.dynamic.modal.changeImage": "Changer l'Image",
+
+  "vendor.dynamic.chart.reservations": "Réservations",
+
+  "vendor.dynamic.restaurants.empty": "Vous n'avez encore ajouté aucun restaurant.",
+  "vendor.dynamic.restaurants.addFirst": "+ Ajouter Votre Premier Restaurant",
+  "vendor.dynamic.restaurants.noDescription": "Aucune description fournie.",
+
+  "vendor.dynamic.status.open": "OUVERT",
+  "vendor.dynamic.status.closed": "FERMÉ",
+  "vendor.dynamic.status.cancelled": "Annulée",
+  "vendor.dynamic.status.past": "Passée",
+
+  "vendor.dynamic.actions.markClosed": "Marquer comme Fermé",
+  "vendor.dynamic.actions.markOpen": "Marquer comme Ouvert",
+  "vendor.dynamic.actions.edit": "Modifier",
+  "vendor.dynamic.actions.floor": "Plan",
+  "vendor.dynamic.actions.accept": "Accepter",
+  "vendor.dynamic.actions.cancel": "Annuler",
+
+  "vendor.dynamic.labels.date": "Date",
+  "vendor.dynamic.labels.time": "Heure",
+  "vendor.dynamic.labels.guests": "Convives",
+  "vendor.dynamic.labels.table": "Table",
+
+  "vendor.dynamic.toast.markOpen": "Restaurant marqué comme Ouvert 🟢.",
+  "vendor.dynamic.toast.markClosed": "Restaurant marqué comme Fermé 🔴.",
+  "vendor.dynamic.toast.resAccepted": "Réservation acceptée.",
+  "vendor.dynamic.toast.resCancelled": "Réservation annulée.",
+
+  "vendor.dynamic.reservations.empty": "Aucune réservation pour le moment.",
+  "vendor.dynamic.history.empty": "Aucune réservation passée trouvée.",
+
+  "vendor.dynamic.errors.loadStats": "Échec du chargement des statistiques.",
+  "vendor.dynamic.errors.loadRestaurants": "Échec du chargement des restaurants.",
+  "vendor.dynamic.errors.updateStatus": "Échec de la mise à jour du statut.",
+  "vendor.dynamic.errors.loadReservations": "Échec du chargement des réservations.",
+  "vendor.dynamic.errors.updateReservation": "Échec de la mise à jour.",
+  "vendor.dynamic.errors.loadHistory": "Échec du chargement de l'historique."
+}

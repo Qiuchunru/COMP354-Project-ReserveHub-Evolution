@@ -1,0 +1,104 @@
+{
+  "vendor.meta.title": "Vendor Dashboard | ReserveHub",
+
+  "vendor.nav.dashboard": "Dashboard",
+  "vendor.nav.restaurants": "My Restaurants",
+  "vendor.nav.tables": "Tables",
+  "vendor.nav.reservations": "Reservations",
+  "vendor.nav.history": "Reservation History",
+  "vendor.nav.exit": "Exit Dashboard",
+  "vendor.theme.switch": "Switch Theme",
+
+  "vendor.dashboard.welcome": "Vendor Overview",
+  "vendor.dashboard.stats.restaurants": "My Restaurants",
+  "vendor.dashboard.stats.reservations": "Total Reservations",
+  "vendor.dashboard.stats.pending": "Pending Approvals",
+  "vendor.dashboard.chart.title": "Reservations by Restaurant",
+  "vendor.dashboard.notifications.title": "Recent Notifications",
+  "vendor.dashboard.notifications.body": "Welcome to ReserveHub Restaurant Owner Panel! Here you can add new restaurants, manage tables, and accept or reject reservations from users in real-time.",
+
+  "vendor.restaurants.title": "My Restaurants",
+  "vendor.restaurants.search.placeholder": "Search my restaurants...",
+  "vendor.restaurants.add": "+ Add New Restaurant",
+
+  "vendor.tables.title": "Floor Plan Editor",
+  "vendor.tables.addRound": "Add Round",
+  "vendor.tables.addRect": "Add Rect",
+  "vendor.tables.saveLayout": "Save Layout",
+  "vendor.tables.hint": "Click a table to edit it",
+
+  "vendor.reservations.title": "Manage Reservations",
+
+  "vendor.history.title": "Reservation History",
+  "vendor.history.search.placeholder": "Search past reservations...",
+  "vendor.history.table.resId": "Res ID",
+  "vendor.history.table.customer": "Customer",
+  "vendor.history.table.restaurant": "Restaurant",
+  "vendor.history.table.dateTime": "Date & Time",
+  "vendor.history.table.table": "Table",
+  "vendor.history.table.guests": "Guests",
+  "vendor.history.table.managedBy": "Managed By",
+  "vendor.history.table.status": "Status",
+
+  "vendor.modal.title": "Add Restaurant",
+  "vendor.modal.name": "Name",
+  "vendor.modal.description": "Description",
+  "vendor.modal.cuisine": "Cuisine",
+  "vendor.modal.location": "Location",
+  "vendor.modal.priceRange": "Price Range",
+  "vendor.modal.openingTime": "Opening Time",
+  "vendor.modal.closingTime": "Closing Time",
+  "vendor.modal.halal": "Halal",
+  "vendor.modal.halalOption.halal": "Halal",
+  "vendor.modal.halalOption.nonHalal": "Non-Halal",
+  "vendor.modal.image": "Restaurant Image",
+  "vendor.modal.noImage": "No image selected",
+  "vendor.modal.chooseImage": "Choose Restaurant Image",
+  "vendor.modal.save": "Save Restaurant",
+
+  "vendor.dynamic.welcome": "Welcome back, {name}!",
+  "vendor.dynamic.loading": "Loading...",
+
+  "vendor.dynamic.modal.addTitle": "Add New Restaurant",
+  "vendor.dynamic.modal.editTitle": "Edit Restaurant",
+  "vendor.dynamic.modal.chooseImage": "Choose Restaurant Image",
+  "vendor.dynamic.modal.changeImage": "Change Image",
+
+  "vendor.dynamic.chart.reservations": "Reservations",
+
+  "vendor.dynamic.restaurants.empty": "You haven't listed any restaurants yet.",
+  "vendor.dynamic.restaurants.addFirst": "+ Add Your First Restaurant",
+  "vendor.dynamic.restaurants.noDescription": "No description provided.",
+
+  "vendor.dynamic.status.open": "OPEN",
+  "vendor.dynamic.status.closed": "CLOSED",
+  "vendor.dynamic.status.cancelled": "Cancelled",
+  "vendor.dynamic.status.past": "Past",
+
+  "vendor.dynamic.actions.markClosed": "Mark as Closed",
+  "vendor.dynamic.actions.markOpen": "Mark as Open",
+  "vendor.dynamic.actions.edit": "Edit",
+  "vendor.dynamic.actions.floor": "Floor",
+  "vendor.dynamic.actions.accept": "Accept",
+  "vendor.dynamic.actions.cancel": "Cancel",
+
+  "vendor.dynamic.labels.date": "Date",
+  "vendor.dynamic.labels.time": "Time",
+  "vendor.dynamic.labels.guests": "Guests",
+  "vendor.dynamic.labels.table": "Table",
+
+  "vendor.dynamic.toast.markOpen": "Restaurant marked as Open 🟢.",
+  "vendor.dynamic.toast.markClosed": "Restaurant marked as Closed 🔴.",
+  "vendor.dynamic.toast.resAccepted": "Reservation accepted.",
+  "vendor.dynamic.toast.resCancelled": "Reservation cancelled.",
+
+  "vendor.dynamic.reservations.empty": "No reservations yet.",
+  "vendor.dynamic.history.empty": "No past reservations found.",
+
+  "vendor.dynamic.errors.loadStats": "Failed to load stats.",
+  "vendor.dynamic.errors.loadRestaurants": "Failed to load restaurants.",
+  "vendor.dynamic.errors.updateStatus": "Failed to update status.",
+  "vendor.dynamic.errors.loadReservations": "Failed to load reservations.",
+  "vendor.dynamic.errors.updateReservation": "Failed to update.",
+  "vendor.dynamic.errors.loadHistory": "Failed to load history."
+}

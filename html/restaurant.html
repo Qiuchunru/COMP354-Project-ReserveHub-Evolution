@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Details | ReserveHub</title>
-    <meta name="description" content="View the floor plan and reserve your preferred table.">
+    <title localization-key="restaurant.meta.title">Restaurant Details | ReserveHub</title>
+    <meta name="description" localization-key="restaurant.meta.description" localization-target="content" content="View the floor plan and reserve your preferred table.">
     <link rel="stylesheet" href="../css/restaurant.css">
     <link rel="stylesheet" href="../css/active-timer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -39,12 +39,16 @@
             <img src="../pictures/reservehub-full-logo-light-mode.png" alt="ReserveHub Logo" class="top-logo">
         </a>
         <div style="display: flex; align-items: center; gap: 15px;">
+            <select class="restaurant-language-localization" aria-label="Select language" style="padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.25); color: var(--text); font-size: 13px; font-weight: 600;">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
                 <i class="fa-solid fa-sun"></i>
             </button>
             <a href="javascript:history.back()" class="nav-back">
-                <i class="fa-solid fa-arrow-left"></i> Back
+                <i class="fa-solid fa-arrow-left"></i> <span localization-key="restaurant.nav.back">Back</span>
             </a>
         </div>
     </nav>
@@ -70,19 +74,19 @@
         <!-- Floor Plan Section -->
         <section class="floor-plan-section">
             <div class="floor-plan-header">
-                <h2><i class="fa-solid fa-table-cells" style="color:var(--orange);margin-right:8px;"></i>Table Layout
+                <h2><i class="fa-solid fa-table-cells" style="color:var(--orange);margin-right:8px;"></i><span localization-key="restaurant.floor.title">Table Layout</span>
                 </h2>
-                <p>Select your preferred table below. Green = Available, Red = Occupied.</p>
+                <p localization-key="restaurant.floor.subtitle">Select your preferred table below. Green = Available, Red = Occupied.</p>
             </div>
 
             <div class="floor-plan-date-bar">
-                <label for="fpDate"><i class="fa-regular fa-calendar"></i> Date</label>
+                <label for="fpDate"><i class="fa-regular fa-calendar"></i> <span localization-key="restaurant.floor.date">Date</span></label>
                 <input type="date" id="fpDate">
-                <label for="fpTime"><i class="fa-regular fa-clock"></i> Time</label>
+                <label for="fpTime"><i class="fa-regular fa-clock"></i> <span localization-key="restaurant.floor.time">Time</span></label>
                 <input type="time" id="fpTime" step="1800">
-                <label for="fpGuests"><i class="fa-solid fa-users"></i> Guests</label>
+                <label for="fpGuests"><i class="fa-solid fa-users"></i> <span localization-key="restaurant.floor.guests">Guests</span></label>
                 <select id="fpGuests" required style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--dark-card); color: var(--text);">
-                    <option value="">Select...</option>
+                    <option localization-key="restaurant.floor.select" value="">Select...</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -94,19 +98,19 @@
                     <option value="9">9+</option>
                 </select>
                 <button class="refresh-btn" id="checkAvailabilityBtn">
-                    <i class="fa-solid fa-rotate"></i> Check Availability
+                    <i class="fa-solid fa-rotate"></i> <span localization-key="restaurant.floor.checkAvailability">Check Availability</span>
                 </button>
             </div>
 
             <div class="floor-legend">
                 <div class="legend-item">
-                    <div class="legend-dot available"></div> Available
+                    <div class="legend-dot available"></div> <span localization-key="restaurant.legend.available">Available</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-dot occupied"></div> Occupied
+                    <div class="legend-dot occupied"></div> <span localization-key="restaurant.legend.occupied">Occupied</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-dot selected"></div> Your Selection
+                    <div class="legend-dot selected"></div> <span localization-key="restaurant.legend.selected">Your Selection</span>
                 </div>
             </div>
 
@@ -134,17 +138,17 @@
                     </g>
                     <!-- Entrance indicator -->
                     <rect x="430" y="685" width="140" height="15" fill="none" stroke="var(--orange)" stroke-width="2" rx="2" opacity="0.5" />
-                    <text x="500" y="695" fill="var(--orange)" font-size="9" font-family="Inter" text-anchor="middle" opacity="0.6">ENTRANCE</text>
+                    <text x="500" y="695" fill="var(--orange)" font-size="9" font-family="Inter" text-anchor="middle" opacity="0.6" localization-key="restaurant.svg.entrance">ENTRANCE</text>
                     <!-- Bar/Counter area -->
                     <rect x="0" y="0" width="1000" height="30" class="floor-counter" rx="0" />
-                    <text x="500" y="19" class="floor-counter-text" font-size="10" font-family="Inter" text-anchor="middle">BAR / COUNTER AREA</text>
+                    <text x="500" y="19" class="floor-counter-text" font-size="10" font-family="Inter" text-anchor="middle" localization-key="restaurant.svg.counter">BAR / COUNTER AREA</text>
 
                     <!-- Dynamic tables will be injected here -->
                     <g id="tablesGroup"></g>
 
                     <!-- Loading indicator -->
                     <text id="svgLoadingText" x="500" y="350" class="floor-loading-text" font-size="16" fill="#888"
-                        font-family="Inter" text-anchor="middle">Select party size to see available tables.</text>
+                        font-family="Inter" text-anchor="middle" localization-key="restaurant.svg.loading">Select party size to see available tables.</text>
                 </svg>
             </div>
         </section>
@@ -152,13 +156,13 @@
         <!-- Booking Panel -->
         <aside class="booking-panel">
             <div class="booking-header">
-                <h3><i class="fa-solid fa-chair" style="color:var(--orange);margin-right:8px;"></i>Reserve a Table</h3>
-                <p>Click a table on the floor plan to select it.</p>
+                <h3><i class="fa-solid fa-chair" style="color:var(--orange);margin-right:8px;"></i><span localization-key="restaurant.booking.title">Reserve a Table</span></h3>
+                <p localization-key="restaurant.booking.subtitle">Click a table on the floor plan to select it.</p>
             </div>
 
             <div class="selected-table-display" id="selectedTableDisplay">
                 <p class="placeholder-text"><i class="fa-solid fa-hand-pointer"
-                        style="margin-right:6px;opacity:0.5;"></i>No table selected yet</p>
+                    style="margin-right:6px;opacity:0.5;"></i><span localization-key="restaurant.booking.noSelection">No table selected yet</span></p>
                 <div class="table-selected-info">
                     <div class="table-num" id="selectedTableNum">–</div>
                     <div class="table-details" id="selectedTableDetails">–</div>
@@ -169,30 +173,30 @@
 
             <form class="booking-form" id="bookingForm">
                 <div class="form-group">
-                    <label for="bookDate"><i class="fa-regular fa-calendar"></i> Date</label>
+                    <label for="bookDate"><i class="fa-regular fa-calendar"></i> <span localization-key="restaurant.booking.date">Date</span></label>
                     <input type="date" id="bookDate" required>
                 </div>
                 <div class="form-group">
-                    <label for="bookTime"><i class="fa-regular fa-clock"></i> Time</label>
+                    <label for="bookTime"><i class="fa-regular fa-clock"></i> <span localization-key="restaurant.booking.time">Time</span></label>
                     <input type="time" id="bookTime" step="1800" required>
                 </div>
                 <div class="form-group" style="display: none;">
-                    <label for="bookGuests"><i class="fa-solid fa-users"></i> Number of Guests</label>
+                    <label for="bookGuests"><i class="fa-solid fa-users"></i> <span localization-key="restaurant.booking.guestCount">Number of Guests</span></label>
                     <select id="bookGuests">
                         <option value="1">1</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="bookRequests"><i class="fa-solid fa-comment"></i> Special Requests (optional)</label>
+                    <label for="bookRequests"><i class="fa-solid fa-comment"></i> <span localization-key="restaurant.booking.specialRequests">Special Requests (optional)</span></label>
                     <textarea id="bookRequests"
-                        placeholder="e.g. Birthday celebration, window seat preferred..."></textarea>
+                        localization-key="restaurant.booking.specialPlaceholder" localization-target="placeholder" placeholder="e.g. Birthday celebration, window seat preferred..."></textarea>
                 </div>
 
                 <input type="hidden" id="selectedTableId" value="">
                 <input type="hidden" id="restaurantId" value="">
 
                 <button type="submit" class="btn-reserve" id="reserveBtn" disabled>
-                    <i class="fa-solid fa-lock"></i> Select a Table First
+                    <i class="fa-solid fa-lock"></i> <span localization-key="restaurant.booking.selectFirst">Select a Table First</span>
                 </button>
             </form>
 
@@ -200,9 +204,9 @@
 
             <div class="reviews-sidebar">
                 <h3 class="sidebar-title"><i class="fa-solid fa-star"
-                        style="color:#f1c40f;margin-right:8px;"></i>Customer Reviews</h3>
+                        style="color:#f1c40f;margin-right:8px;"></i><span localization-key="restaurant.reviews.title">Customer Reviews</span></h3>
                 <div id="reviewsList" class="reviews-list">
-                    <p class="placeholder-text">Loading reviews...</p>
+                    <p class="placeholder-text" localization-key="restaurant.reviews.loading">Loading reviews...</p>
                 </div>
             </div>
         </aside>
@@ -214,7 +218,7 @@
             <i class="fa-solid fa-bell-concierge fa-bounce"></i>
         </div>
         <div class="timer-content">
-            <span class="timer-title">Your Dining Session</span>
+            <span class="timer-title" localization-key="restaurant.timer.title">Your Dining Session</span>
             <span class="timer-countdown" id="timerCountdown">--:--</span>
         </div>
     </div>
@@ -223,8 +227,8 @@
     <div class="toast" id="toast">
         <div class="toast-icon" id="toastIcon"><i class="fa-solid fa-check" id="toastIconI"></i></div>
         <div>
-            <div class="toast-title" id="toastTitle">Success!</div>
-            <div class="toast-msg" id="toastMsg">Your table has been reserved.</div>
+            <div class="toast-title" id="toastTitle" localization-key="restaurant.toast.successTitle">Success!</div>
+            <div class="toast-msg" id="toastMsg" localization-key="restaurant.toast.successMsg">Your table has been reserved.</div>
         </div>
     </div>
 
@@ -237,36 +241,36 @@
                 style="width: 70px; height: 70px; background: rgba(39, 174, 96, 0.1); color: #27ae60; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;">
                 <i class="fa-solid fa-check"></i>
             </div>
-            <h2 style="margin-bottom: 10px; color: #fff;">Reservation Confirmed!</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;">Your table has been successfully
+            <h2 style="margin-bottom: 10px; color: #fff;" localization-key="restaurant.modal.title">Reservation Confirmed!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;" localization-key="restaurant.modal.subtitle">Your table has been successfully
                 booked.</p>
 
             <div id="receiptBox"
                 style="background: var(--dark-surface); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left; border: 1px solid var(--glass-border);">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="color: var(--text-muted); font-size: 14px;">Booking ID</span>
+                    <span style="color: var(--text-muted); font-size: 14px;" localization-key="restaurant.modal.bookingId">Booking ID</span>
                     <strong style="color: var(--orange); font-size: 15px;" id="modalBookingId">#---</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="color: var(--text-muted); font-size: 14px;">Contact Phone</span>
+                    <span style="color: var(--text-muted); font-size: 14px;" localization-key="restaurant.modal.phone">Contact Phone</span>
                     <strong style="color: #fff; font-size: 14px;" id="modalPhone">---</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="color: var(--text-muted); font-size: 14px;">Date & Time</span>
+                    <span style="color: var(--text-muted); font-size: 14px;" localization-key="restaurant.modal.dateTime">Date & Time</span>
                     <strong style="color: #fff; font-size: 14px;" id="modalDateTime">---</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="color: var(--text-muted); font-size: 14px;">Table Number</span>
+                    <span style="color: var(--text-muted); font-size: 14px;" localization-key="restaurant.modal.tableNumber">Table Number</span>
                     <strong style="color: #fff; font-size: 14px;" id="modalTableNum">---</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
-                    <span style="color: var(--text-muted); font-size: 14px;">Guests</span>
+                    <span style="color: var(--text-muted); font-size: 14px;" localization-key="restaurant.modal.guests">Guests</span>
                     <strong style="color: #fff; font-size: 14px;" id="modalGuests">---</strong>
                 </div>
             </div>
 
             <button onclick="window.location.href='profile.html'"
-                style="width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">View
+                localization-key="restaurant.modal.viewReservations" style="width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">View
                 My Reservations</button>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button onclick="downloadReceipt('pdf')" id="downloadPdfBtn"
@@ -279,13 +283,14 @@
                 </button>
             </div>
             <button onclick="document.getElementById('successModal').style.display='none'"
-                style="width: 100%; padding: 14px; background: transparent; color: var(--text-muted); border: none; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 5px;">Close</button>
+                localization-key="restaurant.modal.close" style="width: 100%; padding: 14px; background: transparent; color: var(--text-muted); border: none; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 5px;">Close</button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../js/theme.js"></script>
+    <script src="../js/localization.js"></script>
     <script src="../js/session.js"></script>
     <script src="../js/restaurant.js?v=2"></script>
 </body>

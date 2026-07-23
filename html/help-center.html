@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Help Center | ReserveHub</title>
-    <meta name="description" content="Find answers to your questions about ReserveHub. We're here to help you with your restaurant reservations.">
+    <title localization-key="help.meta.title">Help Center | ReserveHub</title>
+    <meta name="description" localization-key="help.meta.description" localization-target="content" content="Find answers to your questions about ReserveHub. We're here to help you with your restaurant reservations.">
     <link rel="icon" type="image/x-icon" href="../pictures/reservehub-favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -230,12 +230,19 @@
         </a>
 
         <div class="top-btn-container" role="navigation" aria-label="Main navigation">
-            <a href="index.html" class="top-btn">HOME</a>
-            <a href="index.html#how-it-works" class="top-btn">HOW IT WORKS</a>
-            <a href="index.html#featured" class="top-btn">RESTAURANTS</a>
-            <a href="contact.html" class="top-btn">CONTACT</a>
+            <a href="index.html" localization-key="nav.home" class="top-btn">HOME</a>
+            <a href="index.html#how-it-works" localization-key="nav.how" class="top-btn">HOW IT WORKS</a>
+            <a href="index.html#featured" localization-key="nav.restaurants" class="top-btn">RESTAURANTS</a>
+            <a href="contact.html" localization-key="nav.contact" class="top-btn">CONTACT</a>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
-                <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
+                <a href="login-signup.html" localization-key="nav.login" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
+            </div>
+            <div class="language-picker">
+                <i class="fa-solid fa-globe"></i>
+                <select class="help-language-localization language-select" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
             </div>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
@@ -250,14 +257,21 @@
 
     <!-- Mobile Nav -->
     <div class="mobile-nav" id="mobileNav">
-        <a href="index.html" class="mob-link">Home</a>
-        <a href="index.html#how-it-works" class="mob-link">How It Works</a>
-        <a href="index.html#featured" class="mob-link">Restaurants</a>
-        <a href="contact.html" class="mob-link">Contact</a>
+        <a href="index.html" localization-key="mobile.home" class="mob-link">Home</a>
+        <a href="index.html#how-it-works" localization-key="mobile.how" class="mob-link">How It Works</a>
+        <a href="index.html#featured" localization-key="mobile.restaurants" class="mob-link">Restaurants</a>
+        <a href="contact.html" localization-key="mobile.contact" class="mob-link">Contact</a>
         <div id="mob-auth-buttons">
-            <a href="login-signup.html" class="mob-link mob-cta">Sign Up / Log In</a>
+            <a href="login-signup.html" localization-key="mobile.login" class="mob-link mob-cta">Sign Up / Log In</a>
         </div>
-        <a href="javascript:void(0)" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
+        <div class="language-picker">
+            <i class="fa-solid fa-globe"></i>
+            <select class="help-language-localization language-select" aria-label="Select language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
+        <a href="javascript:void(0)" localization-key="mobile.theme" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
             <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
         </a>
     </div>
@@ -266,19 +280,19 @@
     <main>
         <section class="help-hero">
             <div class="container">
-                <span class="section-tag">Support Center</span>
-                <h1 class="help-title">How can we <span class="accent">help you</span> today?</h1>
+                <span localization-key="help.hero.tag" class="section-tag">Support Center</span>
+                <h1 class="help-title"><span localization-key="help.hero.title">How can we</span> <span class="accent" localization-key="help.hero.accent">help you</span> <span localization-key="help.hero.suffix">today?</span></h1>
                 <div class="help-search-container">
                     <div class="help-search-wrapper">
                         <i class="fa-solid fa-magnifying-glass help-search-icon"></i>
-                        <input type="text" class="help-search-input" id="helpSearch" placeholder="Search for answers (e.g. 'how to cancel')">
+                        <input type="text" class="help-search-input" id="helpSearch" localization-key="help.search.placeholder" localization-target="placeholder" placeholder="Search for answers (e.g. 'how to cancel')">
                     </div>
                     <div class="search-suggestions">
-                        <span class="suggestion-tag">Booking</span>
-                        <span class="suggestion-tag">Cancellation</span>
-                        <span class="suggestion-tag">Password Reset</span>
-                        <span class="suggestion-tag">Refunds</span>
-                        <span class="suggestion-tag">Profile Edit</span>
+                        <span localization-key="help.suggestions.booking" class="suggestion-tag">Booking</span>
+                        <span localization-key="help.suggestions.cancellation" class="suggestion-tag">Cancellation</span>
+                        <span localization-key="help.suggestions.password" class="suggestion-tag">Password Reset</span>
+                        <span localization-key="help.suggestions.refunds" class="suggestion-tag">Refunds</span>
+                        <span localization-key="help.suggestions.profile" class="suggestion-tag">Profile Edit</span>
                     </div>
                 </div>
             </div>
@@ -287,49 +301,49 @@
         <section class="faq-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Frequently Asked Questions</h2>
-                    <p class="section-desc">Quickly find the information you need by selecting a category below.</p>
+                    <h2 localization-key="help.faq.title" class="section-title">Frequently Asked Questions</h2>
+                    <p localization-key="help.faq.description" class="section-desc">Quickly find the information you need by selecting a category below.</p>
                 </div>
 
                 <div class="faq-grid" id="faqGrid">
                     <!-- Reservations -->
                     <div class="faq-category">
                         <i class="fa-solid fa-calendar-check faq-category-icon"></i>
-                        <h3>Reservations</h3>
+                        <h3 localization-key="help.category.reservations">Reservations</h3>
                         <div class="faq-list">
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>How to book a table</span>
+                                    <span localization-key="help.reservations.q1.question">How to book a table</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.reservations.q1.answer" class="faq-answer">
                                     Simply use the search bar on the homepage to find a restaurant. Select your preferred date, time, and party size, then click "Book Now". You'll receive an instant confirmation via email.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Modifying a booking</span>
+                                    <span localization-key="help.reservations.q2.question">Modifying a booking</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.reservations.q2.answer" class="faq-answer">
                                     You can modify your reservation by visiting your "My Profile" page. Locate the booking under "My Reservations" and click the edit icon to change the date or party size.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Cancellation policy</span>
+                                    <span localization-key="help.reservations.q3.question">Cancellation policy</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.reservations.q3.answer" class="faq-answer">
                                     Most restaurants allow free cancellations up to 24 hours before the booking. Specific policies for each restaurant are displayed during the booking process.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Large group bookings</span>
+                                    <span localization-key="help.reservations.q4.question">Large group bookings</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.reservations.q4.answer" class="faq-answer">
                                     For parties larger than 10, some restaurants require direct contact. This will be indicated on the restaurant's page. Alternatively, you can email our group booking desk.
                                 </div>
                             </div>
@@ -339,32 +353,32 @@
                     <!-- Account -->
                     <div class="faq-category">
                         <i class="fa-solid fa-user-gear faq-category-icon"></i>
-                        <h3>Account</h3>
+                        <h3 localization-key="help.category.account">Account</h3>
                         <div class="faq-list">
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Setting up your profile</span>
+                                    <span localization-key="help.account.q1.question">Setting up your profile</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.account.q1.answer" class="faq-answer">
                                     Click the user icon in the top right corner to access your profile. Here you can update your name, email, and notification preferences.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Resetting your password</span>
+                                    <span localization-key="help.account.q2.question">Resetting your password</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.account.q2.answer" class="faq-answer">
                                     If you've forgotten your password, click "Forgot Password" on the login page. We'll send a reset link to your registered email address.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Deleting your account</span>
+                                    <span localization-key="help.account.q3.question">Deleting your account</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.account.q3.answer" class="faq-answer">
                                     To delete your account, please contact our support team at support@reservehub.com. We will process your request within 48 hours.
                                 </div>
                             </div>
@@ -374,32 +388,32 @@
                     <!-- Payments & Refunds -->
                     <div class="faq-category">
                         <i class="fa-solid fa-credit-card faq-category-icon"></i>
-                        <h3>Payments & Refunds</h3>
+                        <h3 localization-key="help.category.payments">Payments & Refunds</h3>
                         <div class="faq-list">
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Is there a booking fee?</span>
+                                    <span localization-key="help.payments.q1.question">Is there a booking fee?</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.payments.q1.answer" class="faq-answer">
                                     ReserveHub is completely free for diners! We do not charge any booking fees. Some restaurants may require a deposit for special events or large groups.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>How to request a refund</span>
+                                    <span localization-key="help.payments.q2.question">How to request a refund</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.payments.q2.answer" class="faq-answer">
                                     If you paid a deposit through ReserveHub and cancelled within the allowed window, the refund is processed automatically. It usually takes 5-10 business days.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Accepted payment methods</span>
+                                    <span localization-key="help.payments.q3.question">Accepted payment methods</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.payments.q3.answer" class="faq-answer">
                                     We accept all major credit/debit cards (Visa, Mastercard, AMEX) and digital wallets like Apple Pay and Google Pay for any required deposits.
                                 </div>
                             </div>
@@ -409,23 +423,23 @@
                     <!-- Restaurant Partners -->
                     <div class="faq-category">
                         <i class="fa-solid fa-store faq-category-icon"></i>
-                        <h3>For Restaurants</h3>
+                        <h3 localization-key="help.category.restaurants">For Restaurants</h3>
                         <div class="faq-list">
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>List your restaurant</span>
+                                    <span localization-key="help.restaurants.q1.question">List your restaurant</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.restaurants.q1.answer" class="faq-answer">
                                     Interested in joining our network? Visit our 'Partners' page and fill out the application form. Our team will contact you within 48 hours.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Managing your availability</span>
+                                    <span localization-key="help.restaurants.q2.question">Managing your availability</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.restaurants.q2.answer" class="faq-answer">
                                     Partners get access to the ReserveHub Merchant Dashboard to manage floor plans, block times, and view real-time booking data.
                                 </div>
                             </div>
@@ -435,23 +449,23 @@
                     <!-- Technical Support -->
                     <div class="faq-category">
                         <i class="fa-solid fa-microchip faq-category-icon"></i>
-                        <h3>Technical Support</h3>
+                        <h3 localization-key="help.category.technical">Technical Support</h3>
                         <div class="faq-list">
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Browser compatibility</span>
+                                    <span localization-key="help.technical.q1.question">Browser compatibility</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.technical.q1.answer" class="faq-answer">
                                     ReserveHub works best on the latest versions of Chrome, Safari, Firefox, and Edge. Please ensure your browser is updated for the best experience.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Reporting a bug</span>
+                                    <span localization-key="help.technical.q2.question">Reporting a bug</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.technical.q2.answer" class="faq-answer">
                                     Found something wrong? Please email tech-support@reservehub.com with a screenshot and a brief description of the issue.
                                 </div>
                             </div>
@@ -461,32 +475,32 @@
                     <!-- Privacy -->
                     <div class="faq-category">
                         <i class="fa-solid fa-shield-halved faq-category-icon"></i>
-                        <h3>Privacy & Security</h3>
+                        <h3 localization-key="help.category.privacy">Privacy & Security</h3>
                         <div class="faq-list">
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>How we use your data</span>
+                                    <span localization-key="help.privacy.q1.question">How we use your data</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.privacy.q1.answer" class="faq-answer">
                                     We use your data only to facilitate reservations and improve your experience. We never sell your personal information to third parties.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Social login safety</span>
+                                    <span localization-key="help.privacy.q2.question">Social login safety</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.privacy.q2.answer" class="faq-answer">
                                     Using Google or Facebook to log in is completely secure. We only access your basic profile information (name and email) to create your account.
                                 </div>
                             </div>
                             <div class="faq-item">
                                 <div class="faq-question">
-                                    <span>Managing cookies</span>
+                                    <span localization-key="help.privacy.q3.question">Managing cookies</span>
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
-                                <div class="faq-answer">
+                                <div localization-key="help.privacy.q3.answer" class="faq-answer">
                                     You can manage your cookie preferences through your browser settings. Essential cookies are required for the platform to function correctly.
                                 </div>
                             </div>
@@ -499,30 +513,30 @@
         <section class="contact-section" id="contact">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Still need help?</h2>
-                    <p class="section-desc">Our support team is available 24/7 to assist you with any questions.</p>
+                    <h2 localization-key="help.contact.title" class="section-title">Still need help?</h2>
+                    <p localization-key="help.contact.description" class="section-desc">Our support team is available 24/7 to assist you with any questions.</p>
                 </div>
 
                 <div class="contact-grid">
                     <div class="contact-method">
                         <i class="fa-solid fa-envelope"></i>
-                        <h4>Email Support</h4>
-                        <p>Our typical response time is within 2 hours.</p>
-                        <a href="mailto:support@reservehub.com" class="btn-contact">Send Email</a>
+                        <h4 localization-key="help.contact.email.title">Email Support</h4>
+                        <p localization-key="help.contact.email.description">Our typical response time is within 2 hours.</p>
+                        <a href="mailto:support@reservehub.com" localization-key="help.contact.email.button" class="btn-contact">Send Email</a>
                     </div>
 
                     <div class="contact-method">
                         <i class="fa-solid fa-comments"></i>
-                        <h4>Live Chat</h4>
-                        <p>Chat with a member of our support team instantly.</p>
-                        <a href="#" class="btn-contact">Start Chat</a>
+                        <h4 localization-key="help.contact.chat.title">Live Chat</h4>
+                        <p localization-key="help.contact.chat.description">Chat with a member of our support team instantly.</p>
+                        <a href="#" localization-key="help.contact.chat.button" class="btn-contact">Start Chat</a>
                     </div>
 
                     <div class="contact-method">
                         <i class="fa-solid fa-phone"></i>
-                        <h4>Phone Support</h4>
-                        <p>Available Mon-Fri, 9am - 6pm (GMT).</p>
-                        <a href="contact.html" class="btn-contact">View Contacts</a>
+                        <h4 localization-key="help.contact.phone.title">Phone Support</h4>
+                        <p localization-key="help.contact.phone.description">Available Mon-Fri, 9am - 6pm (GMT).</p>
+                        <a href="contact.html" localization-key="help.contact.phone.button" class="btn-contact">View Contacts</a>
                     </div>
                 </div>
             </div>
@@ -534,31 +548,31 @@
         <div class="footer-inner">
             <div class="footer-brand">
                 <img src="../pictures/reservehub-full-logo-light-mode.png" alt="ReserveHub Logo" class="footer-logo">
-                <p class="footer-tagline">"All Restaurants, One Booking"</p>
+                <p localization-key="footer.tagline" class="footer-tagline">"All Restaurants, One Booking"</p>
             </div>
             <div class="footer-links">
                 <div class="footer-col">
-                    <h4>Company</h4>
-                    <a href="about.html">About Us</a>
-                    <a href="help-center.html">Help Center</a>
+                    <h4 localization-key="footer.company">Company</h4>
+                    <a href="about.html" localization-key="footer.about">About Us</a>
                 </div>
                 <div class="footer-col">
-                    <h4>Support</h4>
-                    <a href="privacy-policy.html">Privacy Policy</a>
-                    <a href="terms-of-service.html">Terms of Service</a>
-                    <a href="admin.html" id="footerAdminLink" style="color:var(--orange);">Admin Dashboard</a>
+                    <h4 localization-key="footer.support">Support</h4>
+                    <a href="help-center.html" localization-key="footer.help">Help Center</a>
+                    <a href="privacy-policy.html" localization-key="footer.privacy">Privacy Policy</a>
+                    <a href="terms-of-service.html" localization-key="footer.terms">Terms of Service</a>
+                    <a href="admin.html" localization-key="footer.admin" id="footerAdminLink" style="color:var(--orange);">Admin Dashboard</a>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 ReserveHub. All rights reserved.</p>
+            <p localization-key="footer.copyright">© 2026 ReserveHub. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="../js/theme.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/session.js"></script>
+    <script src="../js/localization.js"></script>
     <script src="../js/help.js"></script>
 </body>
-</html></body>
 </html>

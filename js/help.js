@@ -10,13 +10,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const faqGrid = document.getElementById('faqGrid');
     const suggestionTags = document.querySelectorAll('.suggestion-tag');
 
+    // Default UI text
+    const uiText = {
+        noResultsTitle: 'No results found',
+        noResultsBody: `We couldn't find any matches for "{term}". Please try a different search term or contact us below.`
+    };
+
+    const cacheOriginalContent = () => {
+        faqItems.forEach(item => {
+            const questionSpan = item.querySelector('.faq-question span');
+            const answerDiv = item.querySelector('.faq-answer');
+            item.dataset.originalQuestion = questionSpan.innerHTML;
+            item.dataset.originalAnswer = answerDiv.innerHTML;
+        });
+    };
+
+    // Update UI messages when the selected language changes
+    const updateUiText = (translations = {}) => {
+        uiText.noResultsTitle = translations['help.search.noResults.title'] || 'No results found';
+        uiText.noResultsBody = translations['help.search.noResults.body'] || `We couldn't find any matches for "{term}". Please try a different search term or contact us below.`;
+    };
+
     // Store original content for highlighting restoration
-    faqItems.forEach(item => {
-        const questionSpan = item.querySelector('.faq-question span');
-        const answerDiv = item.querySelector('.faq-answer');
-        item.dataset.originalQuestion = questionSpan.innerHTML;
-        item.dataset.originalAnswer = answerDiv.innerHTML;
-    });
+    cacheOriginalContent();
 
     // FAQ Toggle Logic
     document.querySelectorAll('.faq-question').forEach(question => {
@@ -103,13 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 noResultsMsg.style.gridColumn = '1 / -1';
                 noResultsMsg.innerHTML = `
                     <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--orange); opacity: 0.5;"></i>
-                    <h3>No results found</h3>
+                    <h3>${uiText.noResultsTitle}</h3>
                     <p style="color: var(--text-muted);"></p>
                 `;
                 faqGrid.appendChild(noResultsMsg);
             }
             noResultsMsg.style.display = 'block';
-            noResultsMsg.querySelector('p').textContent = `We couldn't find any matches for "${term}". Please try a different search term or contact us below.`;
+            noResultsMsg.querySelector('p').textContent = uiText.noResultsBody.replace('{term}', term);
         } else {
             if (noResultsMsg) noResultsMsg.style.display = 'none';
         }
@@ -124,5 +140,16 @@ document.addEventListener('DOMContentLoaded', () => {
             performSearch(tag.textContent);
             searchInput.focus();
         });
+    });
+
+    // Listen for global language changes
+    window.addEventListener('reservehub:languageChanged', event => {
+        const translations = event?.detail?.translations || {};
+        updateUiText(translations);
+        cacheOriginalContent();
+
+        if (searchInput.value.trim() !== '') {
+            performSearch(searchInput.value);
+        }
     });
 });

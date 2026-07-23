@@ -1,4 +1,237 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Default UI text
+const uiText = {
+    reservations: "Reservations",
+    reportTitle: "ReserveHub Analytics Report",
+    generatedOn: "Generated on",
+    totalUsers: "Total Users",
+    restaurants: "Restaurants",
+    platformOverview: "Platform Overview",
+    platformOverviewBody: "This report provides an overview of the main ReserveHub platform indicators.",
+    generating: "Generating...",
+    exportFailed: "Export Failed",
+    exportFailedBody: "Could not generate the PDF report.",
+    save: "Save",
+    saving: "Saving...",
+    saved: "Saved!",
+    delete: "Delete",
+    edit: "Edit",
+    add: "Add",
+    cancel: "Cancel",
+    approve: "Approve",
+    reject: "Reject",
+    from: "From",
+    status: "Status",
+    owner: "Owner",
+    properties: "Properties",
+    position: "Position",
+    capacity: "Capacity",
+    shape: "Shape",
+    round: "Round",
+    rectangular: "Rectangular",
+    seats: "seats",
+    addRestaurant: "Add Restaurant",
+    editRestaurant: "Edit Restaurant",
+    saveRestaurant: "Save Restaurant",
+    noRestaurants: "No restaurants found.",
+    selectRestaurant: "Select Restaurant...",
+    selectRestaurantFirst: "Select a restaurant first.",
+    chooseRestaurantImage: "Choose Restaurant Image",
+    deleteRestaurantConfirm: "Are you sure you want to delete this restaurant? This will delete all its tables and reservations.",
+    selectTableHint: "Click a table on the floor plan to select and edit it.",
+    name: "Name",
+    description: "Description",
+    cuisine: "Cuisine",
+    location: "Location",
+    priceRange: "Price Range",
+    openingTime: "Opening Time",
+    closingTime: "Closing Time",
+    image: "Restaurant Image",
+    noImage: "No image selected",
+    saveLayout: "Save Layout",
+    deleteTable: "Delete Table",
+    deleteTableConfirm: "Delete this table? This will remove its reservations too.",
+    tableNumber: "Table Number",
+    noUsers: "No users found.",
+    addUser: "Add New Vendor/User",
+    editAccount: "Edit Account",
+    saveAccount: "Save Account",
+    customer: "Customer",
+    vendor: "Vendor",
+    admin: "Administrator",
+    username: "Username",
+    fullName: "Full Name",
+    email: "Email Address",
+    phone: "Phone Number",
+    password: "Password",
+    updateUserFailed: "Failed to update user.",
+    createUserFailed: "Failed to create user/vendor.",
+    deleteUserFailed: "Failed to delete user.",
+    deleteUserConfirm: "Are you sure you want to delete this user? This will delete all their reservations and vendor listings.",
+    noReservationHistory: "No past reservations found.",
+    autoConfirmedSystem: "Auto-confirmed / System",
+    moderateFailed: "Failed to moderate listing.",
+    noApprovals: "No vendor listings to review.",
+    noDescription: "No description",
+    reviewed: "Reviewed",
+    inboxEmpty: "Your inbox is empty.",
+    inboxLoadFailed: "Could not load messages. Please try again.",
+    deleteMessage: "Delete Message",
+    deleteMessageConfirm: "Are you sure you want to delete this message?",
+    deleteMessageFailed: "Failed to delete message.",
+    searchRestaurants: "Search restaurants...",
+    searchUsers: "Search users...",
+    searchApprovals: "Search approvals...",
+    searchHistory: "Search history...",
+    searchMessages: "Search messages...",
+    popularRestaurants: "Popular Restaurants",
+    usersByRole: "Users By Role",
+    reservationId: "Res ID",
+    totalReservations: "Total Reservations"
+};
+
+    // Change status lable
+    function getStatusLabel(status) {
+        switch (status) {
+            case "pending":
+                return uiText.pending;
+            case "approved":
+                return uiText.approved;
+            case "rejected":
+                return uiText.rejected;
+            default:
+                return status;
+        }
+    }
+
+    // Change role lable
+    function getRoleLabel(role) {
+        switch (role) {
+            case "admin":
+                return uiText.admin;
+            case "vendor":
+                return uiText.vendor;
+            case "customer":
+                return uiText.customer;
+            default:
+                return role;
+        }
+    }
+
+    // Update UI messages when the selected language changes
+    document.addEventListener('DOMContentLoaded', () => {
+        function updateUiText(translations = {}) {
+            uiText.reservations = translations["admin.dashboard.reservations"] || "Reservations";
+            uiText.totalReservations = translations["admin.dashboard.totalReservations"] || "Total Reservations";
+            uiText.generating = translations["admin.common.generating"] || "Generating...";
+            uiText.saveLayout = translations["admin.tables.saveLayout"] || "Save Layout";
+            uiText.saving = translations["admin.common.saving"] || "Saving...";
+            uiText.saved = translations["admin.common.saved"] || "Saved!";
+            uiText.noRestaurants = translations["admin.restaurants.noneFound"] || "No restaurants found.";
+            uiText.selectRestaurant = translations["admin.restaurants.select"] || "Select Restaurant...";
+            uiText.selectRestaurantFirst = translations["admin.tables.selectRestaurant"] || "Select a restaurant first.";
+            uiText.deleteRestaurantConfirm = translations["admin.restaurants.deleteConfirm"] || "Are you sure you want to delete this restaurant?";
+            uiText.deleteTableConfirm = translations["admin.tables.deleteConfirm"] || "Delete this table?";
+            uiText.deleteUserConfirm = translations["admin.users.deleteConfirm"] || "Are you sure you want to delete this user?";
+            uiText.deleteMessageConfirm = translations["admin.inbox.deleteConfirm"] || "Are you sure you want to delete this message?";
+            uiText.reportTitle = translations["admin.dashboard.reportTitle"] || "ReserveHub Analytics Report";
+            uiText.generatedOn = translations["admin.dashboard.generatedOn"] || "Generated on";
+            uiText.totalUsers = translations["admin.dashboard.totalUsers"] || "Total Users";
+            uiText.restaurants = translations["admin.dashboard.restaurants"] || "Restaurants";
+            uiText.platformOverview = translations["admin.dashboard.platformOverview"] || "Platform Overview";
+            uiText.platformOverviewBody = translations["admin.dashboard.platformOverviewText"] || "";
+            uiText.exportFailed = translations["admin.dashboard.exportFailed"] || "Export Failed";
+            uiText.exportFailedBody = translations["admin.dashboard.pdfFailed"] || "Could not generate PDF report.";
+            uiText.updateUserFailed = translations["admin.users.updateFailed"] || "Failed to update user.";
+            uiText.createUserFailed = translations["admin.users.createFailed"] || "Failed to create user/vendor.";
+            uiText.deleteUserFailed = translations["admin.users.deleteFailed"] || "Failed to delete user.";
+            uiText.moderateFailed = translations["admin.approvals.moderateFailed"] || "Failed to moderate listing.";
+            uiText.inboxEmpty = translations["admin.inbox.none"] || "Your inbox is empty.";
+            uiText.inboxLoadFailed = translations["admin.inbox.loadFailed"] || "Could not load messages.";
+            uiText.deleteMessageFailed = translations["admin.inbox.deleteFailed"] || "Failed to delete message.";
+            uiText.noReservationHistory = translations["admin.history.none"] || "No past reservations found.";
+            uiText.autoConfirmedSystem = translations["admin.history.autoConfirmed"] || "Auto-confirmed / System";
+            uiText.delete = translations["admin.common.delete"] || "Delete";
+            uiText.properties = translations["admin.common.properties"] || "Properties";
+            uiText.position = translations["admin.common.position"] || "Position";
+            uiText.capacity = translations["admin.common.capacity"] || "Capacity";
+            uiText.shape = translations["admin.common.shape"] || "Shape";
+            uiText.round = translations["admin.common.round"] || "Round";
+            uiText.rectangular = translations["admin.common.rectangular"] || "Rectangular";
+            uiText.tableNumber = translations["admin.tables.tableNumber"] || "Table Number";
+            uiText.deleteTable = translations["admin.tables.deleteTable"] || "Delete Table";
+            uiText.noUsers = translations["admin.users.noneFound"] || "No users found.";
+            uiText.addUser = translations["admin.userModal.addTitle"] || "Add User";
+            uiText.editAccount = translations["admin.users.editTitle"] || "Edit Account";
+            uiText.seats = translations["admin.common.seats"] || "seats";
+            uiText.addRestaurant = translations["admin.restaurantModal.addTitle"] || "Add Restaurant";
+            uiText.editRestaurant = translations["admin.restaurants.editTitle"] || "Edit Restaurant";
+            uiText.changeRestaurantImage = translations["admin.restaurants.changeImage"] || "Change Restaurant Image";
+            uiText.edit = translations["admin.common.edit"] || "Edit";
+            uiText.add = translations["admin.common.add"] || "Add";
+            uiText.cancel = translations["admin.common.cancel"] || "Cancel";
+            uiText.approve = translations["admin.common.approve"] || "Approve";
+            uiText.reject = translations["admin.common.reject"] || "Reject";
+            uiText.customer = translations["admin.role.customer"] || "Customer";
+            uiText.vendor = translations["admin.role.vendor"] || "Vendor";
+            uiText.admin = translations["admin.userModal.role.admin"] || "Administrator";
+            uiText.owner = translations["admin.common.owner"] || "Owner";
+            uiText.reviewed = translations["admin.approvals.reviewed"] || "Reviewed";
+            uiText.noDescription = translations["admin.approvals.noDescription"] || "No description";
+            uiText.from = translations["admin.common.from"] || "From";
+            uiText.deleteMessage = translations["admin.inbox.deleteMessage"] || "Delete Message";
+            uiText.searchRestaurants = translations["admin.restaurants.search"] || "Search restaurants...";
+            uiText.searchUsers = translations["admin.users.search"] || "Search users...";
+            uiText.searchApprovals = translations["admin.approvals.search"] || "Search approvals...";
+            uiText.searchHistory = translations["admin.history.search"] || "Search history...";
+            uiText.searchMessages = translations["admin.inbox.search"] || "Search messages...";
+            uiText.noApprovals = translations["admin.approvals.noneFound"] || "No vendor listings to review.";
+            uiText.popularRestaurants = translations["admin.dashboard.popularRestaurants"] || "Popular Restaurants";
+            uiText.usersByRole = translations["admin.dashboard.usersByRole"] || "Users By Role";
+            uiText.selectTableHint = translations["admin.tables.clickTable"] || "Click a table on the floor plan to select and edit it.";
+            uiText.saveRestaurant = translations["admin.restaurantModal.save"] || "Save Restaurant";
+            uiText.saveAccount = translations["admin.userModal.save"] || "Save Account";
+            uiText.status = translations["admin.common.status"] || "Status";
+            uiText.save = translations["admin.common.save"] || "Save";
+            uiText.image = translations["admin.restaurantModal.image"] || "Restaurant Image";
+            uiText.noImage = translations["admin.restaurantModal.noImage"] || "No image selected";
+            uiText.name = translations["admin.restaurantModal.name"] || "Name";
+            uiText.description = translations["admin.restaurantModal.description"] || "Description";
+            uiText.cuisine = translations["admin.restaurantModal.cuisine"] || "Cuisine";
+            uiText.location = translations["admin.restaurantModal.location"] || "Location";
+            uiText.priceRange = translations["admin.restaurantModal.priceRange"] || "Price Range";
+            uiText.openingTime = translations["admin.restaurantModal.openTime"] || "Opening Time";
+            uiText.closingTime = translations["admin.restaurantModal.closeTime"] || "Closing Time";
+            uiText.username = translations["admin.userModal.username"] || "Username";
+            uiText.fullName = translations["admin.userModal.fullName"] || "Full Name";
+            uiText.email = translations["admin.userModal.email"] || "Email Address";
+            uiText.phone = translations["admin.userModal.phone"] || "Phone Number";
+            uiText.password = translations["admin.userModal.password"] || "Password";
+            uiText.chooseRestaurantImage = translations["admin.restaurantModal.chooseImage"] || "Choose Restaurant Image";
+
+            uiText.pending = translations["admin.status.pending"] || "Pending";
+            uiText.approved = translations["admin.status.approved"] || "Approved";
+            uiText.rejected = translations["admin.status.rejected"] || "Rejected";
+
+            uiText.customer = translations["admin.role.customer"] || "Customer";
+            uiText.vendor = translations["admin.role.vendor"] || "Vendor";
+            uiText.admin = translations["admin.role.admin"] || "Administrator";
+        }
+        
+        updateUiText(window.reservehubTranslations || {});
+
+        // Listen for global language changes
+        window.addEventListener("reservehub:languageChanged", event => {
+            updateUiText(event.detail?.translations || {});
+            renderRestaurants(allRestaurants);
+            renderUsers(allUsers);
+            renderHistory(allHistory);
+            renderApprovals(allApprovals);
+            renderMessages(allMessages);
+            if (document.getElementById("dashboard").classList.contains("active")) {
+                loadDashboard();
+            }
+        });
+
     // Navigation
     document.querySelectorAll('.admin-nav a[data-target]').forEach(link => {
         link.addEventListener('click', e => {
@@ -74,7 +307,7 @@ async function loadDashboard() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Reservations',
+                    label: uiText.reservations,
                     data: data,
                     backgroundColor: 'rgba(255, 107, 43, 0.8)',
                     borderColor: '#ff6b2b',
@@ -96,7 +329,7 @@ async function loadDashboard() {
         });
 
         // Users pie chart
-        const roleLabels = json.data.users_by_role.map(u => u.role);
+        const roleLabels = json.data.users_by_role.map(u => getRoleLabel(u.role));
         const roleData = json.data.users_by_role.map(u => u.count);
 
         if (usersChart) usersChart.destroy();
@@ -129,7 +362,7 @@ function downloadAnalyticsPDF() {
     const btn = document.getElementById('exportPdfBtn');
     const originalBtnText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${uiText.generating}`;
 
     // 1. Collect Data
     const users = document.getElementById('statUsers').innerText;
@@ -148,26 +381,26 @@ function downloadAnalyticsPDF() {
     printDiv.style.fontFamily = 'Arial, sans-serif';
     printDiv.innerHTML = `
         <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #ccc; padding-bottom: 20px;">
-            <h1 style="margin: 0; font-size: 28px; color: #333;">ReserveHub Analytics Report</h1>
-            <p style="margin: 5px 0 0; font-size: 14px; color: #666;">Generated on: ${new Date().toLocaleString()}</p>
+            <h1 style="margin: 0; font-size: 28px; color: #333;">${uiText.reportTitle}</h1>
+            <p style="margin: 5px 0 0; font-size: 14px; color: #666;">${uiText.generatedOn} ${new Date().toLocaleString()}</p>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
             <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
-                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Total Users</h3>
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">${uiText.totalUsers}</h3>
                 <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${users}</p>
             </div>
             <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
-                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Total Reservations</h3>
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">${uiText.totalReservations}</h3>
                 <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${res}</p>
             </div>
             <div style="text-align: center; flex: 1; border: 1px solid #ddd; padding: 20px; margin: 0 10px; border-radius: 8px;">
-                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">Restaurants</h3>
+                <h3 style="margin: 0; font-size: 16px; color: #555; text-transform: uppercase;">${uiText.restaurants}</h3>
                 <p style="margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #000;">${rests}</p>
             </div>
         </div>
         <div style="margin-bottom: 20px;">
-            <h2 style="font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Platform Overview</h2>
-            <p style="font-size: 14px; line-height: 1.6;">This report provides a snapshot of the core metrics on the ReserveHub platform. The data above reflects the current totals across all verified vendors and user accounts.</p>
+            <h2 style="font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">${uiText.platformOverview}</h2>
+            <p style="font-size: 14px; line-height: 1.6;">${uiText.platformOverviewBody}</p>
         </div>
     `;
 
@@ -197,7 +430,7 @@ function downloadAnalyticsPDF() {
         if (document.body.contains(printDiv)) document.body.removeChild(printDiv);
         btn.disabled = false;
         btn.innerHTML = originalBtnText;
-        showToast('error', 'Export Failed', 'Could not generate the PDF report.');
+        showToast('error', uiText.exportFailed, uiText.exportFailedBody);
     });
 }
 
@@ -217,7 +450,7 @@ function renderRestaurants(data) {
     const grid = document.getElementById('restGrid');
     grid.innerHTML = '';
     if (data.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-muted);">No restaurants found.</p>';
+        grid.innerHTML = `<p style="color:var(--text-muted);">${uiText.noRestaurants}</p>`;
         return;
     }
     data.forEach(r => {
@@ -229,7 +462,7 @@ function renderRestaurants(data) {
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px;"><i class="fa-solid fa-utensils" style="color: var(--orange); width: 16px;"></i> ${r.cuisine}</p>
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;"><i class="fa-solid fa-location-dot" style="color: var(--orange); width: 16px;"></i> ${r.location}</p>
                     <div style="margin-top: auto; display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 12px;">
-                        <button class="action-btn delete" onclick="deleteRestaurant(${r.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button class="action-btn delete" onclick="deleteRestaurant(${r.id})"><i class="fa-solid fa-trash"></i> ${uiText.delete}</button>
                     </div>
                 </div>
             </div>
@@ -251,7 +484,7 @@ function loadRestaurantSelects() {
     apiFetch('restaurants').then(json => {
         if(json.success) {
             allRestaurants = json.data;
-            let options = '<option value="">Select Restaurant...</option>';
+            let options = `<option value="">${uiText.selectRestaurant}</option>`;
             json.data.forEach(r => options += `<option value="${r.id}">${r.name}</option>`);
             const tableSelect = document.getElementById('tableRestSelect');
             if (tableSelect) tableSelect.innerHTML = options;
@@ -265,8 +498,8 @@ function openRestaurantModal() {
     const preview = document.getElementById('imagePreview');
     preview.querySelector('img').style.display = 'none';
     preview.querySelector('.preview-placeholder').style.display = 'flex';
-    document.getElementById('fileLabelText').textContent = 'Choose Restaurant Image';
-    document.getElementById('restModalTitle').textContent = 'Add Restaurant';
+    document.getElementById('fileLabelText').textContent = uiText.chooseRestaurantImage;
+    document.getElementById('restModalTitle').textContent = uiText.addRestaurant;
     document.getElementById('restModal').classList.add('show');
 }
 
@@ -286,7 +519,7 @@ function previewImage(input) {
         }
         reader.readAsDataURL(input.files[0]);
     } else {
-        labelText.textContent = 'Choose Restaurant Image';
+        labelText.textContent = uiText.chooseRestaurantImage;
     }
 }
 
@@ -309,14 +542,14 @@ function editRestaurant(r) {
         previewImg.src = r.image_url;
         previewImg.style.display = 'block';
         placeholder.style.display = 'none';
-        document.getElementById('fileLabelText').textContent = 'Change Restaurant Image';
+        document.getElementById('fileLabelText').textContent = uiText.changeRestaurantImage;
     } else {
         previewImg.style.display = 'none';
         placeholder.style.display = 'flex';
-        document.getElementById('fileLabelText').textContent = 'Choose Restaurant Image';
+        document.getElementById('fileLabelText').textContent = uiText.chooseRestaurantImage;
     }
     
-    document.getElementById('restModalTitle').textContent = 'Edit Restaurant';
+    document.getElementById('restModalTitle').textContent = uiText.editRestaurant;
     document.getElementById('restModal').classList.add('show');
 }
 
@@ -365,7 +598,7 @@ async function saveRestaurant(e) {
 }
 
 async function deleteRestaurant(id) {
-    if (confirm('Are you sure you want to delete this restaurant? This will delete all its tables and reservations.')) {
+    if (confirm(uiText.deleteRestaurantConfirm)) {
         await apiFetch(`restaurants&id=${id}`, 'DELETE');
         loadRestaurants();
     }
@@ -386,7 +619,7 @@ async function loadFloorPlan() {
 
     if (!restId) {
         room.querySelectorAll('.floor-table').forEach(e => e.remove());
-        sidebar.innerHTML = `<div class="floor-empty-state"><i class="fa-solid fa-utensils"></i><p>Select a restaurant first</p></div>`;
+        sidebar.innerHTML = `<div class="floor-empty-state"><i class="fa-solid fa-utensils"></i><p>${uiText.selectRestaurantFirst}</p></div>`;
         return;
     }
 
@@ -428,7 +661,7 @@ function createTableElement(t) {
         ${seatsHTML}
         <div class="table-body">
             <span class="table-label">T${t.table_number}</span>
-            <span class="table-cap">${cap} seats</span>
+            <span class="table-cap">${cap} ${uiText.seats}</span>
         </div>
     `;
 
@@ -528,9 +761,9 @@ function renderSidebar(t) {
     const sidebar = document.getElementById('floorSidebar');
     if (!t) {
         sidebar.innerHTML = `
-            <div class="floor-sidebar-header">Properties</div>
+            <div class="floor-sidebar-header">${uiText.properties}</div>
             <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-                <p style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">Click a table on the floor plan to select and edit it</p>
+                <p style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">${uiText.selectTableHint}</p>
             </div>`;
         return;
     }
@@ -541,29 +774,29 @@ function renderSidebar(t) {
         </div>
         <div class="floor-sidebar-body">
             <div class="form-group">
-                <label>Table Number</label>
+                <label>${uiText.tableNumber}</label>
                 <input type="text" class="form-control" id="sp-num" value="${t.table_number}" oninput="updateSelectedTable('table_number', this.value)">
             </div>
             <div class="form-group">
-                <label>Capacity (seats)</label>
+                <label>${uiText.capacity}</label>
                 <input type="number" class="form-control" id="sp-cap" value="${t.capacity}" min="1" max="20" oninput="updateSelectedTable('capacity', this.value)">
             </div>
             <div class="form-group">
-                <label>Shape</label>
+                <label>${uiText.shape}</label>
                 <select class="form-control" id="sp-shape" onchange="updateSelectedTable('shape', this.value)">
-                    <option value="round" ${t.shape==='round'?'selected':''}>Round</option>
-                    <option value="rect"  ${t.shape==='rect' ?'selected':''}>Rectangular</option>
+                    <option value="round" ${t.shape==='round'?'selected':''}>${uiText.round}</option>
+                    <option value="rect"  ${t.shape==='rect' ?'selected':''}>${uiText.rectangular}</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Position</label>
+                <label>${uiText.position}</label>
                 <div style="display:flex; gap:8px;">
                     <input type="number" class="form-control" placeholder="X" value="${t.x_pos}" style="flex:1;" oninput="updateSelectedTablePos('x_pos', this.value)">
                     <input type="number" class="form-control" placeholder="Y" value="${t.y_pos}" style="flex:1;" oninput="updateSelectedTablePos('y_pos', this.value)">
                 </div>
             </div>
-            <button class="btn btn-primary" style="width:100%;" onclick="saveFloorPlan()"><i class="fa-solid fa-floppy-disk"></i> Save Layout</button>
-            <button class="sidebar-delete-btn" onclick="deleteFloorTable(${t.id})"><i class="fa-solid fa-trash"></i> Delete Table</button>
+            <button class="btn btn-primary" style="width:100%;" onclick="saveFloorPlan()"><i class="fa-solid fa-floppy-disk"></i> ${uiText.saveLayout}</button>
+            <button class="sidebar-delete-btn" onclick="deleteFloorTable(${t.id})"><i class="fa-solid fa-trash"></i> ${uiText.deleteTable}</button>
         </div>`;
 }
 
@@ -596,7 +829,7 @@ function updateSelectedTablePos(key, value) {
 
 function addTableToFloor(shape, capacity) {
     const restId = document.getElementById('tableRestSelect').value;
-    if (!restId) { showToast('Please select a restaurant first.', 'error'); return; }
+    if (!restId) { showToast(uiText.selectRestaurantFirst, 'error'); return; }
 
     const count = floorTables.filter(t => !t._delete).length + 1;
     const newTable = {
@@ -617,7 +850,7 @@ function addTableToFloor(shape, capacity) {
 }
 
 async function deleteFloorTable(id) {
-    if (!confirm('Delete this table? This will remove its reservations too.')) return;
+    if (!confirm(uiText.deleteTableConfirm)) return;
     const t = floorTables.find(t => t.id === id);
     if (!t) return;
 
@@ -641,7 +874,7 @@ async function saveFloorPlan() {
 
     const btn = document.getElementById('saveFloorBtn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${uiText.saving}`;
 
     const dirty = floorTables.filter(t => t._dirty && !t._delete);
 
@@ -670,8 +903,8 @@ async function saveFloorPlan() {
     }
 
     btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
-    setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Layout'; }, 2000);
+    btn.innerHTML = `<i class="fa-solid fa-check"></i> ${uiText.saved}`;
+    setTimeout(() => { btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ${uiText.saveLayout}`; }, 2000);
 }
 
 // Keep old functions for backward compat if called elsewhere
@@ -695,11 +928,11 @@ function renderHistory(data) {
     if (!tbody) return;
     tbody.innerHTML = '';
     if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No past reservations found.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${uiText.noReservationHistory}</td></tr>`;
         return;
     }
     data.forEach(r => {
-        const managerText = r.manager_name ? `${r.manager_name} (ID: ${r.manager_id})` : 'Auto-confirmed / System';
+        const managerText = r.manager_name ? `${r.manager_name} (ID: ${r.manager_id})` : uiText.autoConfirmedSystem;
         tbody.innerHTML += `
             <tr>
                 <td>#${r.id}</td>
@@ -741,7 +974,7 @@ function renderUsers(data) {
     const tbody = document.getElementById('usersTbody');
     tbody.innerHTML = '';
     if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="color:var(--text-muted); text-align:center;">No users found.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--text-muted); text-align:center;">${uiText.noUsers}</td></tr>`;
         return;
     }
     data.forEach(u => {
@@ -753,7 +986,7 @@ function renderUsers(data) {
                 <td><strong>${u.name}</strong></td>
                 <td>${u.email}</td>
                 <td>${u.phone || '-'}</td>
-                <td><span style="padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${roleColor}; color: #fff;">${u.role || 'customer'}</span></td>
+                <td><span style="padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${roleColor}; color: #fff;">${getRoleLabel(u.role)}</span></td>
                 <td>${new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
                     <div style="display: flex; gap: 8px;">
@@ -785,7 +1018,7 @@ function openUserModal() {
     document.getElementById('passwordGroup').style.display = 'block';
     document.getElementById('userPassword').required = true;
     document.getElementById('userUsername').disabled = false;
-    document.getElementById('userModalTitle').textContent = 'Add New Vendor/User';
+    document.getElementById('userModalTitle').textContent = uiText.addUser;
     document.getElementById('userModal').classList.add('show');
 }
 
@@ -800,7 +1033,7 @@ function editUser(u) {
     document.getElementById('userPassword').required = false;
     document.getElementById('userRole').value = u.role || 'vendor';
     
-    document.getElementById('userModalTitle').textContent = 'Edit Account Details';
+    document.getElementById('userModalTitle').textContent = uiText.editAccount;
     document.getElementById('userModal').classList.add('show');
 }
 
@@ -821,7 +1054,7 @@ async function saveUser(e) {
             closeModal('userModal');
             loadUsers();
         } else {
-            showToast(json.message || 'Failed to update user.', 'error');
+            showToast(json.message || uiText.updateUserFailed, 'error');
         }
     } else {
         // Create new user/vendor
@@ -832,18 +1065,18 @@ async function saveUser(e) {
             closeModal('userModal');
             loadUsers();
         } else {
-            showToast(json.message || 'Failed to create user/vendor.', 'error');
+            showToast(json.message || uiText.createUserFailed, 'error');
         }
     }
 }
 
 async function deleteUser(id) {
-    if (confirm('Are you sure you want to delete this user? This will delete all their reservations and vendor listings.')) {
+    if (confirm(uiText.deleteUserConfirm)) {
         const json = await apiFetch(`users&id=${id}`, 'DELETE');
         if (json.success) {
             loadUsers();
         } else {
-            showToast(json.message || 'Failed to delete user.', 'error');
+            showToast(json.message || uiText.deleteUserFailed, 'error');
         }
     }
 }
@@ -869,7 +1102,7 @@ function renderApprovals(data) {
     const list = document.getElementById('approvalsList');
     list.innerHTML = '';
     if (data.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No vendor listings to review.</p>';
+        list.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">${uiText.noApprovals}</p>`;
         return;
     }
     data.forEach(r => {
@@ -879,13 +1112,13 @@ function renderApprovals(data) {
             <div style="background: var(--dark-card); border: 1px solid var(--glass-border); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column;">
                 <div style="height: 140px; background: url('${imgUrl}'); background-size: cover; background-position: center; position: relative;">
                     <span style="position: absolute; top: 10px; right: 10px; padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; background: ${r.status === 'approved' ? '#2ecc71' : (r.status === 'pending' ? '#f1c40f' : '#e74c3c')}; color: #fff;">
-                        ${r.status}
+                        ${getStatusLabel(r.status)}
                     </span>
                 </div>
                 <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
                     <h3 style="margin-bottom: 8px; font-size: 1.15rem;">${r.name}</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px;"><strong>Owner:</strong> ${r.vendor_name} (${r.vendor_email})</p>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${r.description || 'No description'}</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px;"><strong>${uiText.owner}:</strong> ${r.vendor_name} (${r.vendor_email})</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${r.description || uiText.noDescription}</p>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
                         <i class="fa-solid fa-utensils" style="color: var(--orange); width: 14px;"></i> ${r.cuisine} &nbsp;|&nbsp; 
                         <i class="fa-solid fa-location-dot" style="color: var(--orange); width: 14px;"></i> ${r.location}
@@ -893,12 +1126,12 @@ function renderApprovals(data) {
                     
                     ${r.status === 'pending' ? `
                         <div style="margin-top: auto; display: flex; gap: 10px; border-top: 1px solid var(--glass-border); padding-top: 12px;">
-                            <button class="action-btn edit" style="flex: 1; background: #2ecc71; color: #fff; text-align: center; justify-content: center; cursor: pointer; padding: 8px 12px; border-radius: 8px;" onclick="moderateListing(${r.id}, 'approved')"><i class="fa-solid fa-check"></i> Approve</button>
-                            <button class="action-btn delete" style="flex: 1; background: #e74c3c; color: #fff; text-align: center; justify-content: center; cursor: pointer; padding: 8px 12px; border-radius: 8px;" onclick="moderateListing(${r.id}, 'rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                            <button class="action-btn edit" style="flex: 1; background: #2ecc71; color: #fff; text-align: center; justify-content: center; cursor: pointer; padding: 8px 12px; border-radius: 8px;" onclick="moderateListing(${r.id}, 'approved')"><i class="fa-solid fa-check"></i> ${uiText.approve}</button>
+                            <button class="action-btn delete" style="flex: 1; background: #e74c3c; color: #fff; text-align: center; justify-content: center; cursor: pointer; padding: 8px 12px; border-radius: 8px;" onclick="moderateListing(${r.id}, 'rejected')"><i class="fa-solid fa-xmark"></i> ${uiText.reject}</button>
                         </div>
                     ` : `
                         <div style="margin-top: auto; font-size: 12px; color: var(--text-muted); text-align: center; border-top: 1px solid var(--glass-border); padding-top: 12px;">
-                            Reviewed (Status: <strong>${r.status}</strong>)
+                            ${uiText.reviewed} (${uiText.status}: <strong>${getStatusLabel(r.status)}</strong>)
                         </div>
                     `}
                 </div>
@@ -925,7 +1158,7 @@ async function moderateListing(id, status) {
     if (json.success) {
         loadApprovals();
     } else {
-        showToast(json.message || 'Failed to moderate listing.', 'error');
+        showToast(json.message || uiText.moderateFailed, 'error');
     }
 }
 
@@ -963,7 +1196,7 @@ async function loadInbox() {
         updateInboxBadge(allMessages.length);
     } else {
         const list = document.getElementById('messagesList');
-        if (list) list.innerHTML = '<p style="color:var(--text-muted); padding: 20px; text-align: center;">Could not load messages. Please try again.</p>';
+        if (list) list.innerHTML = `<p style="color:var(--text-muted); padding: 20px; text-align: center;">${uiText.inboxLoadFailed}</p>`;
     }
 }
 
@@ -996,7 +1229,7 @@ function renderMessages(data) {
     
     list.innerHTML = '';
     if (data.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-muted); padding: 20px; text-align: center;">Your inbox is empty.</p>';
+        list.innerHTML = `<p style="color:var(--text-muted); padding: 20px; text-align: center;">${uiText.inboxEmpty}</p>`;
         return;
     }
     
@@ -1007,7 +1240,7 @@ function renderMessages(data) {
                     <div>
                         <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text);">${r.subject}</h4>
                         <span style="font-size: 0.85rem; color: var(--orange); font-weight: 600;">
-                            From: ${r.name} (<a href="mailto:${r.email}" style="color: var(--orange); text-decoration: underline;">${r.email}</a>)
+                            ${uiText.from}: ${r.name} (<a href="mailto:${r.email}" style="color: var(--orange); text-decoration: underline;">${r.email}</a>)
                         </span>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
@@ -1021,8 +1254,8 @@ function renderMessages(data) {
                     ${r.message}
                 </div>
                 <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--glass-border); padding-top: 12px;">
-                    <button class="action-btn delete" onclick="deleteMessage(${r.id})" title="Delete Message" style="margin: 0; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <i class="fa-solid fa-trash"></i> Delete
+                    <button class="action-btn delete" onclick="deleteMessage(${r.id})" title="${uiText.deleteMessage}" style="margin: 0; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <i class="fa-solid fa-trash"></i> ${uiText.delete}
                     </button>
                 </div>
             </div>
@@ -1043,12 +1276,12 @@ function filterMessages() {
 }
 
 async function deleteMessage(id) {
-    if (confirm('Are you sure you want to delete this message?')) {
+    if (confirm(uiText.deleteMessageConfirm)) {
         const json = await apiFetch(`messages&id=${id}`, 'DELETE');
         if (json.success) {
             loadInbox();
         } else {
-            showToast(json.message || 'Failed to delete message.', 'error');
+            showToast(json.message || uiText.deleteMessageFailed, 'error');
         }
     }
 }

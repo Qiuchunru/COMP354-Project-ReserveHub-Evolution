@@ -1,0 +1,76 @@
+{
+  "nav.home": "ACCUEIL",
+  "nav.how": "COMMENT ÇA MARCHE",
+  "nav.restaurants": "RESTAURANTS",
+  "nav.contact": "CONTACT",
+  "nav.login": "S'INSCRIRE / SE CONNECTER",
+
+  "mobile.home": "Accueil",
+  "mobile.how": "Comment ça Marche",
+  "mobile.restaurants": "Restaurants",
+  "mobile.contact": "Contact",
+  "mobile.login": "S'Inscrire / Se Connecter",
+  "mobile.theme": "Changer le Thème",
+
+  "footer.tagline": "Tous les Restaurants, Une Seule Réservation",
+  "footer.company": "Entreprise",
+  "footer.about": "À Propos",
+  "footer.support": "Assistance",
+  "footer.privacy": "Politique de Confidentialité",
+  "footer.terms": "Conditions d'Utilisation",
+  "footer.admin": "Tableau de Bord Administrateur",
+  "footer.copyright": "© 2026 ReserveHub. Tous droits réservés.",
+  "footer.help": "Centre d'Aide",
+  "footer.contact": "Nous Contacter",
+
+  
+  "contact.hero.tag": "Contactez-Nous",
+  "contact.hero.title": "Rencontrez Notre Équipe &",
+  "contact.hero.accent": "Contactez-Nous",
+  "contact.hero.description": "Vous avez une question ou besoin d'aide? Notre équipe des opérations et du soutien est prête à vous offrir une expérience de réservation simple et efficace.",
+
+  "contact.status.checking": "Vérification de l'État...",
+  "contact.status.title": "État du Service",
+  "contact.status.description": "Nous vérifions actuellement la disponibilité de notre équipe de soutien. Les heures d'ouverture habituelles sont indiquées à droite.",
+  "contact.status.open": "Ouvert",
+
+  "contact.hours.days": "Lundi - Vendredi",
+  "contact.hours.saturday": "Samedi",
+  "contact.hours.sunday": "Dimanche",
+  "contact.hours.closed": "Fermé",
+
+  "contact.team.tag": "Équipe ReserveHub",
+  "contact.team.title": "Communiquez Directement Avec Nous",
+  "contact.team.description": "Communiquez avec le membre de notre équipe qui répond le mieux à vos besoins.",
+
+  "contact.team.iman.role": "Développeur Principal",
+  "contact.team.mawi.role": "Responsable des Opérations",
+  "contact.team.haris.role": "Relations Avec la Clientèle",
+  "contact.team.zabir.role": "Administrateur Système",
+  "contact.team.support": "Contacter par Courriel",
+
+  "contact.support.tag": "Assistance Rapide",
+  "contact.support.title": "Aide Supplémentaire",
+  "contact.support.description": "Vous pouvez également communiquer avec nos services généraux ou visiter notre centre d'aide pour obtenir une assistance immédiate.",
+
+  "contact.helpCenter.title": "Centre d'Aide",
+  "contact.helpCenter.description": "Trouvez rapidement des réponses aux questions les plus fréquentes sur les réservations, les tables et les comptes.",
+  "contact.helpCenter.link": "Visiter le Centre d'Aide",
+
+  "contact.hq.title": "Siège Social",
+  "contact.hq.address": "ReserveHub Technologies Sdn Bhd\nNiveau 15, Menara Shell, Kuala Lumpur, Malaisie",
+
+  "contact.form.title": "Envoyer un Message",
+  "contact.form.description": "Remplissez le formulaire ci-dessous et notre équipe des opérations transmettra votre message au bon membre de l'équipe.",
+  "contact.form.name": "Nom",
+  "contact.form.email": "Courriel",
+  "contact.form.subject": "Sujet",
+  "contact.form.message": "Message",
+  "contact.form.placeholder.name": "Votre nom",
+  "contact.form.submit": "Envoyer le Message",
+
+  "contact.form.name.placeholder": "Votre nom",
+  "contact.form.email.placeholder": "Votre adresse e-mail",
+  "contact.form.subject.placeholder": "Quel est le sujet de votre demande ?",
+  "contact.form.message.placeholder": "Écrivez votre message ici..."
+}

@@ -1,3 +1,26 @@
+
+let lang = 'en';
+
+// Translation dictionary for text used in this file
+const translations = {
+    en: {
+        loading: "Loading Restaurants...",
+        noRestaurants: "No restaurants found in this category.",
+        serverError: "Could not connect to the server.",
+        noImage: "No Image Available",
+        reserve: "Reserve a Table",
+        openNow: "Open now",
+    },
+    fr: {
+        loading: "Chargement des Restaurants...",
+        noRestaurants: "Aucun restaurant trouvé dans cette catégorie.",
+        serverError: "Impossible de se connecter au serveur.",
+        noImage: "Aucune Image Disponible",
+        reserve: "Réserver une Table",
+        openNow: "Ouvert maintenant",
+    }
+};
+
 // ===== NAVBAR SCROLL =====
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
@@ -40,7 +63,7 @@ const fetchFeatured = (category = 'all') => {
     if (!featuredGrid) return;
     
     // Show loading state
-    featuredGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>Loading Restaurants...</div>';
+    featuredGrid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>${translations[lang].loading}</div>`;
 
     let url = '../api/search.php';
     if (category !== 'all') {
@@ -57,14 +80,14 @@ const fetchFeatured = (category = 'all') => {
             }
         })
         .catch(err => {
-            featuredGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">Could not connect to the server.</div>';
+            featuredGrid.innerHTML =   `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">${translations[lang].serverError}</div>`;
         });
 };
 
 const renderRestaurants = (data) => {
     featuredGrid.innerHTML = '';
     if (data.length === 0) {
-        featuredGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">No restaurants found in this category.</div>';
+        featuredGrid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">${translations[lang].noRestaurants}</div>`;
         return;
     }
 
@@ -74,7 +97,7 @@ const renderRestaurants = (data) => {
         card.innerHTML = `
             <div class="card-image">
                 <img src="${item.image_url}" alt="${item.name}" onerror="this.onerror=null; this.src=''; this.parentElement.classList.add('no-image');" style="width:100%; height:100%; object-fit:cover;">
-                <div class="no-image-overlay"><i class="fa-solid fa-utensils"></i><span>No Image Available</span></div>
+                <div class="no-image-overlay"><i class="fa-solid fa-utensils"></i><span>${translations[lang].noImage}</span></div>
                 <div class="card-img-overlay">
                     <span class="halal-tag" style="background: ${item.is_halal == 1 ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; position: absolute; top: 10px; left: 10px;">${item.is_halal == 1 ? 'HALAL' : 'NON-HALAL'}</span>
                     <button class="wishlist-btn" data-id="${item.id}" aria-label="Add to wishlist"><i class="fa-regular fa-heart"></i></button>
@@ -88,10 +111,10 @@ const renderRestaurants = (data) => {
                 <div class="card-meta">
                     <span><i class="fa-solid fa-star"></i> ${item.rating}</span>
                     <span><i class="fa-solid fa-location-dot"></i> ${item.location}</span>
-                    <span><i class="fa-regular fa-clock"></i> Open now</span>
+                    <span><i class="fa-regular fa-clock"></i> ${translations[lang].openNow}</span>
                 </div>
                 <p class="card-desc">${item.description}</p>
-                <button class="reserve-btn" onclick="window.location.href='restaurant.html?id=${item.id}'">Reserve a Table</button>
+                <button class="reserve-btn" onclick="window.location.href='restaurant.html?id=${item.id}'">${translations[lang].reserve}</button>
             </div>
         `;
         featuredGrid.appendChild(card);
@@ -168,4 +191,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             target.scrollIntoView({ behavior: 'smooth' });
         }
     });
+});
+
+// Listen for language changes
+window.addEventListener("reservehub:languageChanged", event => {
+    lang = event.detail.language;
+    // Reload cards so they use the new language
+    fetchFeatured();
 });

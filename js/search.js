@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q') || '';
+    // Stores the current translations.
+    let translations = {};
+    // Returns a translated string for a given key.
+    const t = (key, fallback) => translations[key] || fallback;
     
     const keywordInput = document.getElementById('filterKeyword');
     const locationSelect = document.getElementById('filterLocation');
@@ -36,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const grid = document.getElementById('restaurantsGrid');
         const countHeader = document.getElementById('resultsCount');
         
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>Searching...</div>';
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>${t('search.results.searching', 'Searching...')}</div>`;
 
         let apiURL = `../api/search.php?q=${encodeURIComponent(q)}&location=${encodeURIComponent(loc)}&time=${encodeURIComponent(time)}&halal=${encodeURIComponent(halal)}`;
 
@@ -45,11 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => {
                 if(res.success) {
                     const data = res.data;
-                    countHeader.textContent = `Found ${data.length} Restaurant${data.length === 1 ? '' : 's'}`;
+                    const foundTemplate = data.length === 1
+                        ? t('search.results.foundSingle', 'Found {count} Restaurant')
+                        : t('search.results.foundPlural', 'Found {count} Restaurants');
+                    countHeader.textContent = foundTemplate.replace('{count}', data.length);
                     grid.innerHTML = '';
 
                     if(data.length === 0) {
-                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">No restaurants found matching your criteria.</div>';
+                        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">${t('search.results.none', 'No restaurants found matching your criteria.')}</div>`;
                         return;
                     }
 
@@ -59,10 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.innerHTML = `
                             <div class="card-image">
                                 <img src="${item.image_url}" alt="${item.name}" onerror="this.onerror=null; this.src=''; this.parentElement.classList.add('no-image');" style="width:100%; height:100%; object-fit:cover;">
-                                <div class="no-image-overlay"><i class="fa-solid fa-utensils"></i><span>No Image Available</span></div>
+                                <div class="no-image-overlay"><i class="fa-solid fa-utensils"></i><span>${t('search.card.noImage', 'No Image Available')}</span></div>
                                 <div class="card-img-overlay">
-                                    <span class="halal-tag" style="background: ${item.is_halal == 1 ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; position: absolute; top: 10px; left: 10px;">${item.is_halal == 1 ? 'HALAL' : 'NON-HALAL'}</span>
-                                    <button class="wishlist-btn" data-id="${item.id}" aria-label="Add to wishlist"><i class="fa-regular fa-heart"></i></button>
+                                    <span class="halal-tag" style="background: ${item.is_halal == 1 ? '#27ae60' : '#e74c3c'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; position: absolute; top: 10px; left: 10px;">${item.is_halal == 1 ? t('search.card.halal', 'HALAL') : t('search.card.nonHalal', 'NON-HALAL')}</span>
+                                    <button class="wishlist-btn" data-id="${item.id}" aria-label="${t('search.card.wishlist', 'Add to wishlist')}"><i class="fa-regular fa-heart"></i></button>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -76,21 +83,27 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span><i class="fa-regular fa-clock"></i> ${item.opening_time.slice(0,5)} - ${item.closing_time.slice(0,5)}</span>
                                 </div>
                                 <p class="card-desc">${item.description}</p>
-                                <button class="reserve-btn" onclick="window.location.href='restaurant.html?id=${item.id}'">Reserve a Table</button>
+                                <button class="reserve-btn" onclick="window.location.href='restaurant.html?id=${item.id}'">${t('search.card.reserve', 'Reserve a Table')}</button>
                             </div>
                         `;
                         grid.appendChild(card);
                     });
                 } else {
-                    countHeader.textContent = 'Error loading results';
+                    countHeader.textContent = t('search.results.errorTitle', 'Error loading results');
                     grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--error-color)">${res.message}</div>`;
                 }
             })
             .catch(err => {
-                countHeader.textContent = 'Network Error';
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--error-color)">Could not connect to the server.</div>';
+                countHeader.textContent = t('search.results.networkTitle', 'Network Error');
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--error-color)">${t('search.results.networkBody', 'Could not connect to the server.')}</div>`;
             });
     }
+
+    // Listen for global language changes
+    window.addEventListener('reservehub:languageChanged', event => {
+        translations = event?.detail?.translations || {};
+        fetchResults();
+    });
 
     // ===== WISHLIST TOGGLE =====
     document.addEventListener('click', e => {

@@ -1,11 +1,22 @@
 // Get token from URL
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
+let resetTranslations = {};
+
+// Returns a translated string for a given key.
+function rt(key, fallback) {
+    return resetTranslations[key] || fallback;
+}
+
+// Listen for global language changes
+window.addEventListener('reservehub:languageChanged', (event) => {
+    resetTranslations = event.detail?.translations || {};
+});
 
 if (token) {
     document.getElementById('resetToken').value = token;
 } else {
-    showError('newPasswordError', 'Invalid or missing reset token.');
+    showError('newPasswordError', rt('reset.dynamic.error.invalidToken', 'Invalid or missing reset token.'));
     const submitBtn = document.querySelector('.submit-btn');
     if (submitBtn) submitBtn.disabled = true;
 }
@@ -80,19 +91,19 @@ document.getElementById('resetPasswordFormElement')?.addEventListener('submit', 
     let isValid = true;
 
     if (newPassword.length < 6) {
-        showError('newPasswordError', 'Password must be at least 6 characters');
+        showError('newPasswordError', rt('reset.dynamic.error.passwordLength', 'Password must be at least 6 characters'));
         isValid = false;
     }
 
     if (newPassword !== confirmNewPassword) {
-        showError('confirmNewPasswordError', 'Passwords do not match');
+        showError('confirmNewPasswordError', rt('reset.dynamic.error.passwordMismatch', 'Passwords do not match'));
         isValid = false;
     }
 
     if (isValid) {
         const submitBtn = this.querySelector('.submit-btn');
         const originalBtnText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Updating...</span>';
+        submitBtn.innerHTML = `<span>${rt('reset.dynamic.button.updating', 'Updating...')}</span>`;
         submitBtn.disabled = true;
 
         fetch('../api/reset_password.php', {
@@ -105,7 +116,7 @@ document.getElementById('resetPasswordFormElement')?.addEventListener('submit', 
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccessModal('Success!', data.message);
+                showSuccessModal(rt('reset.dynamic.success.title', 'Success!'), data.message);
                 setTimeout(() => {
                     window.location.href = 'login-signup.html';
                 }, 3000);
@@ -118,7 +129,7 @@ document.getElementById('resetPasswordFormElement')?.addEventListener('submit', 
         .catch(error => {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
-            showError('newPasswordError', 'Network error. Please try again.');
+            showError('newPasswordError', rt('reset.dynamic.error.network', 'Network error. Please try again.'));
         });
     }
 });

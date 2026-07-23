@@ -79,12 +79,19 @@
         </a>
 
         <div class="top-btn-container" role="navigation" aria-label="Main navigation">
-            <a href="index.html" class="top-btn">HOME</a>
-            <a href="index.html#how-it-works" class="top-btn">HOW IT WORKS</a>
-            <a href="index.html#featured" class="top-btn">RESTAURANTS</a>
-            <a href="contact.html" class="top-btn">CONTACT</a>
+            <a href="index.html" class="top-btn" localization-key="nav.home">HOME</a>
+            <a href="index.html#how-it-works" class="top-btn" localization-key="nav.how">HOW IT WORKS</a>
+            <a href="index.html#featured" class="top-btn" localization-key="nav.restaurants">RESTAURANTS</a>
+            <a href="contact.html" class="top-btn" localization-key="nav.contact">CONTACT</a>
             <div id="auth-buttons" style="display: flex; gap: 4px;">
-                <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn">SIGN UP / LOG IN</a>
+                <a href="login-signup.html" class="top-btn btn-cta" id="signupBtn" localization-key="nav.login">SIGN UP / LOG IN</a>
+            </div>
+            <div class="language-picker">
+                <i class="fa-solid fa-globe"></i>
+                <select class="about-language-localization language-select" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
             </div>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                 <i class="fa-solid fa-moon"></i>
@@ -99,14 +106,21 @@
 
     <!-- Mobile Nav -->
     <div class="mobile-nav" id="mobileNav">
-        <a href="index.html" class="mob-link">Home</a>
-        <a href="index.html#how-it-works" class="mob-link">How It Works</a>
-        <a href="index.html#featured" class="mob-link">Restaurants</a>
-        <a href="contact.html" class="mob-link">Contact</a>
+        <a href="index.html" class="mob-link" localization-key="mobile.home">Home</a>
+        <a href="index.html#how-it-works" class="mob-link" localization-key="mobile.how">How It Works</a>
+        <a href="index.html#featured" class="mob-link" localization-key="mobile.restaurants">Restaurants</a>
+        <a href="contact.html" class="mob-link" localization-key="mobile.contact">Contact</a>
         <div id="mob-auth-buttons">
-            <a href="login-signup.html" class="mob-link mob-cta">Sign Up / Log In</a>
+            <a href="login-signup.html" class="mob-link mob-cta" localization-key="mobile.login">Sign Up / Log In</a>
         </div>
-        <a href="javascript:void(0)" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
+        <div class="language-picker">
+            <i class="fa-solid fa-globe"></i>
+            <select class="about-language-localization language-select" aria-label="Select language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
+        <a href="javascript:void(0)" localization-key="mobile.theme" class="mob-link" id="mobile-theme-toggle" style="margin-top: 20px;">
             <i class="fa-solid fa-circle-half-stroke"></i> Switch Theme
         </a>
     </div>
@@ -115,25 +129,28 @@
     <main>
         <section class="about-hero">
             <div class="container">
-                <span class="section-tag">Our Story</span>
-                <h1 class="about-title">Connecting Diners with <span class="accent">Culinary Magic</span></h1>
-                <p class="about-subtitle">ReserveHub was born from a simple idea: exploring great food should be effortless. We bridge the gap between passionate foodies and exceptional restaurants, making every reservation a seamless experience.</p>
+                <span class="section-tag" localization-key="about.hero.tag">Our Story</span>
+                <h1 class="about-title">
+                    <span localization-key="about.hero.title1">Connecting Diners with </span>
+                    <span class="accent" localization-key="about.hero.title2">Culinary Magic</span>
+                </h1>
+                <p class="about-subtitle" localization-key="about.hero.subtitle">ReserveHub was born from a simple idea: exploring great food should be effortless. We bridge the gap between passionate foodies and exceptional restaurants, making every reservation a seamless experience.</p>
                 
                 <div class="about-grid">
                     <div class="about-card">
                         <i class="fa-solid fa-utensils about-icon"></i>
-                        <h3>Curated Selection</h3>
-                        <p>We handpick our restaurant partners, ensuring you always have access to the finest dining experiences in your city.</p>
+                        <h3 localization-key="about.card1.title">Curated Selection</h3>
+                        <p localization-key="about.card1.description">We handpick our restaurant partners, ensuring you always have access to the finest dining experiences in your city.</p>
                     </div>
                     <div class="about-card">
                         <i class="fa-solid fa-bolt about-icon"></i>
-                        <h3>Instant Booking</h3>
-                        <p>Say goodbye to long wait times on the phone. With ReserveHub, your perfect table is just a few clicks away.</p>
+                        <h3 localization-key="about.card2.title">Instant Booking</h3>
+                        <p localization-key="about.card2.description">Say goodbye to long wait times on the phone. With ReserveHub, your perfect table is just a few clicks away.</p>
                     </div>
                     <div class="about-card">
                         <i class="fa-solid fa-star about-icon"></i>
-                        <h3>Verified Reviews</h3>
-                        <p>Real reviews from real diners. We believe in transparency so you can choose your next meal with confidence.</p>
+                        <h3 localization-key="about.card3.title">Verified Reviews</h3>
+                        <p localization-key="about.card3.description">Real reviews from real diners. We believe in transparency so you can choose your next meal with confidence.</p>
                     </div>
                 </div>
             </div>
@@ -141,17 +158,17 @@
 
         <section class="team-section">
             <div class="container" style="text-align: center;">
-                <h2 class="section-title">Our Mission</h2>
-                <p class="about-subtitle" style="margin-top: 20px;">To elevate the dining ecosystem by providing an intuitive platform that empowers both diners to discover amazing food and restaurants to manage their spaces efficiently.</p>
+                <h2 class="section-title" localization-key="about.mission.title">Our Mission</h2>
+                <p class="about-subtitle" localization-key="about.mission.description" style="margin-top: 20px;">To elevate the dining ecosystem by providing an intuitive platform that empowers both diners to discover amazing food and restaurants to manage their spaces efficiently.</p>
             </div>
         </section>
 
         <!-- ===== CTA BANNER ===== -->
         <section class="cta-section">
             <div class="cta-inner">
-                <h2>Join the Food Revolution</h2>
-                <p>Start discovering and booking top restaurants today with ReserveHub.</p>
-                <a href="login-signup.html" class="cta-main-btn">Get Started — It's Free <i class="fa-solid fa-arrow-right"></i></a>
+                <h2 localization-key="about.cta.title">Join the Food Revolution</h2>
+                <p localization-key="about.cta.description">Start discovering and booking top restaurants today with ReserveHub.</p>
+                <a href="login-signup.html" class="cta-main-btn"><span localization-key="about.cta.button">Get Started — It's Free</span><i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </section>
     </main>
@@ -161,30 +178,31 @@
         <div class="footer-inner">
             <div class="footer-brand">
                 <img src="../pictures/reservehub-full-logo-light-mode.png" alt="ReserveHub Logo" class="footer-logo">
-                <p class="footer-tagline">"All Restaurants, One Booking"</p>
+                <p class="footer-tagline" localization-key="footer.tagline">"All Restaurants, One Booking"</p>
             </div>
             <div class="footer-links">
                 <div class="footer-col">
-                    <h4>Company</h4>
-                    <a href="about.html">About Us</a>
+                    <h4 localization-key="footer.company">Company</h4>
+                    <a href="about.html" localization-key="footer.about">About Us</a>
                 </div>
                 <div class="footer-col">
-                    <h4>Support</h4>
-                    <a href="help-center.html">Help Center</a>
-                    <a href="contact.html">Contact Us</a>
-                    <a href="privacy-policy.html">Privacy Policy</a>
-                    <a href="terms-of-service.html">Terms of Service</a>
-                    <a href="admin.html" id="footerAdminLink" style="color:var(--orange);">Admin Dashboard</a>
+                    <h4 localization-key="footer.support">Support</h4>
+                    <a localization-key="footer.help" href="help-center.html">Help Center</a>
+                    <a localization-key="footer.contact" href="contact.html">Contact Us</a>
+                    <a localization-key="footer.privacy" href="privacy-policy.html">Privacy Policy</a>
+                    <a localization-key="footer.terms" href="terms-of-service.html">Terms of Service</a>
+                    <a localization-key="footer.admin" href="admin.html" id="footerAdminLink" style="color:var(--orange);">Admin Dashboard</a>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 ReserveHub. All rights reserved.</p>
+            <p localization-key="footer.copyright">© 2026 ReserveHub. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="../js/theme.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/session.js"></script>
+    <script src="../js/localization.js"></script>
 </body>
 </html>

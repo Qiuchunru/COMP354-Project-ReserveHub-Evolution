@@ -1,6 +1,8 @@
 // js/vendor.js - Vendor Dashboard with 2-step Restaurant Modal + Floor Plan Editor
 
 document.addEventListener('DOMContentLoaded', () => {
+    let vendorTranslations = {};
+    const vt = (key, fallback) => vendorTranslations[key] || fallback;
 
     // =========================================================
     // 1. MODAL + FLOOR PLAN STATE (defined FIRST)
@@ -20,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('restForm');
         if (form) form.reset();
         document.getElementById('restId').value         = '';
-        document.getElementById('restModalTitle').innerText = 'Add New Restaurant';
+        document.getElementById('restModalTitle').innerText = vt('vendor.dynamic.modal.addTitle', 'Add New Restaurant');
         document.getElementById('restTableLayout') && (document.getElementById('restTableLayout').value = '');
 
         // Reset image preview
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (img) img.style.display = 'none';
         if (ph)  ph.style.display  = 'flex';
         const lbl = document.getElementById('fileLabelText');
-        if (lbl) lbl.innerText = 'Choose Restaurant Image';
+        if (lbl) lbl.innerText = vt('vendor.dynamic.modal.chooseImage', 'Choose Restaurant Image');
 
         document.getElementById('restModal').classList.add('show');
     };
@@ -72,7 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const userId = vendorUser.id;
     const welcomeEl = document.getElementById('welcomeText');
-    if (welcomeEl) welcomeEl.innerText = `Welcome back, ${vendorUser.name}!`;
+    if (welcomeEl) welcomeEl.innerText = vt('vendor.dynamic.welcome', 'Welcome back, {name}!').replace('{name}', vendorUser.name);
+
+    window.addEventListener('reservehub:languageChanged', event => {
+        vendorTranslations = event?.detail?.translations || {};
+        if (welcomeEl) welcomeEl.innerText = vt('vendor.dynamic.welcome', 'Welcome back, {name}!').replace('{name}', vendorUser.name);
+        loadRestaurants();
+    });
 
     // =========================================================
     // 3. SIDEBAR NAVIGATION
@@ -122,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (resr.success) { vendorReservations = resr.data || []; document.getElementById('statReservations').innerText = vendorReservations.length; }
             
             drawVendorChart();
-        }).catch(err => { console.error(err); showToast('Failed to load stats.', 'error'); });
+        }).catch(err => { console.error(err); showToast(vt('vendor.dynamic.errors.loadStats', 'Failed to load stats.'), 'error'); });
     }
 
     function drawVendorChart() {
@@ -146,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Reservations',
+                    label: vt('vendor.dynamic.chart.reservations', 'Reservations'),
                     data: data,
                     backgroundColor: 'rgba(46, 204, 113, 0.8)',
                     borderColor: '#2ecc71',
@@ -174,13 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadRestaurants() {
         const grid = document.getElementById('restGrid');
         if (!grid) return;
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>Loading...</div>';
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--orange)"></i><br><br>${vt('vendor.dynamic.loading', 'Loading...')}</div>`;
         fetch(`../api/vendor_api.php?endpoint=restaurants`)
             .then(r => r.json())
             .then(res => {
                 if (res.success) { vendorRestaurants = res.data || []; renderRestaurants(vendorRestaurants); }
                 else showToast(res.message, 'error');
-            }).catch(() => showToast('Failed to load restaurants.', 'error'));
+            }).catch(() => showToast(vt('vendor.dynamic.errors.loadRestaurants', 'Failed to load restaurants.'), 'error'));
     }
 
     function renderRestaurants(list) {
@@ -188,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!grid) return;
         grid.innerHTML = '';
         if (list.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;background:var(--surface);border-radius:12px;border:1px dashed var(--glass-border);"><i class="fa-solid fa-utensils" style="font-size:48px;color:var(--text-muted);opacity:0.3;margin-bottom:16px;display:block;"></i><p style="color:var(--text-muted);margin-bottom:20px;">You haven't listed any restaurants yet.</p><button class="btn btn-primary" onclick="openRestaurantModal()">+ Add Your First Restaurant</button></div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;background:var(--surface);border-radius:12px;border:1px dashed var(--glass-border);"><i class="fa-solid fa-utensils" style="font-size:48px;color:var(--text-muted);opacity:0.3;margin-bottom:16px;display:block;"></i><p style="color:var(--text-muted);margin-bottom:20px;">${vt('vendor.dynamic.restaurants.empty', "You haven't listed any restaurants yet.")}</p><button class="btn btn-primary" onclick="openRestaurantModal()">${vt('vendor.dynamic.restaurants.addFirst', '+ Add Your First Restaurant')}</button></div>`;
             return;
         }
         list.forEach(rest => {
@@ -200,8 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const imgStyle = imgUrl ? `background-image:url('${imgUrl}');` : 'background:linear-gradient(135deg,#ff6b2b,#e85520);';
             const isOpen = (rest.is_open === undefined || rest.is_open == 1);
             const openStatusHtml = isOpen 
-                ? `<span style="background: #2ecc71; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px;"><i class="fa-solid fa-door-open"></i> OPEN</span>` 
-                : `<span style="background: #e74c3c; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px;"><i class="fa-solid fa-door-closed"></i> CLOSED</span>`;
+                ? `<span style="background: #2ecc71; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px;"><i class="fa-solid fa-door-open"></i> ${vt('vendor.dynamic.status.open', 'OPEN')}</span>` 
+                : `<span style="background: #e74c3c; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px;"><i class="fa-solid fa-door-closed"></i> ${vt('vendor.dynamic.status.closed', 'CLOSED')}</span>`;
             
             card.innerHTML = `
                 <div style="position:absolute;top:12px;right:12px;z-index:10;"><span class="status-badge ${statusClass}">${statusClass}</span></div>
@@ -210,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div style="padding:20px;">
                     <h3 style="margin-bottom:6px;font-size:17px;display:flex;align-items:center;">${escHtml(rest.name)} ${openStatusHtml}</h3>
-                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escHtml(rest.description || 'No description provided.')}</p>
+                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escHtml(rest.description || vt('vendor.dynamic.restaurants.noDescription', 'No description provided.'))}</p>
                     <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:18px;">
                         <span><i class="fa-solid fa-utensils"></i> ${escHtml(rest.cuisine || '—')}</span>
                         <span><i class="fa-solid fa-location-dot"></i> ${escHtml(rest.location || '—')}</span>
@@ -218,12 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div style="display:flex;gap:8px;margin-bottom:10px;">
                         <button class="btn btn-primary" style="flex:1;font-size:13px;background:${isOpen?'transparent':'#2ecc71'};border-color:${isOpen?'#e74c3c':'#2ecc71'};color:${isOpen?'#e74c3c':'#fff'};" onclick="toggleRestaurantOpen(${rest.id}, ${isOpen ? 0 : 1})">
-                            <i class="fa-solid ${isOpen?'fa-door-closed':'fa-door-open'}"></i> Mark as ${isOpen?'Closed':'Open'}
+                            <i class="fa-solid ${isOpen?'fa-door-closed':'fa-door-open'}"></i> ${isOpen ? vt('vendor.dynamic.actions.markClosed', 'Mark as Closed') : vt('vendor.dynamic.actions.markOpen', 'Mark as Open')}
                         </button>
                     </div>
                     <div style="display:flex;gap:8px;">
-                        <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editRestaurant(${rest.id})"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editFloorPlan(${rest.id})"><i class="fa-solid fa-table-cells"></i> Floor</button>
+                        <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editRestaurant(${rest.id})"><i class="fa-solid fa-pen"></i> ${vt('vendor.dynamic.actions.edit', 'Edit')}</button>
+                        <button class="btn btn-primary" style="flex:1;font-size:13px;" onclick="editFloorPlan(${rest.id})"><i class="fa-solid fa-table-cells"></i> ${vt('vendor.dynamic.actions.floor', 'Floor')}</button>
                         <button class="btn btn-primary" style="flex:1;font-size:13px;background:transparent;border:1px solid #ff4757;color:#ff4757;" onclick="deleteRestaurant(${rest.id})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>`;
@@ -247,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(r => r.json())
         .then(res => { 
             if(res.success){
-                showToast(`Restaurant marked as ${isOpen ? 'Open 🟢' : 'Closed 🔴'}.`); 
+                showToast(isOpen ? vt('vendor.dynamic.toast.markOpen', 'Restaurant marked as Open 🟢.') : vt('vendor.dynamic.toast.markClosed', 'Restaurant marked as Closed 🔴.')); 
                 // Update local state immediately
                 const rest = vendorRestaurants.find(r => r.id == id);
                 if (rest) rest.is_open = isOpen;
@@ -261,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast(res.message, 'error'); 
             }
         })
-        .catch(() => showToast('Failed to update status.', 'error'));
+        .catch(() => showToast(vt('vendor.dynamic.errors.updateStatus', 'Failed to update status.'), 'error'));
     };
 
     // =========================================================
@@ -274,25 +282,25 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`../api/vendor_api.php?endpoint=reservations`)
             .then(r => r.json())
             .then(res => { if (res.success) { vendorReservations = res.data || []; renderReservations(vendorReservations); } else showToast(res.message, 'error'); })
-            .catch(() => showToast('Failed to load reservations.', 'error'));
+            .catch(() => showToast(vt('vendor.dynamic.errors.loadReservations', 'Failed to load reservations.'), 'error'));
     }
 
     function renderReservations(list) {
         const c = document.getElementById('resList'); if (!c) return; c.innerHTML = '';
-        if (list.length === 0) { c.innerHTML = `<div style="text-align:center;padding:60px;background:var(--surface);border-radius:12px;border:1px dashed var(--glass-border);"><i class="fa-solid fa-book" style="font-size:48px;color:var(--text-muted);opacity:0.3;display:block;margin-bottom:16px;"></i><p style="color:var(--text-muted);">No reservations yet.</p></div>`; return; }
+        if (list.length === 0) { c.innerHTML = `<div style="text-align:center;padding:60px;background:var(--surface);border-radius:12px;border:1px dashed var(--glass-border);"><i class="fa-solid fa-book" style="font-size:48px;color:var(--text-muted);opacity:0.3;display:block;margin-bottom:16px;"></i><p style="color:var(--text-muted);">${vt('vendor.dynamic.reservations.empty', 'No reservations yet.')}</p></div>`; return; }
         list.forEach(res => {
             const card = document.createElement('div'); card.className = 'admin-card';
             card.style.cssText = 'display:flex;flex-direction:row;align-items:center;padding:20px;gap:20px;flex-wrap:wrap;';
             const sc = res.status === 'confirmed' ? 'approved' : (res.status === 'pending' ? 'pending' : 'rejected');
-            card.innerHTML = `<div style="flex:1;min-width:220px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span class="status-badge ${sc}">${res.status}</span><span style="font-size:12px;color:var(--text-muted);"><i class="fa-solid fa-store"></i> ${escHtml(res.restaurant_name)}</span></div><h3 style="margin-bottom:4px;">${escHtml(res.user_name)}</h3><p style="color:var(--text-muted);font-size:13px;"><i class="fa-solid fa-phone"></i> ${escHtml(res.user_phone||'—')}</p></div><div style="flex:1;min-width:180px;font-size:14px;display:flex;flex-direction:column;gap:6px;"><div><i class="fa-solid fa-calendar"></i> <strong>Date:</strong> ${res.date}</div><div><i class="fa-solid fa-clock"></i> <strong>Time:</strong> ${res.time}</div></div><div style="flex:1;min-width:150px;font-size:14px;display:flex;flex-direction:column;gap:6px;"><div><i class="fa-solid fa-users"></i> <strong>Guests:</strong> ${res.guests}</div><div><i class="fa-solid fa-chair"></i> <strong>Table:</strong> ${escHtml(res.table_number)}</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;">${res.status==='pending'?`<button class="btn btn-primary" style="background:#2ecc71;border-color:#2ecc71;" onclick="updateReservation(${res.id},'confirmed')"><i class="fa-solid fa-check"></i> Accept</button>`:''} ${res.status!=='cancelled'?`<button class="btn btn-primary" style="background:transparent;border:1px solid #ff4757;color:#ff4757;" onclick="updateReservation(${res.id},'cancelled')"><i class="fa-solid fa-times"></i> Cancel</button>`:''}</div>`;
+            card.innerHTML = `<div style="flex:1;min-width:220px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span class="status-badge ${sc}">${res.status}</span><span style="font-size:12px;color:var(--text-muted);"><i class="fa-solid fa-store"></i> ${escHtml(res.restaurant_name)}</span></div><h3 style="margin-bottom:4px;">${escHtml(res.user_name)}</h3><p style="color:var(--text-muted);font-size:13px;"><i class="fa-solid fa-phone"></i> ${escHtml(res.user_phone||'—')}</p></div><div style="flex:1;min-width:180px;font-size:14px;display:flex;flex-direction:column;gap:6px;"><div><i class="fa-solid fa-calendar"></i> <strong>${vt('vendor.dynamic.labels.date', 'Date')}:</strong> ${res.date}</div><div><i class="fa-solid fa-clock"></i> <strong>${vt('vendor.dynamic.labels.time', 'Time')}:</strong> ${res.time}</div></div><div style="flex:1;min-width:150px;font-size:14px;display:flex;flex-direction:column;gap:6px;"><div><i class="fa-solid fa-users"></i> <strong>${vt('vendor.dynamic.labels.guests', 'Guests')}:</strong> ${res.guests}</div><div><i class="fa-solid fa-chair"></i> <strong>${vt('vendor.dynamic.labels.table', 'Table')}:</strong> ${escHtml(res.table_number)}</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;">${res.status==='pending'?`<button class="btn btn-primary" style="background:#2ecc71;border-color:#2ecc71;" onclick="updateReservation(${res.id},'confirmed')"><i class="fa-solid fa-check"></i> ${vt('vendor.dynamic.actions.accept', 'Accept')}</button>`:''} ${res.status!=='cancelled'?`<button class="btn btn-primary" style="background:transparent;border:1px solid #ff4757;color:#ff4757;" onclick="updateReservation(${res.id},'cancelled')"><i class="fa-solid fa-times"></i> ${vt('vendor.dynamic.actions.cancel', 'Cancel')}</button>`:''}</div>`;
             c.appendChild(card);
         });
     }
 
     window.updateReservation = (id, status) => {
         fetch('../api/vendor_api.php?endpoint=update_reservation', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({reservation_id:id,status}) })
-            .then(r=>r.json()).then(res => { if(res.success){showToast(`Reservation ${status==='confirmed'?'accepted':'cancelled'}.`); loadReservations();} else showToast(res.message,'error'); })
-            .catch(()=>showToast('Failed to update.','error'));
+            .then(r=>r.json()).then(res => { if(res.success){showToast(status==='confirmed' ? vt('vendor.dynamic.toast.resAccepted', 'Reservation accepted.') : vt('vendor.dynamic.toast.resCancelled', 'Reservation cancelled.')); loadReservations();} else showToast(res.message,'error'); })
+            .catch(()=>showToast(vt('vendor.dynamic.errors.updateReservation', 'Failed to update.'),'error'));
     };
 
     // =========================================================
@@ -315,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showToast(res.message, 'error');
                 }
             })
-            .catch(() => showToast('Failed to load history.', 'error'));
+            .catch(() => showToast(vt('vendor.dynamic.errors.loadHistory', 'Failed to load history.'), 'error'));
     }
 
     function renderHistory(data) {
@@ -324,13 +332,13 @@ document.addEventListener('DOMContentLoaded', () => {
         tbody.innerHTML = '';
         
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No past reservations found.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">${vt('vendor.dynamic.history.empty', 'No past reservations found.')}</td></tr>`;
             return;
         }
 
         data.forEach(r => {
             const statusColor = r.status === 'cancelled' ? '#e74c3c' : '#888';
-            const statusText = r.status === 'cancelled' ? 'Cancelled' : 'Past';
+            const statusText = r.status === 'cancelled' ? vt('vendor.dynamic.status.cancelled', 'Cancelled') : vt('vendor.dynamic.status.past', 'Past');
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -400,10 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = document.querySelector('#imagePreview img');
         const ph  = document.querySelector('#imagePreview .preview-placeholder');
         const lbl = document.getElementById('fileLabelText');
-        if (rest.image_url) { img.src = rest.image_url; img.style.display='block'; if(ph) ph.style.display='none'; if(lbl) lbl.innerText='Change Image'; }
-        else { if(img) img.style.display='none'; if(ph) ph.style.display='flex'; if(lbl) lbl.innerText='Choose Restaurant Image'; }
+        if (rest.image_url) { img.src = rest.image_url; img.style.display='block'; if(ph) ph.style.display='none'; if(lbl) lbl.innerText=vt('vendor.dynamic.modal.changeImage', 'Change Image'); }
+        else { if(img) img.style.display='none'; if(ph) ph.style.display='flex'; if(lbl) lbl.innerText=vt('vendor.dynamic.modal.chooseImage', 'Choose Restaurant Image'); }
 
-        document.getElementById('restModalTitle').innerText = 'Edit Restaurant';
+        document.getElementById('restModalTitle').innerText = vt('vendor.dynamic.modal.editTitle', 'Edit Restaurant');
         document.getElementById('restModal').classList.add('show');
     };
 
